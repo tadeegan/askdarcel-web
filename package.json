@@ -107,7 +107,8 @@
     "unmockedModulePathPatterns": [
       "react",
       "enzyme",
-      "core-js"
+      "core-js",
+      "history"
     ]
   },
   "stylelint": {
