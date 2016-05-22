@@ -1,0 +1,68 @@
+
+.resourcetable p {
+	margin: 0;
+}
+
+.resourcetable_container {
+	width: 100%;
+	background-color: #ffffff;
+	border-radius: 4px;
+	border: solid 1px #dddddd;
+}
+
+.resourcetable_table {
+	display: table;
+	width: 100%;
+}
+
+.resourcetable_row {
+	display: table-row;
+	color: #111;
+}
+
+.resourcetable_tablebody > .row:hover {
+	background-color: $darcell-gray;
+	cursor: pointer;
+}
+
+.resourcetable_tableheader {
+	display: table-header-group;
+}
+
+.resourcetable_cell {
+	display: table-cell;
+	text-align: left;
+	height: 51px;
+	vertical-align: middle;
+	padding-left: 48px;
+}
+
+.resourcetable_preheader {
+	display: block;
+	background-color: $darcell-gray;
+	height: 40px;
+	width: 100%;
+}
+
+.resourcetable_preheader > p {
+	font-size: 14px;
+	line-height: 1.6;
+	color: #333333;
+	vertical-align: middle;
+	padding: 9px;
+}
+
+.resourcetable_tableheader p {
+	font-family: HelveticaNeue-Bold;
+	font-size: 14px;
+	line-height: 2.6;
+	color: #000000;
+}
+
+.resourcetable_tablebody {
+	display: table-row-group;
+}
+
+.resourcetable_closed {
+	color: red;
+}

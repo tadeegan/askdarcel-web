@@ -1,0 +1,47 @@
+
+$brand-color: #61dafb;
+
+.header_root {
+  background: $darcell-blue;
+  color: #fff;
+}
+
+.header_container {
+  margin: 0 auto;
+  padding: 15px 0;
+  max-width: $max-content-width;
+}
+
+.header_brand {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.25em;
+}
+
+.header_brandTxt {
+  margin-left: 10px;
+}
+
+.nav {
+  float: right;
+  margin-top: 6px;
+}
+
+.banner {
+  text-align: center;
+}
+
+.bannerTitle {
+  margin: 0;
+  padding: 10px;
+  font-weight: normal;
+  font-size: 4em;
+  line-height: 1em;
+}
+
+.bannerDesc {
+  padding: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.25em;
+  margin: 0;
+}

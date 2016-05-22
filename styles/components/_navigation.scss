@@ -1,0 +1,37 @@
+
+.nav_root {
+  margin: 0;
+}
+
+.nav_link {
+  display: inline-block;
+  padding: 3px 8px;
+  text-decoration: none;
+  font-size: 1.125em; /* ~18px */
+}
+
+.nav_link,
+.nav_link:active,
+.nav_link:visited {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.nav_link:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+.nav_highlight {
+  margin-right: 8px;
+  margin-left: 8px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.15);
+  color: #fff;
+}
+
+.nav_highlight:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.nav_spacer {
+  color: rgba(255, 255, 255, 0.3);
+}
