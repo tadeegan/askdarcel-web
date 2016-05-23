@@ -1,7 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import Gmap from './resources/Map.js';
 
 var categories = [];
       
@@ -32,7 +31,6 @@ var CategoryBox = React.createClass({
   render: function() {
     return (
       <div>
-        <Gmap />
         <CategoryList categories={categories} />
       </div>
     );
