@@ -8,7 +8,7 @@ const emptyFunction = () => {};
 class App extends Component {
 
   render() {
-    return !this.props.error ? (
+    return (!this.props.error && this.props.route.path != '/') ? (
       <div>
         <Header />
         {this.props.children}
