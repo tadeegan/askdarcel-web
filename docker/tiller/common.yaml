@@ -1,0 +1,8 @@
+exec: [ "nginx", "-g", "daemon off;" ]
+data_sources: [ file, environment ]
+template_sources: [ file ]
+
+environments:
+  production:
+    askdarcel-web.erb:
+      target: /etc/nginx/conf.d/askdarcel-web.conf
