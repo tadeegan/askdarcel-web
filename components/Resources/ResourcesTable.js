@@ -5,7 +5,7 @@ import Gmap from './Map.js';
 class ResourcesTable extends Component {
 	constructor() {
 		super();
-		this.state = {categoryName: 'Caregory Name', resources: [], markers: {}};
+		this.state = {categoryName: 'Caregory Name', resources: []};
 	}
 
 	loadResourcesFromServer() {
@@ -18,30 +18,64 @@ class ResourcesTable extends Component {
 		});
 	}
 
+	getLocation(callback) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(callback);
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+    }
+  }
+
+	getWalkTime() {
+		var self = this;
+		this.getLocation(position => {
+			var directionsService = new google.maps.DirectionsService();
+			let myLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+			let destLatLang = new google.maps.LatLng('37.7749295', '-122.4194155');
+			let preferences = {
+				origin: myLatLng,
+				destination: destLatLang,
+				travelMode: google.maps.TravelMode.WALKING
+			};
+			directionsService.route(preferences, function(result, status) {
+		    if (status == google.maps.DirectionsStatus.OK) {
+		      console.log(result);
+		    }
+		  });
+		});
+	}
+
 	componentDidMount() {
 		this.loadResourcesFromServer();
+		this.getWalkTime();
 	}
 
 	render() {
 		return !this.state.resources.length ? <div>Loading...</div> : (
 			<div className="resourcetable_main">
-				<div className="resourcetable_container">
-					<div className="resourcetable_preheader">
-					  <p className="resourcetable_title">{this.state.categoryName}</p>
-					  <span>{this.state.resources.length} results</span>
+			  <div className="row">
+					<div className="col-xs-12 col-md-5">
+						<div className="resourcetable_main container-fluid">
+							<div className="resourcetable_preheader row">
+							  <p className="resourcetable_title col-md-10">{this.state.categoryName}</p>
+							  <span className="col-md-2">{this.state.resources.length} results</span>
+							</div>
+							<div className="resourcetable_filter">
+								<ul className="list-inline text-center">
+									<li>Filter:</li>
+									<li>Open Now</li>
+									<li>Walking Distance</li>
+									<li>Just for Me</li>
+								</ul>
+							</div>
+							<ResourcesList resources={this.state.resources} />
+						</div>
 					</div>
-					<div className="resourcetable_buttons">
-						<ul>
-							<li>Filter:</li>
-							<li>Open Now</li>
-							<li>Walking Distance</li>
-							<li>Just for Me</li>
-						</ul>
-					</div>
-					<ResourcesList resources={this.state.resources} />
-				</div>
-				<div className="resourcetable_map">
-				  {getMapWithMarkers(this.state.resources)}
+					<div className="resourcetable_main container-fluid">
+						<div className="resourcetable_map col-xs-12 col-md-7">
+						  {getMapWithMarkers(this.state.resources)}
+						</div>
+				  </div>
 				</div>
 			</div>
 		);
@@ -86,14 +120,18 @@ class ResourcesRow extends Component {
 		return (
 			<div className="resourcetable_entry">
 				<Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
-				  <img src="http://lorempixel.com/100/100/city/" />
-				  <div className="resourcetable_general_info">
-						<div className="resourcetable_name"><p>{this.props.number}. {this.props.resource.name}</p></div>
-						{buildAddressCell(this.props.resource.addresses)}
-						<button>Save</button>
+					<div className="row">
+					  <img className="col-md-3" src="http://lorempixel.com/100/100/city/" />
+					  <div className="resourcetable_general_info col-md-6">
+							<div className="resourcetable_name"><p>{this.props.number}. {this.props.resource.name}</p></div>
+							<div>{buildAddressCell(this.props.resource.addresses)}</div>
+							<div><button>Save</button></div>
+					  </div>
+						<div className="resourcetable_review col-md-2"><p>{Math.floor(Math.random()*10)%6}</p></div>
 				  </div>
-					<div className="resourcetable_review"><p>{Math.floor(Math.random()*10)%6}</p></div>
-					{buildHoursCell(this.props.resource.schedule.schedule_days)}
+					<div className="row resourcetable_subtext">
+					  {buildHoursCell(this.props.resource.schedule.schedule_days)}
+					</div>
 				</Link>
 			</div>
 		);
