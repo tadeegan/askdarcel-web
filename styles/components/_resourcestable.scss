@@ -41,8 +41,13 @@
 		clear: left;
 	}
 
-	.resourcetable_subtext {
-	  margin: 10px;
+	.resourcetable_subtext p {
+	  font-family: OpenSans;
+	  height: 19px;
+	  font-size: 14px;
+		color: #474747;
+		margin-left: 10px;
+		display: block;
 	}
 
 }
@@ -83,4 +88,12 @@
 
 .resourcetable_closed {
 	color: red;
+}
+
+.col-md-5 {
+	padding: 0;
+}
+
+.row {
+	margin: 0;
 }
