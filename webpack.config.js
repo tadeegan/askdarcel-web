@@ -1,15 +1,13 @@
 var path = require('path');
 var webpack = require('webpack');
 
-var outputPath = '/dist';
-
 module.exports = {
   context: __dirname,
   entry: './init.js',
-  output: { 
-    path: outputPath,
+  output: {
+    path: path.resolve(__dirname, 'build/public'),
     publicPath: '/dist',
-    filename: 'bundle.js' 
+    filename: 'bundle.js'
   },
   devtool: 'source-map',
   module: {
@@ -26,7 +24,7 @@ module.exports = {
         test: /\.scss$/,
         loaders: ['style', 'css', 'sass']
       },
-      { test: /\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/, 
+      { test: /\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
       loader: 'file-loader?name=fonts/[name].[ext]' }
     ]
   },
@@ -41,6 +39,6 @@ module.exports = {
           req.url = req.url.replace(/^\/api/, '');
         }
       }
-    }  
+    }
   }
 };
