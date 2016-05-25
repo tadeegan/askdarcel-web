@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import Header from './Header';
 import CategoryPage from './CategoryPage';
 import ResourcesTable from './Resources/ResourcesTable';
+import Gmap from './Resources/Map.js';
 
 class App extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      test: "I am the test!",
       userLocation: null
     };
   }
@@ -32,7 +32,6 @@ class App extends Component {
   render() {
     let childrenWithProps = React.Children.map(this.props.children, (child) => {
       return React.cloneElement(child, { 
-        test: this.state.test,
         userLocation: this.state.userLocation,
         getLocation: this.getLocation
       });

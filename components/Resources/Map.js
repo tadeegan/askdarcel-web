@@ -18,44 +18,42 @@ class Gmap extends Component {
   }
 
   populateMarkers(markers, map) {
+    let offset = this.props.markers.center ? 2 : 1;
     markers.forEach((marker, index) => {
-      let number = index + 2;
       var latLang = new google.maps.LatLng(marker[0], marker[1]);
       new google.maps.Marker({
         position: latLang,
         map: map,
-        label: number+'',
-        title: 'Resource ' + number
+        label: (index + offset)+'',
+        title: 'Resource ' + (index + offset)
       });
     })
   }
 
   componentDidMount() {
-    
-    var latLang = new google.maps.LatLng(this.props.markers.center[0], this.props.markers.center[1]);
-    var map = new google.maps.Map(this.refs.map_canvas, {
-      center: latLang,
+    let map = new google.maps.Map(this.refs.map_canvas, {
+      center: this.props.markers.user,
       zoom: 13
     });
 
     new google.maps.Marker({
+      position: this.props.markers.user,
+      map: map,
+      title: 'Your position'
+    });
+
+    if(this.props.markers.center) {
+      let latLang = new google.maps.LatLng(this.props.markers.center[0], this.props.markers.center[1]);
+      map.setCenter(latLang);
+      new google.maps.Marker({
         position: latLang,
         map: map,
         label: '1',
         title: 'Resource 1'
       });
+    }
 
     this.populateMarkers(this.props.markers.additional, map);
-
-    this.getLocation(position => {
-      var myLatLng = {lat: position.coords.latitude, lng: position.coords.longitude};
-      
-      var userLocation = new google.maps.Marker({
-        position: myLatLng,
-        map: map,
-        title: 'Your location'
-      });
-    });
 
   }
 

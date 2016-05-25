@@ -85,7 +85,7 @@ class ResourcesTable extends Component {
 					</div>
 					<div className="resourcetable_main container-fluid">
 						<div className="resourcetable_map col-xs-12 col-md-7">
-						  {getMapWithMarkers(this.state.resources)}
+						  {getMapWithMarkers(this.state.resources, this.state.location)}
 						</div>
 				  </div>
 				</div>
@@ -194,7 +194,7 @@ class ResourcesRow extends Component {
 	}
 }
 
-function getMapWithMarkers(resources) {
+function getMapWithMarkers(resources, userLoc) {
 	const processAddress = (resource) => {
 		if(resource) {
 			let address = resource.addresses[0];
@@ -212,6 +212,7 @@ function getMapWithMarkers(resources) {
 	markers.additional = resources.slice(1).map(resource => {
 		return processAddress(resource);
 	});
+	markers.user = userLoc;
 
 	return <Gmap markers={markers} />;
 }
