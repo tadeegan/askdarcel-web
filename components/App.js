@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Header from './Header';
 import CategoryPage from './CategoryPage';
 import ResourcesTable from './Resources/ResourcesTable';
-import Gmap from './Resources/Map.js';
 
 class App extends Component {
 
@@ -43,8 +42,8 @@ class App extends Component {
         {childrenWithProps}
       </div>
     ) : <div>
-    {childrenWithProps}
-    </div>
+    	{childrenWithProps}
+    	</div>
   }
 
 };
