@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-
-// let cx = classNames.bind(styles);
+import Gmap from './Map.js';
 
 class ResourcesTable extends Component {
 	constructor() {
 		super();
-		this.state = {categoryName: 'Category Name', resources: []};
+		this.state = {categoryName: 'Caregory Name', resources: [], location: null};
 	}
 
 	loadResourcesFromServer() {
@@ -19,25 +18,76 @@ class ResourcesTable extends Component {
 		});
 	}
 
+	getLocation(callback) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(callback);
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+    }
+  }
+
+	getWalkTime(dest, cb) {
+		let directionsService = new google.maps.DirectionsService();
+		let myLatLng = new google.maps.LatLng(this.state.location.lat, this.state.location.lng);
+		let destLatLang = new google.maps.LatLng(dest.lat, dest.lng);
+		let preferences = {
+			origin: myLatLng,
+			destination: destLatLang,
+			travelMode: google.maps.TravelMode.WALKING
+		};
+		directionsService.route(preferences, function(result, status) {
+	    if (status == google.maps.DirectionsStatus.OK) {
+	      cb(result.routes[0].legs[0].duration.text);
+	    }
+	  });
+	}
+
 	componentDidMount() {
+		if(this.props.userLocation) {
+			let position = this.props.userLocation;
+			let userPosition = {lat: position.coords.latitude, lng: position.coords.longitude};
+			this.setState({
+				location: userPosition
+			});
+		} else {
+			this.props.getLocation(position => {
+				let userPosition = {lat: position.coords.latitude, lng: position.coords.longitude};
+				this.setState({
+					location: userPosition
+				});
+		  });
+		}
+
 		this.loadResourcesFromServer();
+		
 	}
 
 	render() {
-		return (
-			<div className="resourcetable_container">
-				<div className="resourcetable_preheader"><p>Select a resource:</p></div>
-				<div className="resourcetable_table">
-					<div className="resourcetable_tableheader">
-						<div className="resourcetable_row">
-							<div className="resourcetable_cell"><p>Name</p></div>
-							<div className="resourcetable_cell"><p>Rating</p></div>
-							<div className="resourcetable_cell"><p>Todays hours</p></div>
-							<div className="resourcetable_cell"><p>Address</p></div>
-							<div className="resourcetable_cell"><p>Categories</p></div>
+		return !this.state.resources.length || !this.state.location ? <div>Loading...</div> : (
+			<div className="resourcetable_main">
+			  <div className="row">
+					<div className="col-xs-12 col-md-5">
+						<div className="resourcetable_main container-fluid">
+							<div className="resourcetable_preheader row">
+							  <p className="resourcetable_title col-md-10">{this.state.categoryName}</p>
+							  <span className="col-md-2">{this.state.resources.length} Results</span>
+							</div>
+							<div className="resourcetable_filter">
+								<ul className="list-inline">
+									<li>Filter:</li>
+									<li>Open Now</li>
+									<li>Walking Distance</li>
+									<li>Just for Me</li>
+								</ul>
+							</div>
+							<ResourcesList resources={this.state.resources} location={this.state.location} />
 						</div>
 					</div>
-					<ResourcesList resources={this.state.resources} />
+					<div className="resourcetable_main container-fluid">
+						<div className="resourcetable_map col-xs-12 col-md-7">
+						  {getMapWithMarkers(this.state.resources, this.state.location)}
+						</div>
+				  </div>
 				</div>
 			</div>
 		);
@@ -45,15 +95,16 @@ class ResourcesTable extends Component {
 }
 
 class ResourcesList extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {};
 	}
 
 	render() {
+		let location = this.props.location;
 		let resourcesRows = this.props.resources.map((resource, index) => {
 			return (
-				<ResourcesRow resource={resource} key={index}/>	
+				<ResourcesRow resource={resource} key={index} number={index + 1} location={location}/>	
 			);
 		});
 
@@ -66,9 +117,12 @@ class ResourcesList extends Component {
 }
 
 class ResourcesRow extends Component {
-	constructor() {
-		super();
-		this.state = {};
+	constructor(props) {
+		super(props);
+		this.state = {
+			dest: {lat: props.resource.addresses[0].latitude, lng: props.resource.addresses[0].longitude},
+			walkTime: null
+		};
 		this.handleClick = this.handleClick.bind(this);
 	}
 
@@ -78,17 +132,89 @@ class ResourcesRow extends Component {
 		// Location.push("/resource/" + this.props.resource.id);
 	}
 
+	getWalkTime(dest, cb) {
+		let directionsService = new google.maps.DirectionsService();
+		let myLatLng = new google.maps.LatLng(this.props.location.lat, this.props.location.lng);
+		let destLatLang = new google.maps.LatLng(dest.lat, dest.lng);
+		let preferences = {
+			origin: myLatLng,
+			destination: destLatLang,
+			travelMode: google.maps.TravelMode.WALKING
+		};
+		directionsService.route(preferences, function(result, status) {
+	    if (status == google.maps.DirectionsStatus.OK) {
+	      cb(result.routes[0].legs[0].duration.text);
+	    }
+	  });
+	}
+
+	getReview() {
+		let placeHolderReviews = [
+		  "safe and friendly",
+		  "clean place",
+		  "great if you can get in",
+		  "okay",
+		  "not the best"
+		];
+
+		return placeHolderReviews[Math.floor(Math.random() * placeHolderReviews.length)];
+	}
+
+	componentDidMount() {
+		this.getWalkTime(this.state.dest, (duration) => {
+			this.setState({
+				walkTime: duration
+			});
+		});
+	}
+
 	render() {
-		return (
-			<Link className="resourcetable_row" to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
-				<div className="resourcetable_cell"><p>{this.props.resource.name}</p></div>
-				<div className="resourcetable_cell"><p>{Math.floor(Math.random()*10)%6}</p></div>
-				{buildHoursCell(this.props.resource.schedule.schedule_days)}
-				{buildAddressCell(this.props.resource.addresses)}
-				<div className="resourcetable_cell"><p>{displayCategories(this.props.resource.categories)}</p></div>
-			</Link>
+		return !this.state.walkTime ? <div>Loading...</div> : (
+			<div className="resourcetable_entry">
+				<Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
+					<div className="row">
+					  <img className="col-md-3" src="http://lorempixel.com/100/100/city/" />
+					  <div className="resourcetable_general_info col-md-6">
+							<div className="resourcetable_name"><p>{this.props.number}. {this.props.resource.short_description || this.props.resource.long_description || "Description"}</p></div>
+							<div className="resourcetable_address">
+								<p>{this.props.resource.name}</p>
+							  <p>{buildAddressCell(this.props.resource.addresses)} &bull; {this.state.walkTime} walking</p>
+							</div>
+							<div><button>Save</button></div>
+					  </div>
+						<div className="resourcetable_reviewbox col-md-2 text-center"><p>{Math.floor(Math.random()*10)%6}</p></div>
+				  </div>
+					<div className="resourcetable_subtext">
+					  <p><span className="glyphicon glyphicon-bell"></span> {buildHoursCell(this.props.resource.schedule.schedule_days)}</p>
+						<p><span className="glyphicon glyphicon-comment"></span> {this.getReview()}</p>
+					</div>
+				</Link>
+			</div>
 		);
 	}
+}
+
+function getMapWithMarkers(resources, userLoc) {
+	const processAddress = (resource) => {
+		if(resource) {
+			let address = resource.addresses[0];
+			if(!address) {
+				return null;
+			}
+			return [+address.latitude, +address.longitude];
+		}
+		return null;
+	};
+
+	let markers = {
+		center: processAddress(resources[0])
+	};
+	markers.additional = resources.slice(1).map(resource => {
+		return processAddress(resource);
+	});
+	markers.user = userLoc;
+
+	return <Gmap markers={markers} />;
 }
 
 function displayCategories(categories) {
@@ -126,7 +252,7 @@ function buildHoursCell(schedule_days) {
 	}
 
 	return (
-		<div className="resourcetable_cell"><p>{hours}</p></div>
+		<span className="resourcetable_hours">{hours}</span>
 	);
 }
 
@@ -134,10 +260,13 @@ function buildAddressCell(addresses) {
 	let addressString = "";
 	if(addresses.length && addresses.length > 0) {
 		let address = addresses[0];
-		addressString += address.address_1 + ", " + address.address_2;
+		addressString += address.address_1;
+		if(address.address_2) {
+			addressString += ", " + address_2;
+		}
 	}
 
-	return <div className="resourcetable_cell"><p>{addressString}</p></div>
+	return <span>{addressString}</span>
 }
 
 function timeToString(hours) {

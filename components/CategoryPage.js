@@ -1,14 +1,14 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import Gmap from './resources/Map.js';
+import Gmap from './Resources/Map.js';
 import LargeHeader from './LargeHeader.js'
 import Footer from './Footer.js'
 
 var categories = [];
-      
+
 var CategoryBox = React.createClass({
-  loadCategoriesFromServer: function() {  
+  loadCategoriesFromServer: function() {
     var callback = function callback(response, textStatus, jqXHR) {
       if (httpRequest.readyState === XMLHttpRequest.DONE) {
         if (httpRequest.status === 200) {
@@ -44,13 +44,13 @@ var CategoryBox = React.createClass({
 
 var CategoryList = React.createClass({
   render: function() {
-  
+
     var categoryNodes = this.props.categories.map(function(category) {
       return (
         <Category name={category.name} key={category.id} categoryid={category.id} image_path={category.image_path}/>
       );
     });
-    
+
     return (
       <div className="CategoryList container">
         <div className="browseCategoriesText">
