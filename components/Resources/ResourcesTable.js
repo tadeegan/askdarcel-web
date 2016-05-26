@@ -2,6 +2,14 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import Gmap from './Map.js';
 
+const cats = {
+	1: "Shelter",
+	2: "Food",
+	3: "Medical",
+	4: "Hygiene",
+	5: "Technology"
+};
+
 class ResourcesTable extends Component {
 	constructor() {
 		super();
@@ -11,6 +19,9 @@ class ResourcesTable extends Component {
 	loadResourcesFromServer() {
 		let { query } = this.props.location;
 		let categoryid = query.categoryid;
+		this.setState({
+			categoryName: cats[categoryid]
+		});
 		let url = '/api/resources?category_id=' + categoryid;
 		fetch(url).then(r => r.json())
 		.then(data => {
