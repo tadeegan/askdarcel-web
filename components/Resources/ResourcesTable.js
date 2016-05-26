@@ -5,7 +5,7 @@ import Gmap from './Map.js';
 class ResourcesTable extends Component {
 	constructor() {
 		super();
-		this.state = {categoryName: 'Caregory Name', resources: [], location: null};
+		this.state = {categoryName: 'Category Name', resources: [], location: null};
 	}
 
 	loadResourcesFromServer() {
