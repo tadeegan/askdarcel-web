@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import Header from './Header';
 import CategoryPage from './CategoryPage';
-import ResourcesTable from './Resources/ResourcesTable';
-import Gmap from './Resources/Map.js';
+import ResourcesTable from './Resources/ResourcesTable'; 
 
 class App extends Component {
 
@@ -37,12 +36,14 @@ class App extends Component {
       });
     });
 
-    return !this.props.error ? (
+    return (!this.props.error && this.props.route.path != '/') ? (
       <div>
         <Header />
         {childrenWithProps}
       </div>
-    ) : childrenWithProps;
+    ) : <div>
+    	{childrenWithProps}
+    	</div>
   }
 
 };
