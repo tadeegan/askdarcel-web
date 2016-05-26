@@ -2,6 +2,8 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import Gmap from './resources/Map.js';
+import LargeHeader from './LargeHeader.js'
+import Footer from './Footer.js'
 
 var categories = [];
       
@@ -32,8 +34,9 @@ var CategoryBox = React.createClass({
   render: function() {
     return (
       <div>
-        <Gmap />
+        <LargeHeader />
         <CategoryList categories={categories} />
+        <Footer />
       </div>
     );
   }
@@ -44,18 +47,17 @@ var CategoryList = React.createClass({
   
     var categoryNodes = this.props.categories.map(function(category) {
       return (
-        <Category name={category.name} key={category.id} categoryid={category.id} />
+        <Category name={category.name} key={category.id} categoryid={category.id} image_path={category.image_path}/>
       );
     });
     
     return (
       <div className="CategoryList container">
-        <h1>Find Community Resources</h1>
-        <div className="category_shelterBox">
-          <p className="category_title">Select a category:</p>
-          <ul className="category_list">
-            {categoryNodes}
-          </ul>
+        <div className="browseCategoriesText">
+          Browse Categories
+        </div>
+        <div className="row">
+          {categoryNodes}
         </div>
       </div>
     );
@@ -65,13 +67,26 @@ var CategoryList = React.createClass({
 var Category = React.createClass({
   render: function() {
     return  (
-      <li className="category_list_item">
-        <div className="category-name">
+    <div>
+      <div className="col-lg-2 col-md-2 col-sm-2 hidden-xs category_option">
           <Link className="category_brand" to={{ pathname: "resources", query: { categoryid: this.props.categoryid } }} >
-            <span>{this.props.name}</span> 
+              <img src={'assets/images/' + this.props.image_path} alt="boohoo" className="img-responsive"/><br />
           </Link>
-        </div>
-      </li>
+          {this.props.name}
+      </div>
+      <div className="hidden-lg hidden-md hidden-sm col-xs-12">
+        <Link className="category_brand" to={{ pathname: "resources", query: { categoryid: this.props.categoryid } }} >
+          <button className="btn btn-default category_button" type="submit">
+            <div className="col-xs-4 category_xs_button_image">
+                <img src={'assets/images/' + this.props.image_path} alt="boohoo" className="img-responsive"/><br />
+            </div>
+            <div className="col-xs-8 category_xs_text">
+              {this.props.name}
+            </div>
+          </button>
+        </Link>
+      </div>
+    </div>
     );
   }
 });
