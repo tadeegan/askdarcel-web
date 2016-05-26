@@ -90,6 +90,10 @@ resourcetable_hours:hover {
 		  font-family: OpenSans-Bold;
 			font-size: 14px;
 			color: #818181;
+			&:hover {
+			  cursor: pointer;
+			  border: 1px solid #818181;
+		  }
 		}
 	}
 }

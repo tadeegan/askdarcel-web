@@ -39,6 +39,15 @@ class Gmap extends Component {
     new google.maps.Marker({
       position: this.props.markers.user,
       map: map,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 5,
+        fillColor: 'blue',
+        fillOpacity: 0.8,
+        strokeColor: 'blue',
+        strokeWeight: 12,
+        strokeOpacity: 0.2
+      },
       title: 'Your position'
     });
 
