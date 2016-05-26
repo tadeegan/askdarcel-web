@@ -1,24 +1,20 @@
 
 .resourcetable_main {
-	border: solid 1px #dddddd;
+	font-family: OpenSans;
 
-	.container-fluid {
-	  div {
-	    padding: 0;
-	    div {
-	      padding: 0;
-	    }
-	  }
+	.resourcetable_filter li{
+	  margin: 1em;
 	}
 }
 
 .resourcetable_entry {
-	border: 1px solid black;
+	border-bottom: 1px solid #474747;
 	color: #111;
+	font-family: OpenSans;
 
 	img {
-	  border-radius: 5px;
 	  margin: 10px;
+	  border-radius: 4px;
 	}
 
 	.resourcetable_general_info {
@@ -28,21 +24,30 @@
 	}
 
 	.resourcetable_name {
-	  font-family: OpenSans-Bold;
+	  margin-top: 10px;
+	  font-weight: bold;
 	  font-size: 16px;
 	  color: #116eea;
 	  float: left;
 	}
 
 	.resourcetable_address {
-	  font-family: OpenSans;
 		font-size: 14px;
 		color: #818181;
 		clear: left;
 	}
 
+	.resourcetable_reviewbox {
+	  width: 3em;
+	  height: 2em;
+	  color: #fff;
+    padding-top: 0.5em;
+    margin-top: 10px;
+	  background-color: #aeca0d;
+	  border-radius: 4px;
+	}
+
 	.resourcetable_subtext p {
-	  font-family: OpenSans;
 	  height: 19px;
 	  font-size: 14px;
 		color: #474747;
@@ -50,14 +55,24 @@
 		display: block;
 	}
 
+	button {
+	  font-weight: bold;
+	}
+
 }
 
+resourcetable_hours:hover {
+	  text-decoration: none;
+	}
+
 .resourcetable_entry:hover {
-	background-color: $darcell-gray;
+	border: 1px solid #000;
 	cursor: pointer;
+	text-decoration: none;
 }
 
 .resourcetable_preheader {
+  padding-top: 15px;
 	.resourcetable_title {
 		font-family: OpenSans-Bold;
 		font-size: 24px;
@@ -96,4 +111,15 @@
 
 .row {
 	margin: 0;
+}
+
+.container-fluid {
+	padding: 0;
+	div {
+	    padding-right: 0;
+	    padding-left: 0;
+	    div {
+	      padding: 0;
+	    }
+	  }
 }

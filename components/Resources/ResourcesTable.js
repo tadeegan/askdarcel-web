@@ -70,10 +70,10 @@ class ResourcesTable extends Component {
 						<div className="resourcetable_main container-fluid">
 							<div className="resourcetable_preheader row">
 							  <p className="resourcetable_title col-md-10">{this.state.categoryName}</p>
-							  <span className="col-md-2">{this.state.resources.length} results</span>
+							  <span className="col-md-2">{this.state.resources.length} Results</span>
 							</div>
 							<div className="resourcetable_filter">
-								<ul className="list-inline text-center">
+								<ul className="list-inline">
 									<li>Filter:</li>
 									<li>Open Now</li>
 									<li>Walking Distance</li>
@@ -178,11 +178,11 @@ class ResourcesRow extends Component {
 							<div className="resourcetable_name"><p>{this.props.number}. {this.props.resource.short_description || this.props.resource.long_description || "Description"}</p></div>
 							<div className="resourcetable_address">
 								<p>{this.props.resource.name}</p>
-							  <p>{buildAddressCell(this.props.resource.addresses)} o {this.state.walkTime} walking</p>
+							  <p>{buildAddressCell(this.props.resource.addresses)} &bull; {this.state.walkTime} walking</p>
 							</div>
 							<div><button>Save</button></div>
 					  </div>
-						<div className="resourcetable_review col-md-2"><p>{Math.floor(Math.random()*10)%6}</p></div>
+						<div className="resourcetable_reviewbox col-md-2 text-center"><p>{Math.floor(Math.random()*10)%6}</p></div>
 				  </div>
 					<div className="resourcetable_subtext">
 					  <p><span className="glyphicon glyphicon-bell"></span> {buildHoursCell(this.props.resource.schedule.schedule_days)}</p>
