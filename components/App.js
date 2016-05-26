@@ -31,18 +31,20 @@ class App extends Component {
 
   render() {
     let childrenWithProps = React.Children.map(this.props.children, (child) => {
-      return React.cloneElement(child, { 
+      return React.cloneElement(child, {
         userLocation: this.state.userLocation,
         getLocation: this.getLocation
       });
     });
 
-    return !this.props.error ? (
+    return (!this.props.error && this.props.route.path != '/') ? (
       <div>
         <Header />
         {childrenWithProps}
       </div>
-    ) : childrenWithProps;
+    ) : <div>
+    {childrenWithProps}
+    </div>
   }
 
 };
