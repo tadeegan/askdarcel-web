@@ -6,4 +6,3 @@ node_modules
 ncp-debug.log
 npm-debug.log
 dist
-utils/config.js
