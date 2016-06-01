@@ -29,13 +29,14 @@ class ResourcesTable extends Component {
 		});
 	}
 
-	getLocation(callback) {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(callback);
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-    }
-  }
+	getLocationGoogle() {
+		// Results are not very accurate
+		let url = 'https://www.googleapis.com/geolocation/v1/geolocate?key= AIzaSyBrt0fmU5Iarh0LdqEDp6bjMIqEOQB2hqU'; 
+		fetch(url, {method: 'post'}).then(r => r.json())
+		.then(data => {
+			this.setState({location: data.location});
+		});
+	}
 
 	getWalkTime(dest, cb) {
 		let directionsService = new google.maps.DirectionsService();
@@ -61,12 +62,17 @@ class ResourcesTable extends Component {
 				location: userPosition
 			});
 		} else {
-			this.props.getLocation(position => {
-				let userPosition = {lat: position.coords.latitude, lng: position.coords.longitude};
-				this.setState({
-					location: userPosition
-				});
-		  });
+			this.getLocationGoogle();
+			// this.props.getLocation(position => {
+			// 	let userPosition = {lat: position.coords.latitude, lng: position.coords.longitude};
+			// 	console.log("got it!", userPosition);
+			// 	this.setState({
+			// 		location: userPosition
+			// 	});
+		 //  },
+		 //  error => {
+		 //  	console.error(error);
+		 //  });
 		}
 
 		this.loadResourcesFromServer();
@@ -115,7 +121,7 @@ class ResourcesList extends Component {
 		let location = this.props.location;
 		let resourcesRows = this.props.resources.map((resource, index) => {
 			return (
-				<ResourcesRow resource={resource} key={index} number={index + 1} location={location}/>	
+				<ResourcesRow resource={resource} key={index} number={index + 1} location={location || {}}/>	
 			);
 		});
 
