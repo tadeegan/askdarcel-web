@@ -279,7 +279,7 @@ function buildAddressCell(addresses) {
 		let address = addresses[0];
 		addressString += address.address_1;
 		if(address.address_2) {
-			addressString += ", " + address_2;
+			addressString += ", " + address.address_2;
 		}
 	}
 
