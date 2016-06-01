@@ -4,9 +4,28 @@ node_js:
   - '5'
 env:
   - CXX=g++-4.8
+
+services:
+  - docker
+
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
+
+env:
+  - global:
+    - COMMIT=${TRAVIS_COMMIT::8}
+    - SANITIZED_BRANCH=$(echo $TRAVIS_BRANCH|sed 's|/|-|g')
+    - REPO=sheltertechsf/askdarcel-web
+
+after_success:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+  - export TAG=`if [[ -n "$TRAVIS_TAG" ]]; then echo "$TRAVIS_TAG"; else if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then echo "pull-request-$TRAVIS_PULL_REQUEST"; else if [ "$SANITIZED_BRANCH" == "master" ]; then echo "latest"; else echo "branch-$SANITIZED_BRANCH"; fi; fi; fi`
+  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - echo "Pushing tags for '$COMMIT', '$TAG', and 'travis-$TRAVIS_BUILD_NUMBER'"
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO
