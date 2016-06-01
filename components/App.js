@@ -12,9 +12,9 @@ class App extends Component {
     };
   }
 
-  getLocation(callback) {
+  getLocation(successCB, errorCB) {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(callback);
+      navigator.geolocation.getCurrentPosition(successCB, errorCB);
     } else {
       console.log("Geolocation is not supported by this browser.");
     }
