@@ -19,7 +19,7 @@ server {
         resolver_timeout 5s;
 
         set $api_url <%= env_api_url.chomp '/' %>;
-        proxy_pass $api_url/$1;
+        proxy_pass $api_url/$1$is_args$args;
         proxy_redirect off;
     }
 
