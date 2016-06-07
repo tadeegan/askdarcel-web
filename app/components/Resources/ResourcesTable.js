@@ -13,7 +13,13 @@ const cats = {
 class ResourcesTable extends Component {
 	constructor() {
 		super();
-		this.state = {categoryName: 'Category Name', resources: [], location: null};
+		this.state = {
+			categoryName: 'Category Name', 
+			resources: [],
+			currentResources: [],
+			page: 0,
+			location: null
+		};
 	}
 
 	loadResourcesFromServer() {
@@ -25,7 +31,23 @@ class ResourcesTable extends Component {
 		let url = '/api/resources?category_id=' + categoryid;
 		fetch(url).then(r => r.json())
 		.then(data => {
-			this.setState({resources: data});
+			this.setState({resources: data, currentResources: data.slice(0,10)});
+		});
+	}
+
+	getNextResources() {
+		let page = this.state.page + 1;
+		this.setState({
+			page: page,
+			currentResources: this.state.resources.slice(page, page + 10)
+		});
+	}
+
+	getPreviousResources() {
+		let page = this.state.page - 1;
+		this.setState({
+			page: page,
+			currentResources: this.state.resources.slice(page, page + 10)
 		});
 	}
 
@@ -80,6 +102,7 @@ class ResourcesTable extends Component {
 	}
 
 	render() {
+
 		return !this.state.resources.length || !this.state.location ? <div>Loading...</div> : (
 			<div className="resourcetable_main">
 			  <div className="row">
@@ -87,7 +110,7 @@ class ResourcesTable extends Component {
 						<div className="resourcetable_main container-fluid">
 							<div className="resourcetable_preheader row">
 							  <p className="resourcetable_title col-md-10">{this.state.categoryName}</p>
-							  <span className="col-md-2">{this.state.resources.length} Results</span>
+							  <span className="col-md-2">{this.state.currentResources.length} Results</span>
 							</div>
 							<div className="resourcetable_filter">
 								<ul className="list-inline">
@@ -97,12 +120,14 @@ class ResourcesTable extends Component {
 									<li>Just for Me</li>
 								</ul>
 							</div>
-							<ResourcesList resources={this.state.resources} location={this.state.location} />
+							<ResourcesList resources={this.state.currentResources} location={this.state.location} />
+							{this.state.page ? <button className="btn btn-link" onClick={this.getPreviousResources.bind(this)}> Previous </button> : null}
+							{this.state.page <= Math.floor(this.state.resources.length / 9) - 1 ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null} 
 						</div>
 					</div>
 					<div className="resourcetable_main container-fluid">
 						<div className="resourcetable_map col-xs-12 col-md-7">
-						  {getMapWithMarkers(this.state.resources, this.state.location)}
+						  {getMapWithMarkers(this.state.currentResources, this.state.location)}
 						</div>
 				  </div>
 				</div>
@@ -178,6 +203,7 @@ class ResourcesRow extends Component {
 	}
 
 	componentDidMount() {
+		var num = this.props.number;
 		this.getWalkTime(this.state.dest, (duration) => {
 			this.setState({
 				walkTime: duration
@@ -186,7 +212,7 @@ class ResourcesRow extends Component {
 	}
 
 	render() {
-		return !this.state.walkTime ? <div>Loading...</div> : (
+		return (
 			<div className="resourcetable_entry">
 				<Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
 					<div className="row">
@@ -195,7 +221,7 @@ class ResourcesRow extends Component {
 							<div className="resourcetable_name"><p>{this.props.number}. {this.props.resource.short_description || this.props.resource.long_description || "Description"}</p></div>
 							<div className="resourcetable_address">
 								<p>{this.props.resource.name}</p>
-							  <p>{buildAddressCell(this.props.resource.addresses)} &bull; {this.state.walkTime} walking</p>
+							  <p>{buildAddressCell(this.props.resource.addresses)} &bull; {this.state.walkTime || "unknown"} walking</p>
 							</div>
 							<div><button>Save</button></div>
 					  </div>

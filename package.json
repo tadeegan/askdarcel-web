@@ -26,6 +26,7 @@
   "devDependencies": {
     "classnames": "^2.2.3",
     "css-loader": "^0.23.1",
+    "extended-define-webpack-plugin": "^0.1.0",
     "node-sass": "^3.7.0",
     "react-icons": "^2.0.1",
     "sass-loader": "^3.2.0",

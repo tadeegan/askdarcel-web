@@ -1,6 +1,8 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ExtendedDefinePlugin = require('extended-define-webpack-plugin');
+var config = require(path.resolve(__dirname, 'app/utils/config.js'));
 
 var appRoot = path.resolve(__dirname, 'app/');
 
@@ -16,6 +18,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'Ask Darcel',
       template: 'app/index.html'
+    }),
+    new ExtendedDefinePlugin({
+      CONFIG: config
     })
   ],
   devtool: 'source-map',
