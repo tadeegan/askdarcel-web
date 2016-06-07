@@ -1,8 +1,11 @@
 import React from 'react';
 
+let bgImage = require('../assets/images/bg.png');
+let smallLogo = require('../assets/images/logo-small-white@3x.png');
+
 function LargeHeader() {
   return (
-    <nav className="navbar navbar-default largeheader_background" style={{backgroundImage: 'url(' + 'assets/images/bg.png' +')'}}>
+    <nav className="navbar navbar-default largeheader_background" style={{backgroundImage: 'url(' + bgImage +')'}}>
         <div className="container-fluid">
             <div className="navbar-header">
                 <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false">
@@ -12,7 +15,7 @@ function LargeHeader() {
                     <span className="icon-bar"></span>
                 </button>
                 <a className="navbar-brand" href="#">
-                    <img src={'assets/images/logo-small-white@3x.png'} />
+                    <img src={smallLogo} />
                 </a>
             </div>
             <nav id="navbar" className="collapse navbar-collapse">

@@ -1,9 +1,8 @@
 
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
-import Gmap from './Resources/Map.js';
 import LargeHeader from './LargeHeader.js'
 import Footer from './Footer.js'
+import Category from './Category.js'
 
 var categories = [];
 
@@ -64,40 +63,13 @@ var CategoryList = React.createClass({
   }
 });
 
-var Category = React.createClass({
-  render: function() {
-    return  (
-    <div>
-      <div className="col-lg-2 col-md-2 col-sm-2 hidden-xs category_option">
-          <Link className="category_brand" to={{ pathname: "resources", query: { categoryid: this.props.categoryid } }} >
-              <img src={'assets/images/' + this.props.image_path} alt="boohoo" className="img-responsive"/><br />
-          </Link>
-          {this.props.name}
-      </div>
-      <div className="hidden-lg hidden-md hidden-sm col-xs-12">
-        <Link className="category_brand" to={{ pathname: "resources", query: { categoryid: this.props.categoryid } }} >
-          <button className="btn btn-default category_button" type="submit">
-            <div className="col-xs-4 category_xs_button_image">
-                <img src={'assets/images/' + this.props.image_path} alt="boohoo" className="img-responsive"/><br />
-            </div>
-            <div className="col-xs-8 category_xs_text">
-              {this.props.name}
-            </div>
-          </button>
-        </Link>
-      </div>
-    </div>
-    );
-  }
-});
-
 class ContentPage extends Component {
   render() {
     return (
       <CategoryBox />
     );
   }
-
 }
 
 export default ContentPage;
+
