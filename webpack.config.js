@@ -2,7 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtendedDefinePlugin = require('extended-define-webpack-plugin');
-var config = require(path.resolve(__dirname, 'app/utils/config.js'));
+var config = require(path.resolve(__dirname, 'app/utils/config.example.js'));
 
 var appRoot = path.resolve(__dirname, 'app/');
 
