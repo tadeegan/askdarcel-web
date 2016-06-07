@@ -2,6 +2,8 @@ var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtendedDefinePlugin = require('extended-define-webpack-plugin');
+
+//Change this to config.js and add a key to the config file
 var config = require(path.resolve(__dirname, 'app/utils/config.example.js'));
 
 var appRoot = path.resolve(__dirname, 'app/');
