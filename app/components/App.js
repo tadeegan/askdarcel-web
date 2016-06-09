@@ -36,7 +36,7 @@ class App extends Component {
       });
     });
 
-    return (!this.props.error && this.props.route.path != '/') ? (
+    return (!this.props.error && this.props.location.pathname != '/') ? (
       <div>
         <Header />
         {childrenWithProps}
