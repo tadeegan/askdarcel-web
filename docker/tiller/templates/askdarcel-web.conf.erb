@@ -23,6 +23,11 @@ server {
         proxy_redirect off;
     }
 
+    location = /_version {
+        expires -1;
+        try_files /_version.json =404;
+    }
+
     location ~ ^/dist/(.*)$ {
         try_files /$1 /robots.txt =404;
     }
