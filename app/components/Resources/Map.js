@@ -5,7 +5,9 @@ class Gmap extends Component {
     super(props);
 
     this.state = {
-      userLocation: {}
+      userMarker: null,
+      map: null,
+      markers: []
     };
   }
 
@@ -17,17 +19,30 @@ class Gmap extends Component {
     }
   }
 
-  populateMarkers(markers, map) {
-    let offset = this.props.markers.center ? 2 : 1;
-    markers.forEach((marker, index) => {
-      var latLang = new google.maps.LatLng(marker[0], marker[1]);
-      new google.maps.Marker({
+  setMapOnAll(map, markers) {
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(map);
+    }
+  }
+
+  generateMarkers(locs, map) {
+    let markers = [];
+    let offset = 1;
+
+    locs.forEach((loc, index) => {
+      var latLang = new google.maps.LatLng(loc[0], loc[1]);
+      let marker = new google.maps.Marker({
         position: latLang,
         map: map,
         label: (index + offset)+'',
         title: 'Resource ' + (index + offset)
       });
-    })
+      markers.push(marker);
+    });
+
+    this.setState({
+      markers: markers
+    });
   }
 
   componentDidMount() {
@@ -36,7 +51,7 @@ class Gmap extends Component {
       zoom: 13
     });
 
-    new google.maps.Marker({
+    let userMarker = new google.maps.Marker({
       position: this.props.markers.user,
       map: map,
       icon: {
@@ -51,19 +66,22 @@ class Gmap extends Component {
       title: 'Your position'
     });
 
-    if(this.props.markers.center) {
-      let latLang = new google.maps.LatLng(this.props.markers.center[0], this.props.markers.center[1]);
-      map.setCenter(latLang);
-      new google.maps.Marker({
-        position: latLang,
-        map: map,
-        label: '1',
-        title: 'Resource 1'
-      });
-    }
+    this.setState({
+      map: map,
+      userMarker: userMarker
+    })
 
-    this.populateMarkers(this.props.markers.additional, map);
+    let latLang = new google.maps.LatLng(this.props.markers.results[0][0], this.props.markers.results[0][1]);
+    map.setCenter(latLang);
 
+    this.generateMarkers(this.props.markers.results, map);
+
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.setMapOnAll(null, this.state.markers);
+    this.state.userMarker.setMap(this.state.map);
+    this.generateMarkers(newProps.markers.results, this.state.map);
   }
 
   render() {

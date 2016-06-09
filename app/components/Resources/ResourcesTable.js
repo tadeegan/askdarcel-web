@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import Gmap from './Map.js';
 
+// Show the span of results (11 - 20 for example rather than the #10)
+// Make the map update with proper markers
+
 const cats = {
 	1: "Shelter",
 	2: "Food",
@@ -31,7 +34,7 @@ class ResourcesTable extends Component {
 		let url = '/api/resources?category_id=' + categoryid;
 		fetch(url).then(r => r.json())
 		.then(data => {
-			this.setState({resources: data, currentResources: data.slice(0,10)});
+			this.setState({resources: data, currentResources: data.slice(0,9)});
 		});
 	}
 
@@ -39,7 +42,7 @@ class ResourcesTable extends Component {
 		let page = this.state.page + 1;
 		this.setState({
 			page: page,
-			currentResources: this.state.resources.slice(page, page + 10)
+			currentResources: this.state.resources.slice(page, page + 9)
 		});
 	}
 
@@ -47,7 +50,7 @@ class ResourcesTable extends Component {
 		let page = this.state.page - 1;
 		this.setState({
 			page: page,
-			currentResources: this.state.resources.slice(page, page + 10)
+			currentResources: this.state.resources.slice(page, page + 9)
 		});
 	}
 
@@ -110,7 +113,7 @@ class ResourcesTable extends Component {
 						<div className="resourcetable_main container-fluid">
 							<div className="resourcetable_preheader row">
 							  <p className="resourcetable_title col-md-10">{this.state.categoryName}</p>
-							  <span className="col-md-2">{this.state.currentResources.length} Results</span>
+							  <span className="col-md-2">{this.state.resources.length} Results</span>
 							</div>
 							<div className="resourcetable_filter">
 								<ul className="list-inline">
@@ -127,7 +130,7 @@ class ResourcesTable extends Component {
 					</div>
 					<div className="resourcetable_main container-fluid">
 						<div className="resourcetable_map col-xs-12 col-md-7">
-						  {getMapWithMarkers(this.state.currentResources, this.state.location)}
+						  <Gmap markers={getMapMarkers(this.state.currentResources, this.state.location)} />
 						</div>
 				  </div>
 				</div>
@@ -237,7 +240,7 @@ class ResourcesRow extends Component {
 	}
 }
 
-function getMapWithMarkers(resources, userLoc) {
+function getMapMarkers(resources, userLoc) {
 	const processAddress = (resource) => {
 		if(resource) {
 			let address = resource.addresses[0];
@@ -249,15 +252,15 @@ function getMapWithMarkers(resources, userLoc) {
 		return null;
 	};
 
-	let markers = {
-		center: processAddress(resources[0])
-	};
-	markers.additional = resources.slice(1).map(resource => {
+	var markers = {};
+
+	markers.results = resources.map(resource => {
 		return processAddress(resource);
 	});
+
 	markers.user = userLoc;
 
-	return <Gmap markers={markers} />;
+	return markers;
 }
 
 function displayCategories(categories) {
