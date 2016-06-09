@@ -8,18 +8,10 @@ function LargeHeader() {
     <nav className="navbar navbar-default largeheader_background" style={{backgroundImage: 'url(' + bgImage +')'}}>
         <div className="container-fluid">
             <div className="navbar-header">
-                <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false">
-                    <span className="sr-only">Toggle navigation</span>
-                    <span className="icon-bar"></span>
-                    <span className="icon-bar"></span>
-                    <span className="icon-bar"></span>
-                </button>
                 <a className="navbar-brand" href="#">
                     <img src={smallLogo} />
                 </a>
             </div>
-            <nav id="navbar" className="collapse navbar-collapse">
-            </nav>
         </div>
         <div id="largeheader_content" className="container">
             <div className="row">
