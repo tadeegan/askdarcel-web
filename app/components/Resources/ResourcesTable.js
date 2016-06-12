@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import Gmap from './Map.js';
 
+// Show the span of results (11 - 20 for example rather than the #10)
+// Make the map update with proper markers
+
 const cats = {
 	1: "Shelter",
 	2: "Food",
@@ -13,7 +16,13 @@ const cats = {
 class ResourcesTable extends Component {
 	constructor() {
 		super();
-		this.state = {categoryName: 'Category Name', resources: [], location: null};
+		this.state = {
+			categoryName: 'Category Name', 
+			resources: [],
+			currentResources: [],
+			page: 0,
+			location: null
+		};
 	}
 
 	loadResourcesFromServer() {
@@ -25,7 +34,23 @@ class ResourcesTable extends Component {
 		let url = '/api/resources?category_id=' + categoryid;
 		fetch(url).then(r => r.json())
 		.then(data => {
-			this.setState({resources: data});
+			this.setState({resources: data, currentResources: data.slice(0,9)});
+		});
+	}
+
+	getNextResources() {
+		let page = this.state.page + 1;
+		this.setState({
+			page: page,
+			currentResources: this.state.resources.slice(page, page + 9)
+		});
+	}
+
+	getPreviousResources() {
+		let page = this.state.page - 1;
+		this.setState({
+			page: page,
+			currentResources: this.state.resources.slice(page, page + 9)
 		});
 	}
 
@@ -80,6 +105,7 @@ class ResourcesTable extends Component {
 	}
 
 	render() {
+
 		return !this.state.resources.length || !this.state.location ? <div>Loading...</div> : (
 			<div className="resourcetable_main">
 			  <div className="row">
@@ -97,12 +123,14 @@ class ResourcesTable extends Component {
 									<li>Just for Me</li>
 								</ul>
 							</div>
-							<ResourcesList resources={this.state.resources} location={this.state.location} />
+							<ResourcesList resources={this.state.currentResources} location={this.state.location} />
+							{this.state.page ? <button className="btn btn-link" onClick={this.getPreviousResources.bind(this)}> Previous </button> : null}
+							{this.state.page <= Math.floor(this.state.resources.length / 9) - 1 ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null} 
 						</div>
 					</div>
 					<div className="resourcetable_main container-fluid">
 						<div className="resourcetable_map col-xs-12 col-md-7">
-						  {getMapWithMarkers(this.state.resources, this.state.location)}
+						  <Gmap markers={getMapMarkers(this.state.currentResources, this.state.location)} />
 						</div>
 				  </div>
 				</div>
@@ -178,6 +206,7 @@ class ResourcesRow extends Component {
 	}
 
 	componentDidMount() {
+		var num = this.props.number;
 		this.getWalkTime(this.state.dest, (duration) => {
 			this.setState({
 				walkTime: duration
@@ -186,7 +215,7 @@ class ResourcesRow extends Component {
 	}
 
 	render() {
-		return !this.state.walkTime ? <div>Loading...</div> : (
+		return (
 			<div className="resourcetable_entry">
 				<Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
 					<div className="row">
@@ -195,7 +224,7 @@ class ResourcesRow extends Component {
 							<div className="resourcetable_name"><p>{this.props.number}. {this.props.resource.short_description || this.props.resource.long_description || "Description"}</p></div>
 							<div className="resourcetable_address">
 								<p>{this.props.resource.name}</p>
-							  <p>{buildAddressCell(this.props.resource.addresses)} &bull; {this.state.walkTime} walking</p>
+							  <p>{buildAddressCell(this.props.resource.addresses)} &bull; {this.state.walkTime || "unknown"} walking</p>
 							</div>
 							<div><button>Save</button></div>
 					  </div>
@@ -211,7 +240,7 @@ class ResourcesRow extends Component {
 	}
 }
 
-function getMapWithMarkers(resources, userLoc) {
+function getMapMarkers(resources, userLoc) {
 	const processAddress = (resource) => {
 		if(resource) {
 			let address = resource.addresses[0];
@@ -223,15 +252,15 @@ function getMapWithMarkers(resources, userLoc) {
 		return null;
 	};
 
-	let markers = {
-		center: processAddress(resources[0])
-	};
-	markers.additional = resources.slice(1).map(resource => {
+	var markers = {};
+
+	markers.results = resources.map(resource => {
 		return processAddress(resource);
 	});
+
 	markers.user = userLoc;
 
-	return <Gmap markers={markers} />;
+	return markers;
 }
 
 function displayCategories(categories) {
