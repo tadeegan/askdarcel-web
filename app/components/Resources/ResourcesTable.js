@@ -18,10 +18,11 @@ class ResourcesTable extends Component {
 		super();
 		this.state = {
 			categoryName: 'Category Name', 
-			resources: [],
+			allResources: [],
 			openResources: [],
+			resources: [],
 			openFilter: false,
-			currentResources: [],
+			currentPage: [],
 			page: 0,
 			location: null
 		};
@@ -42,10 +43,10 @@ class ResourcesTable extends Component {
 					return resource;
 				}
 			});
-			console.log(openResources);
 			this.setState({
+				allResources: data.resources,
 				resources: data.resources, 
-				currentResources: data.resources.slice(0,9),
+				currentPage: data.resources.slice(0,9),
 				openResources: openResources
 			});
 		});
@@ -53,10 +54,9 @@ class ResourcesTable extends Component {
 
 	getNextResources() {
 		let page = this.state.page + 1;
-		let resources = this.state.openFilter ? this.state.openResources : this.state.resources;
 		this.setState({
 			page: page,
-			currentResources: this.state.resources.slice(page, page + 9)
+			currentResources: this.state.resources.slice(page * 9 + 1, page * 9 + 10)
 		});
 	}
 
@@ -64,7 +64,7 @@ class ResourcesTable extends Component {
 		let page = this.state.page - 1;
 		this.setState({
 			page: page,
-			currentResources: this.state.resources.slice(page, page + 9)
+			currentResources: this.state.resources.slice(page * 9 + 1, page * 9 + 10)
 		});
 	}
 
@@ -98,13 +98,15 @@ class ResourcesTable extends Component {
 		if(this.state.openFilter) {
 			this.setState({
 				page: page,
-				currentResources: this.state.resources.slice(page, page + 9),
+				resources: this.state.allResources,
+				currentPage: this.state.allResources.slice(page, page + 9),
 				openFilter: false
 			});
 		} else {
 			this.setState({
 				page: page,
-				currentResources: this.state.openResources.slice(page, page + 9),
+				resources: this.state.openResources,
+				currentPage: this.state.openResources.slice(page, page + 9),
 				openFilter: true
 			});
 		}
@@ -152,14 +154,14 @@ class ResourcesTable extends Component {
 									<li onClick={this.filterResources.bind(this)}>{this.state.openFilter ? "All" : "Open Now"}</li>
 								</ul>
 							</div>
-							<ResourcesList resources={this.state.currentResources} location={this.state.location} />
+							<ResourcesList resources={this.state.currentPage} location={this.state.location} />
 							{this.state.page ? <button className="btn btn-link" onClick={this.getPreviousResources.bind(this)}> Previous </button> : null}
 							{this.state.page <= Math.floor(this.state.resources.length / 9) - 1 ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null} 
 						</div>
 					</div>
 					<div className="resourcetable_main container-fluid">
 						<div className="resourcetable_map col-xs-12 col-md-7">
-						  <Gmap markers={getMapMarkers(this.state.currentResources, this.state.location)} />
+						  <Gmap markers={getMapMarkers(this.state.currentPage, this.state.location)} />
 						</div>
 				  </div>
 				</div>
