@@ -56,15 +56,16 @@ class ResourcesTable extends Component {
 		let page = this.state.page + 1;
 		this.setState({
 			page: page,
-			currentResources: this.state.resources.slice(page * 9 + 1, page * 9 + 10)
+			currentPage: this.state.resources.slice(page * 9 + 1, page * 9 + 10)
 		});
 	}
 
 	getPreviousResources() {
 		let page = this.state.page - 1;
+		let offset = page ? 1 : 0;
 		this.setState({
 			page: page,
-			currentResources: this.state.resources.slice(page * 9 + 1, page * 9 + 10)
+			currentPage: this.state.resources.slice(page * 9 + offset, (page + 1) * 9 + offset)
 		});
 	}
 
