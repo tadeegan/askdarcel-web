@@ -19,6 +19,8 @@ class ResourcesTable extends Component {
 		this.state = {
 			categoryName: 'Category Name', 
 			resources: [],
+			openResources: [],
+			openFilter: false,
 			currentResources: [],
 			page: 0,
 			location: null
@@ -34,12 +36,24 @@ class ResourcesTable extends Component {
 		let url = '/api/resources?category_id=' + categoryid;
 		fetch(url).then(r => r.json())
 		.then(data => {
-			this.setState({resources: data.resources, currentResources: data.resources.slice(0,9)});
+			let openResources = data.resources.filter(resource => {
+				let hours = openHours(resource.schedule.schedule_days);
+				if(hours) {
+					return resource;
+				}
+			});
+			console.log(openResources);
+			this.setState({
+				resources: data.resources, 
+				currentResources: data.resources.slice(0,9),
+				openResources: openResources
+			});
 		});
 	}
 
 	getNextResources() {
 		let page = this.state.page + 1;
+		let resources = this.state.openFilter ? this.state.openResources : this.state.resources;
 		this.setState({
 			page: page,
 			currentResources: this.state.resources.slice(page, page + 9)
@@ -77,6 +91,23 @@ class ResourcesTable extends Component {
 	      cb(result.routes[0].legs[0].duration.text);
 	    }
 	  });
+	}
+
+	filterResources() {
+		let page = 0;
+		if(this.state.openFilter) {
+			this.setState({
+				page: page,
+				currentResources: this.state.resources.slice(page, page + 9),
+				openFilter: false
+			});
+		} else {
+			this.setState({
+				page: page,
+				currentResources: this.state.openResources.slice(page, page + 9),
+				openFilter: true
+			});
+		}
 	}
 
 	componentDidMount() {
@@ -118,9 +149,7 @@ class ResourcesTable extends Component {
 							<div className="resourcetable_filter">
 								<ul className="list-inline">
 									<li>Filter:</li>
-									<li>Open Now</li>
-									<li>Walking Distance</li>
-									<li>Just for Me</li>
+									<li onClick={this.filterResources.bind(this)}>{this.state.openFilter ? "All" : "Open Now"}</li>
 								</ul>
 							</div>
 							<ResourcesList resources={this.state.currentResources} location={this.state.location} />
@@ -272,27 +301,14 @@ function displayCategories(categories) {
 }
 
 function buildHoursCell(schedule_days) {
-	let hours = "";
+
 	let styles = {
 		cell: true
 	};
-	const currentDate = new Date();
-	const currentHour = currentDate.getHours();
 
-	const days = schedule_days.filter(schedule_day => {
-		return (schedule_day && schedule_day.day == daysOfTheWeek()[currentDate.getDay()] &&
-				currentHour > schedule_day.opens_at && currentHour < schedule_day.closes_at);
-	});
+	let hours = openHours(schedule_days);
 
-	if(days.length && days.length > 0) {
-		for(let i = 0; i < days.length; i++) {
-			let day = days[i];
-			hours = "open: " + timeToString(day.opens_at) + "-" + timeToString(day.closes_at);
-			if(i != days.length - 1) {
-				hours += ", ";
-			}
-		}
-	} else {
+	if(!hours) {
 		hours = "closed";
 		styles.closed = true;
 	}
@@ -313,6 +329,31 @@ function buildAddressCell(addresses) {
 	}
 
 	return <span>{addressString}</span>
+}
+
+// Returns the open hours today or null if closed
+function openHours(schedule_days) {
+	const currentDate = new Date();
+	const currentHour = currentDate.getHours();
+	let hours = null;
+
+	const days = schedule_days.filter(schedule_day => {
+		let day = schedule_day ? schedule_day.day.replace(/,/g, '') : null;
+		return (day && day === daysOfTheWeek()[currentDate.getDay()] &&
+				currentHour > schedule_day.opens_at && currentHour < schedule_day.closes_at);
+	});
+
+	if(days.length) {
+		for(let i = 0; i < days.length; i++) {
+			let day = days[i];
+			hours = "open: " + timeToString(day.opens_at) + "-" + timeToString(day.closes_at);
+			if(i != days.length - 1) {
+				hours += ", ";
+			}
+		}
+	}
+
+	return hours;
 }
 
 function timeToString(hours) {
