@@ -1,11 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-
-var icons = require.context("../assets/images", true, /ic-.*\.png$/i);
-var iconPathMap = {};
-icons.keys().forEach(function (key) {
-  iconPathMap[key.replace('./', '')] = icons(key);
-});
+import { images } from '../assets';
 
 var Category = React.createClass({
   render: function() {
@@ -14,7 +9,7 @@ var Category = React.createClass({
       <Link className="category-button" to={{ pathname: "resources", query: { categoryid: this.props.categoryid } }} >
         <div className="category-button-content">
           <div className="category-button-icon">
-            <img src={iconPathMap[this.props.image_path]} alt={this.props.name} className="img-responsive"/>
+            <img src={images.icon(this.props.name)} alt={this.props.name} className="img-responsive"/>
           </div>
           <h5 className="category-button-title">{this.props.name}</h5>
         </div>
@@ -25,4 +20,3 @@ var Category = React.createClass({
 });
 
 export default Category;
-
