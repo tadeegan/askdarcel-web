@@ -51,14 +51,14 @@ var CategoryList = React.createClass({
     });
 
     return (
-      <div className="CategoryList container">
-        <div className="browseCategoriesText">
-          Browse Categories
-        </div>
-        <div className="row">
+      <section className="category-list" role="main">
+        <header>
+          <h3>Browse Categories</h3>
+        </header>
+        <ul className="category-items">
           {categoryNodes}
-        </div>
-      </div>
+        </ul>
+      </section>
     );
   }
 });

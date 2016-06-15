@@ -4,5 +4,5 @@ template_sources: [ file ]
 
 environments:
   production:
-    askdarcel-web.erb:
+    askdarcel-web.conf.erb:
       target: /etc/nginx/conf.d/askdarcel-web.conf

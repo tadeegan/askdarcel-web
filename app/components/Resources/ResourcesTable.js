@@ -30,11 +30,11 @@ class ResourcesTable extends Component {
 
 	loadResourcesFromServer() {
 		let { query } = this.props.location;
-		let categoryid = query.categoryid;
+		let categoryId = query.categoryid;
 		this.setState({
-			categoryName: cats[categoryid]
+			categoryName: cats[categoryId]
 		});
-		let url = '/api/resources?category_id=' + categoryid;
+		let url = '/api/resources?category_id=' + categoryId;
 		fetch(url).then(r => r.json())
 		.then(data => {
 			let openResources = data.resources.filter(resource => {
@@ -71,7 +71,7 @@ class ResourcesTable extends Component {
 
 	getLocationGoogle() {
 		// Results are not very accurate
-		let url = 'https://www.googleapis.com/geolocation/v1/geolocate?key= AIzaSyBrt0fmU5Iarh0LdqEDp6bjMIqEOQB2hqU'; 
+		let url = 'https://www.googleapis.com/geolocation/v1/geolocate?key= AIzaSyBrt0fmU5Iarh0LdqEDp6bjMIqEOQB2hqU';
 		fetch(url, {method: 'post'}).then(r => r.json())
 		.then(data => {
 			this.setState({location: data.location});
@@ -135,37 +135,52 @@ class ResourcesTable extends Component {
 		}
 
 		this.loadResourcesFromServer();
-		
+
 	}
 
 	render() {
-
-		return !this.state.resources.length || !this.state.location ? <div>Loading...</div> : (
-			<div className="resourcetable_main">
-			  <div className="row">
-					<div className="col-xs-12 col-md-5">
-						<div className="resourcetable_main container-fluid">
-							<div className="resourcetable_preheader row">
-							  <p className="resourcetable_title col-md-10">{this.state.categoryName}</p>
-							  <span className="col-md-2">{this.state.resources.length} Results</span>
-							</div>
-							<div className="resourcetable_filter">
-								<ul className="list-inline">
+		return !this.state.resources.length || !this.state.location ? <div className="loader">
+      <div className="sk-fading-circle">
+        <div className="sk-circle1 sk-circle"></div>
+        <div className="sk-circle2 sk-circle"></div>
+        <div className="sk-circle3 sk-circle"></div>
+        <div className="sk-circle4 sk-circle"></div>
+        <div className="sk-circle5 sk-circle"></div>
+        <div className="sk-circle6 sk-circle"></div>
+        <div className="sk-circle7 sk-circle"></div>
+        <div className="sk-circle8 sk-circle"></div>
+        <div className="sk-circle9 sk-circle"></div>
+        <div className="sk-circle10 sk-circle"></div>
+        <div className="sk-circle11 sk-circle"></div>
+        <div className="sk-circle12 sk-circle"></div>
+      </div>
+    </div> : (
+			<div className="results">
+						<div className="results-table">
+							<header>
+                <h1 className="results-title">{this.state.categoryName}</h1>
+                <span className="results-count">{this.state.resources.length} Results</span>
+              </header>
+							<div className="results-filters">
+								<ul>
 									<li>Filter:</li>
-									<li onClick={this.filterResources.bind(this)}>{this.state.openFilter ? "All" : "Open Now"}</li>
+									<li><a className="filters-button disabled" onClick={this.filterResources.bind(this)}>{this.state.openFilter ? "All" : "Open Now"}</a></li>
 								</ul>
 							</div>
-							<ResourcesList resources={this.state.currentPage} location={this.state.location} />
-							{this.state.page ? <button className="btn btn-link" onClick={this.getPreviousResources.bind(this)}> Previous </button> : null}
-							{this.state.page <= Math.floor(this.state.resources.length / 9) - 1 ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null} 
+              <div className="results-table-body">
+                <ResourcesList resources={this.state.currentPage} location={this.state.location} />
+                <div className="pagination">
+                  <div className="pagination-count">
+                    <p>1 — {this.state.currentPage.length} of {this.state.allResources.length} Results</p>
+                  </div>
+                  {this.state.page ? <button className="btn btn-link" onClick={this.getPreviousResources.bind(this)}> Previous </button> : null}
+                  {this.state.page <= Math.floor(this.state.resources.length / 9) - 1 ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null}
+                </div>
+              </div>
 						</div>
-					</div>
-					<div className="resourcetable_main container-fluid">
-						<div className="resourcetable_map col-xs-12 col-md-7">
-						  <Gmap markers={getMapMarkers(this.state.currentPage, this.state.location)} />
-						</div>
-				  </div>
-				</div>
+					<div className="map">
+            <Gmap markers={getMapMarkers(this.state.currentPage, this.state.location)} />
+          </div>
 			</div>
 		);
 	}
@@ -181,14 +196,14 @@ class ResourcesList extends Component {
 		let location = this.props.location;
 		let resourcesRows = this.props.resources.map((resource, index) => {
 			return (
-				<ResourcesRow resource={resource} key={index} number={index + 1} location={location || {}}/>	
+				<ResourcesRow resource={resource} key={index} number={index + 1} location={location || {}}/>
 			);
 		});
 
 		return (
-			<div className="resourcetable_tablebody">
-				{resourcesRows}
-			</div>
+      <ul className="resource-table-entries">
+        {resourcesRows}
+      </ul>
 		);
 	}
 }
@@ -248,26 +263,37 @@ class ResourcesRow extends Component {
 
 	render() {
 		return (
-			<div className="resourcetable_entry">
+			<li className="results-table-entry">
 				<Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
-					<div className="row">
-					  <img className="col-md-3" src="http://lorempixel.com/100/100/city/" />
-					  <div className="resourcetable_general_info col-md-6">
-							<div className="resourcetable_name"><p>{this.props.number}. {this.props.resource.short_description || this.props.resource.long_description || "Description"}</p></div>
-							<div className="resourcetable_address">
-								<p>{this.props.resource.name}</p>
-							  <p>{buildAddressCell(this.props.resource.addresses)} &bull; {this.state.walkTime || "unknown"} walking</p>
-							</div>
-							<div><button>Save</button></div>
-					  </div>
-						<div className="resourcetable_reviewbox col-md-2 text-center"><p>{Math.floor(Math.random()*10)%6}</p></div>
-				  </div>
-					<div className="resourcetable_subtext">
-					  <p><span className="glyphicon glyphicon-bell"></span> {buildHoursCell(this.props.resource.schedule.schedule_days)}</p>
-						<p><span className="glyphicon glyphicon-comment"></span> {this.getReview()}</p>
-					</div>
+					<div className="entry-photo-rating">
+					  <img className="entry-img" src="http://lorempixel.com/100/100/city/" />
+            <div className="entry-rating excellent">
+              <i className="material-icons">sentiment_very_satisfied</i>
+              <span>{Math.floor(Math.random()*10)%6}</span>
+            </div>
+          </div>
+          <div className="entry-details">
+            <h4 className="entry-title">{this.props.number}. {this.props.resource.short_description || this.props.resource.long_description || "Description"}</h4>
+            <p className="entry-organization">{this.props.resource.name}</p>
+            <p className="entry-meta">{buildAddressCell(this.props.resource.addresses)} &bull; {this.state.walkTime || "unknown"} walking</p>
+            <div className="quote">
+              <img className="quote-img" src="http://lorempixel.com/100/100/people/" />
+              <div className="quote-content">
+                <p className="quote-meta">username • April 22, 2016</p>
+                <p className="quote-text">they were nice and helpful</p>
+              </div>
+            </div>
+            <ul className="entry-actions">
+              <li>
+                <div className="button">
+                  <i className="material-icons">turned_in</i>
+                  <span>Save</span>
+                </div>
+              </li>
+            </ul>
+          </div>
 				</Link>
-			</div>
+			</li>
 		);
 	}
 }
@@ -335,15 +361,15 @@ function buildAddressCell(addresses) {
 }
 
 // Returns the open hours today or null if closed
-function openHours(schedule_days) {
+function openHours(scheduleDays) {
 	const currentDate = new Date();
 	const currentHour = currentDate.getHours();
 	let hours = null;
 
-	const days = schedule_days.filter(schedule_day => {
-		let day = schedule_day ? schedule_day.day.replace(/,/g, '') : null;
+	const days = scheduleDays.filter(scheduleDay => {
+		let day = scheduleDay ? scheduleDay.day.replace(/,/g, '') : null;
 		return (day && day === daysOfTheWeek()[currentDate.getDay()] &&
-				currentHour > schedule_day.opens_at && currentHour < schedule_day.closes_at);
+				currentHour > scheduleDay.opens_at && currentHour < scheduleDay.closes_at);
 	});
 
 	if(days.length) {
@@ -367,7 +393,7 @@ function timeToString(hours) {
 		if(hours > 12) {
 			hours -= 12;
 		}
-		
+
 		hoursString += hours + "pm";
 	}
 
