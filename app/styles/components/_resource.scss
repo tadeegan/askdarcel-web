@@ -1,14 +1,4 @@
 
-p {
-	font-size: 14px;
-	display: inline-block;
-	line-height: 1.1;
-}
-
-hr {
-  color: #eeeeee;
-  margin: 0 0 20px 0
-}
 
 .resource_container {
   margin: 0 auto;
@@ -26,7 +16,7 @@ hr {
 
 .doublelineicon {
 	font-size: 28px;
-	color: $icon-light-blue;
+	color: $color-brand;
 	padding: 0 35px 15px 15px;
 }
 
@@ -75,27 +65,27 @@ hr {
 
 .communicationicon {
   font-size: 28px;
-  color: $icon-light-gray;
+  color: $color-grey;
 }
 
 .communicationtext {
   font-size: 16px;
   display: block;
-  color: $icon-light-gray;
+  color: $color-grey;
 }
 
 .infoicon {
 	font-size: 28px;
-	color: $icon-light-blue;
+	color: $color-brand;
 	padding: 0 35px 0 15px;
 }
 
 .inactive {
-  color: $icon-light-gray;
+  color: $color-grey;
 }
 
 .active {
-  color: $icon-light-blue;
+  color: $color-brand;
 }
 
 .service_title {

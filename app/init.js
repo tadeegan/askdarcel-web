@@ -7,7 +7,6 @@ import CategoryPage from './components/CategoryPage';
 import ResourcesTable from './components/Resources/ResourcesTable';
 import Resource from './components/Resource/Resource';
 import Google from './utils/google';
-import config from './utils/config';
 
 require('./styles/main.scss');
 

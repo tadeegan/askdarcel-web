@@ -1,56 +1,42 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+// HERO
 
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,800,700);
-$brand-color: #61dafb;
-
-@font-face {
-    font-family: 'Fat Frank';
-    src: url('../assets/fonts/FatFrank-Free.otf');
-}
-
-
-.largeheader_background {
-  background-position: right;
-}
-
-#largeheader_content {
-  height: inherit;
-  margin-bottom: 40px;
-}
-
-#largeheader_searchbutton {
-  color: white;
-  background-color: #01c270;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
-}
-
-.navbar-brand > img {
-  width: 160px;
-  padding-left: 15px;
-}
-
-.largeheader_centerText {
-  margin-top: 40px;
-  margin-bottom: 40px;
-  font-size: 48px;
-  line-height: 1.2;
-  color: #ffffff;
-  width: 100%;
-  text-align: center;
-  font-family: 'Fat Frank';
-  font-weight: 700;
-}
-
-@media only screen and (max-width: 768px) {
-    .largeheader_centerText {
-        font-size: 24px;
+.header-large {
+  .hero {
+    width: 100%;
+    height: calc-em(450px);
+    background-position: right;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: calc-em(85px) 0;
+    @include r_max($screen-xs-min) {
+      height: calc-em(250px);
+      padding: calc-em(30px);
     }
-}
-
-.largeheader_searchBox {
-  width: 100%;
-  text-align: center;
-  font-family: 'Open Sans';
-  font-weight: 700;
-  font-size: 14px;
-  color: #ffffff;
+    h1 {
+      @extend .h1-hero;
+      text-align: center;
+    }
+  }
+  .search-container {
+    @extend .base-max-width;
+    margin: calc-em(40px) auto 0;
+    @include r_max($screen-xs-min) {
+      width: 100%;
+    }
+  }
+  input, button {
+    height: calc-em(60px);
+  }
+  .location-field {
+    max-width: calc-em(240px);
+    background-repeat: no-repeat;
+    background-image: url(../assets/images/ic-location.png);
+    background-size: 18px 18px;
+    background-position: calc-em(15px) center;
+    padding-left: calc-em(40px);
+    @include r_max($screen-xs-min) {
+      display:none;
+    }
+  }
 }

@@ -5,33 +5,26 @@ let smallLogo = require('../assets/images/logo-small-white@3x.png');
 
 function LargeHeader() {
   return (
-    <nav className="navbar navbar-default largeheader_background" style={{backgroundImage: 'url(' + bgImage +')'}}>
-        <div className="container-fluid">
-            <div className="navbar-header">
-                <a className="navbar-brand" href="#">
-                    <img src={smallLogo} />
-                </a>
-            </div>
+    <header className="header-large">
+      <nav className="navbar navbar-default" role="navigation">
+        <a className="navbar-brand" href="#">
+          <img src={smallLogo} alt="Ask Darcel"/>
+        </a>
+      </nav>
+      <div className="push"></div>
+      <div className="hero" style={{backgroundImage: 'url(' + bgImage +')'}} role="banner">
+        <h1>
+          Find the best community<br />
+          resources for your needs
+        </h1>
+        <div className="search-container form-row" role="search">
+          <input type="text" className="search-field" placeholder="I'm looking for..." name="srch-term" id="srch-term" />
+          <input type="text" className="location-field" placeholder="Near me" name="srch-location" id="srch-location" />
+          <button id="largeheader_searchbutton" className="button search" type="submit"><i className="material-icons">search</i> <span>Search</span></button>
         </div>
-        <div id="largeheader_content" className="container">
-            <div className="row">
-                <div className="largeheader_centerText">
-                    Find the best community<br />
-                    resources for your needs
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-lg-2 col-md-2 col-sm-1 col-xs-1">
-                </div>
-                <div className="input-group col-lg-8 col-md-8 col-sm-10 col-xs-10">
-                    <input type="text" className="form-control" placeholder="Search" name="srch-term" id="srch-term" />
-                    <div className="input-group-btn">
-                        <button id="largeheader_searchbutton" className="btn btn-default" type="submit"><i className="glyphicon glyphicon-search"></i> Search</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+      </div>
+    </header>
+
   );
 }
 
