@@ -159,7 +159,7 @@ class ResourcesTable extends Component {
 						<div className="results-table">
 							<header>
                 <h1 className="results-title">{this.state.categoryName}</h1>
-                <span className="results-count">{this.state.resources.length} Results</span>
+                <span className="results-count">{this.state.allResources.length} Results</span>
               </header>
 							<div className="results-filters">
 								<ul>
