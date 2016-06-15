@@ -17,9 +17,12 @@ class ResourcesTable extends Component {
 	constructor() {
 		super();
 		this.state = {
-			categoryName: 'Category Name',
+			categoryName: 'Category Name', 
+			allResources: [],
+			openResources: [],
 			resources: [],
-			currentResources: [],
+			openFilter: false,
+			currentPage: [],
 			page: 0,
 			location: null
 		};
@@ -27,14 +30,25 @@ class ResourcesTable extends Component {
 
 	loadResourcesFromServer() {
 		let { query } = this.props.location;
-		let categoryid = query.categoryid;
+		let categoryId = query.categoryid;
 		this.setState({
-			categoryName: cats[categoryid]
+			categoryName: cats[categoryId]
 		});
-		let url = '/api/resources?category_id=' + categoryid;
+		let url = '/api/resources?category_id=' + categoryId;
 		fetch(url).then(r => r.json())
 		.then(data => {
-			this.setState({resources: data.resources, currentResources: data.resources.slice(0,9)});
+			let openResources = data.resources.filter(resource => {
+				let hours = openHours(resource.schedule.schedule_days);
+				if(hours) {
+					return resource;
+				}
+			});
+			this.setState({
+				allResources: data.resources,
+				resources: data.resources, 
+				currentPage: data.resources.slice(0,9),
+				openResources: openResources
+			});
 		});
 	}
 
@@ -42,15 +56,16 @@ class ResourcesTable extends Component {
 		let page = this.state.page + 1;
 		this.setState({
 			page: page,
-			currentResources: this.state.resources.slice(page, page + 9)
+			currentPage: this.state.resources.slice(page * 9 + 1, page * 9 + 10)
 		});
 	}
 
 	getPreviousResources() {
 		let page = this.state.page - 1;
+		let offset = page ? 1 : 0;
 		this.setState({
 			page: page,
-			currentResources: this.state.resources.slice(page, page + 9)
+			currentPage: this.state.resources.slice(page * 9 + offset, (page + 1) * 9 + offset)
 		});
 	}
 
@@ -77,6 +92,25 @@ class ResourcesTable extends Component {
 	      cb(result.routes[0].legs[0].duration.text);
 	    }
 	  });
+	}
+
+	filterResources() {
+		let page = 0;
+		if(this.state.openFilter) {
+			this.setState({
+				page: page,
+				resources: this.state.allResources,
+				currentPage: this.state.allResources.slice(page, page + 9),
+				openFilter: false
+			});
+		} else {
+			this.setState({
+				page: page,
+				resources: this.state.openResources,
+				currentPage: this.state.openResources.slice(page, page + 9),
+				openFilter: true
+			});
+		}
 	}
 
 	componentDidMount() {
@@ -125,19 +159,19 @@ class ResourcesTable extends Component {
 						<div className="results-table">
 							<header>
                 <h1 className="results-title">{this.state.categoryName}</h1>
-                <span className="results-count">{this.state.resources.length} Results</span>
+                <span className="results-count">{this.state.allResources.length} Results</span>
               </header>
 							<div className="results-filters">
 								<ul>
 									<li>Filter:</li>
-									<li><a className="filters-button disabled">Open Now</a></li>
+									<li><a className="filters-button disabled" onClick={this.filterResources.bind(this)}>{this.state.openFilter ? "All" : "Open Now"}</a></li>
 								</ul>
 							</div>
               <div className="results-table-body">
-                <ResourcesList resources={this.state.currentResources} location={this.state.location} />
+                <ResourcesList resources={this.state.currentPage} location={this.state.location} />
                 <div className="pagination">
                   <div className="pagination-count">
-                    <p>1 — 9 of 22 Results</p>
+                    <p>1 — {this.state.currentPage.length} of {this.state.allResources.length} Results</p>
                   </div>
                   {this.state.page ? <button className="btn btn-link" onClick={this.getPreviousResources.bind(this)}> Previous </button> : null}
                   {this.state.page <= Math.floor(this.state.resources.length / 9) - 1 ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null}
@@ -145,7 +179,7 @@ class ResourcesTable extends Component {
               </div>
 						</div>
 					<div className="map">
-            <Gmap markers={getMapMarkers(this.state.currentResources, this.state.location)} />
+            <Gmap markers={getMapMarkers(this.state.currentPage, this.state.location)} />
           </div>
 			</div>
 		);
@@ -296,27 +330,14 @@ function displayCategories(categories) {
 }
 
 function buildHoursCell(schedule_days) {
-	let hours = "";
+
 	let styles = {
 		cell: true
 	};
-	const currentDate = new Date();
-	const currentHour = currentDate.getHours();
 
-	const days = schedule_days.filter(schedule_day => {
-		return (schedule_day && schedule_day.day == daysOfTheWeek()[currentDate.getDay()] &&
-				currentHour > schedule_day.opens_at && currentHour < schedule_day.closes_at);
-	});
+	let hours = openHours(schedule_days);
 
-	if(days.length && days.length > 0) {
-		for(let i = 0; i < days.length; i++) {
-			let day = days[i];
-			hours = "open: " + timeToString(day.opens_at) + "-" + timeToString(day.closes_at);
-			if(i != days.length - 1) {
-				hours += ", ";
-			}
-		}
-	} else {
+	if(!hours) {
 		hours = "closed";
 		styles.closed = true;
 	}
@@ -337,6 +358,31 @@ function buildAddressCell(addresses) {
 	}
 
 	return <span>{addressString}</span>
+}
+
+// Returns the open hours today or null if closed
+function openHours(scheduleDays) {
+	const currentDate = new Date();
+	const currentHour = currentDate.getHours();
+	let hours = null;
+
+	const days = scheduleDays.filter(scheduleDay => {
+		let day = scheduleDay ? scheduleDay.day.replace(/,/g, '') : null;
+		return (day && day === daysOfTheWeek()[currentDate.getDay()] &&
+				currentHour > scheduleDay.opens_at && currentHour < scheduleDay.closes_at);
+	});
+
+	if(days.length) {
+		for(let i = 0; i < days.length; i++) {
+			let day = days[i];
+			hours = "open: " + timeToString(day.opens_at) + "-" + timeToString(day.closes_at);
+			if(i != days.length - 1) {
+				hours += ", ";
+			}
+		}
+	}
+
+	return hours;
 }
 
 function timeToString(hours) {
