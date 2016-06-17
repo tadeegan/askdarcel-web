@@ -34,7 +34,7 @@ class ResourcesTable extends Component {
 		this.setState({
 			categoryName: cats[categoryId]
 		});
-		let url = '/api/resources?category_id=' + categoryId;
+		let url = 'http://localhost:3000/resources?category_id=' + categoryId;
 		fetch(url).then(r => r.json())
 		.then(data => {
 			let openResources = data.resources.filter(resource => {
@@ -159,7 +159,7 @@ class ResourcesTable extends Component {
 						<div className="results-table">
 							<header>
                 <h1 className="results-title">{this.state.categoryName}</h1>
-                <span className="results-count">{this.state.allResources.length} Results</span>
+                <span className="results-count">{this.state.allResources.length - 1} Results</span>
               </header>
 							<div className="results-filters">
 								<ul>
@@ -168,10 +168,10 @@ class ResourcesTable extends Component {
 								</ul>
 							</div>
               <div className="results-table-body">
-                <ResourcesList resources={this.state.currentPage} location={this.state.location} />
+                <ResourcesList resources={this.state.currentPage} location={this.state.location} page={this.state.page} />
                 <div className="pagination">
                   <div className="pagination-count">
-                    <p>1 — {this.state.currentPage.length} of {this.state.openResources.length} Results</p>
+                    <p>{this.state.page * 9 + 1} — {(this.state.page + 1) * 9 < this.state.resources.length ? (this.state.page + 1) * 9 : this.state.resources.length - 1} of {this.state.resources.length - 1} Results</p>
                   </div>
                   {this.state.page ? <button className="btn btn-link" onClick={this.getPreviousResources.bind(this)}> Previous </button> : null}
                   {this.state.page <= Math.floor(this.state.resources.length / 9) - 1 ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null}
@@ -196,7 +196,7 @@ class ResourcesList extends Component {
 		let location = this.props.location;
 		let resourcesRows = this.props.resources.map((resource, index) => {
 			return (
-				<ResourcesRow resource={resource} key={index} number={index + 1} location={location || {}}/>
+				<ResourcesRow resource={resource} key={index} number={index + 1 + (9 * this.props.page)} location={location || {}}/>
 			);
 		});
 
