@@ -171,7 +171,7 @@ class ResourcesTable extends Component {
                 <ResourcesList resources={this.state.currentPage} location={this.state.location} />
                 <div className="pagination">
                   <div className="pagination-count">
-                    <p>1 — {this.state.currentPage.length} of {this.state.allResources.length} Results</p>
+                    <p>1 — {this.state.currentPage.length} of {this.state.openResources.length} Results</p>
                   </div>
                   {this.state.page ? <button className="btn btn-link" onClick={this.getPreviousResources.bind(this)}> Previous </button> : null}
                   {this.state.page <= Math.floor(this.state.resources.length / 9) - 1 ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null}
@@ -266,7 +266,7 @@ class ResourcesRow extends Component {
 			<li className="results-table-entry">
 				<Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
 					<div className="entry-photo-rating">
-					  <img className="entry-img" src="http://lorempixel.com/100/100/city/" />
+					  <img className="entry-img" src={buildImgURL(this.props.resource.addresses)} />
             <div className="entry-rating excellent">
               <i className="material-icons">sentiment_very_satisfied</i>
               <span>{Math.floor(Math.random()*10)%6}</span>
@@ -358,6 +358,16 @@ function buildAddressCell(addresses) {
 	}
 
 	return <span>{addressString}</span>
+}
+
+function buildImgURL(addresses) {
+	if(addresses.length) {
+		return "https://maps.googleapis.com/maps/api/streetview?size=400x400&location=" +
+		  addresses[0].latitude + "," + addresses[0].longitude +
+		  "&fov=90&heading=235&pitch=10";
+	} else {
+		return "http://lorempixel.com/200/200/city/";
+	}
 }
 
 // Returns the open hours today or null if closed
