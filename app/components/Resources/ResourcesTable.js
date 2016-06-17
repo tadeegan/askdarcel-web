@@ -34,7 +34,7 @@ class ResourcesTable extends Component {
 		this.setState({
 			categoryName: cats[categoryId]
 		});
-		let url = 'http://localhost:3000/resources?category_id=' + categoryId;
+		let url = '/api/resources?category_id=' + categoryId;
 		fetch(url).then(r => r.json())
 		.then(data => {
 			let openResources = data.resources.filter(resource => {
