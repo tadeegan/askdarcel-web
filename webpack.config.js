@@ -7,12 +7,13 @@ var ExtendedDefinePlugin = require('extended-define-webpack-plugin');
 var config = require(path.resolve(__dirname, 'app/utils/config.example.js'));
 
 var appRoot = path.resolve(__dirname, 'app/');
+var buildDir = path.resolve(__dirname, 'build');
 
 module.exports = {
   context: __dirname,
   entry: path.resolve(appRoot, 'init.js'),
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: buildDir,
     publicPath: '/dist/',
     filename: 'bundle.js'
   },
@@ -47,19 +48,20 @@ module.exports = {
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
         loaders: [
-          'file?hash=sha512&digest=hex&name=[hash].[ext]',
+          'file?name=[name]-[sha512:hash:hex:8].[ext]',
           'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
         ]
       }
     ]
   },
   devServer: {
+    contentBase: buildDir,
     historyApiFallback: true,
     devtool: 'source-map',
     colors: true,
     proxy: {
       '/api/*': {
-        target: 'http://localhost:3000',
+        target: process.env.API_URL || 'http://localhost:3000',
         rewrite: function(req) {
           req.url = req.url.replace(/^\/api/, '');
         }

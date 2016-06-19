@@ -1,4 +1,3 @@
-
 import React, { Component, PropTypes } from 'react';
 import LargeHeader from './LargeHeader.js'
 import Footer from './Footer.js'
