@@ -27,21 +27,50 @@ class Resource extends React.Component {
 
 	render() {
 		return (
-			<div className="resource_container">
-				<h1>{this.state.resource.name}</h1>
-				<hr />
-                <CommunicationBoxes />
-                <Services description={this.state.resource.long_description} services={this.state.resource.services}/>
-				<div className="infocontainer">
-					<AddressInfo addresses={this.state.resource.addresses} />
-					<BusinessHours schedule_days={this.state.resource.addresses} />
-					<PhoneNumber phones={this.state.resource.phones} />
-					<Website website={this.state.resource.website} />
-					<Languages />
-					<hr />
-					<div className="resource_editslabel"><p>Make Edits</p></div>
-				</div>
-			</div>
+      <div className="org-container">
+        <article className="org">
+          <div className="main-column">
+            <section className="org-summary">
+              <header>
+                <img className="org-img" src="http://lorempixel.com/100/100/city/" />
+                <div className="org-info">
+                  <h1>{this.state.resource.name}</h1>
+                  <h4>Category 1, Category 2, Category 3</h4>
+                  <p><AddressInfo addresses={this.state.resource.addresses} /></p>
+                </div>
+              </header>
+              <div className="rating-summary-container">
+                <div className="rating-summary excellent">
+                  <i className="material-icons">sentiment_very_satisfied</i>
+                  <span>{Math.floor(Math.random()*10)%6}/5</span>
+                </div>
+                <div className="rating-summary-details">
+                  <a href="#reviews">12 reviews</a>
+                </div>
+              </div>
+              <div className="org-desc">
+                <p>This is an organisation's long description{this.props.description}</p>
+              </div>
+              <ul className="org-details">
+                <BusinessHours schedule_days={this.state.resource.addresses} />
+                <PhoneNumber phones={this.state.resource.phones} />
+                <Website website={this.state.resource.website} />
+                <Languages />
+              </ul>
+              <div className="org-actions">
+                <a href="#" className="button">Make Edits</a>
+              </div>
+            </section>
+
+            <Services description={this.state.resource.long_description} services={this.state.resource.services}/>
+          </div>
+
+          <aside className="org-map">
+            <div className="map-container"></div>
+          </aside>
+
+        </article>
+      </div>
 		);
 	}
 }

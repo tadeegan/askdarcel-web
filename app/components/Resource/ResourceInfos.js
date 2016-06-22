@@ -1,16 +1,10 @@
 import React from 'react';
 import classNames from 'classnames/bind';
-let MdPlace =  require('react-icons/lib/md/place');
-let MdAccessTime = require('react-icons/lib/md/access-time');
-let MdLocalPhone = require('react-icons/lib/md/local-phone');
-let MdTranslate = require('react-icons/lib/md/translate');
-let MdPublic = require('react-icons/lib/md/public');
 
 class AddressInfo extends React.Component {
 	render() {
 		return (
-			<div className="wrapper">
-				<MdPlace className="infoicon"/>
+			<div className="address">
 				{buildLocation(this.props.addresses)}
 			</div>
 		);
@@ -20,10 +14,15 @@ class AddressInfo extends React.Component {
 class BusinessHours extends React.Component {
 	render() {
 		return (
-			<div className="wrapper">
-				<MdAccessTime className="infoicon" />
-				{buildHoursText(this.props.schedule_days)}
-			</div>
+			<li className="hours">
+        <i className="material-icons">schedule</i>
+        <a href="" className="expand-hours">
+          <div className="current-hours">
+            {buildHoursText(this.props.schedule_days)}
+            <i className="material-icons">expand_more</i>
+          </div>
+        </a>
+			</li>
 		);
 	}
 }
@@ -31,10 +30,10 @@ class BusinessHours extends React.Component {
 class PhoneNumber extends React.Component {
 	render() {
 		return (
-			<div className="wrapper">
-				<MdLocalPhone className="infoicon"/>
+			<li className="phone">
+        <i className="material-icons">call</i>
 				{buildPhoneNumber(this.props.phones)}
-			</div>
+			</li>
 		);
 	}
 }
@@ -42,22 +41,22 @@ class PhoneNumber extends React.Component {
 class Languages extends React.Component {
 	render() {
 		return (
-			<div className="wrapper">
-				<MdTranslate className="infoicon" />
+			<li className="lang">
+        <i className="material-icons">translate</i>
 				<p>English, Spanish</p>
-			</div>
-		); 
+			</li>
+		);
 	}
 }
 
 class Website extends React.Component {
 	render() {
 		return (
-			<div className="wrapper">
-				<MdPublic className="infoicon" />
-				<p>{this.props.website}</p>
-			</div>
-		); 
+			<li className="website">
+        <i className="material-icons">public</i>
+				<p><a href="{this.props.website}" target="_blank">Website</a></p>
+			</li>
+		);
 	}
 }
 
@@ -112,21 +111,21 @@ function buildLocation(addresses) {
 		}
 
 		if(address.city) {
-			line1 += ", " + address.city;
+			line2 += address.city;
 		}
 
 		if(address.state_province) {
-			line1 += ", " + address.state_province;
+			line2 += ", " + address.state_province;
 		}
 
 		if(address.postal_code) {
-			line1 += ", " + address.postal_code;
+			line2 += ", " + address.postal_code;
 		}
 	}
 
 	return (
 		<p>
-		{line1}
+		{line1}<br />{line2}
 		</p>
 	);
 }

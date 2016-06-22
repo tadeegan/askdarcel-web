@@ -22,8 +22,7 @@ $navigation-height-small: calc-em(60px);
 .navbar-brand {
   display: inline-block;
   margin-right: calc-em(25px);
-  position: relative;
-  top: calc-em(-4px);
+  vertical-align: top;
   img {
     height: calc-em(44px);
     width: auto;
