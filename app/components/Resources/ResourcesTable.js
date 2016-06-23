@@ -13,6 +13,8 @@ const cats = {
 	5: "Technology"
 };
 
+const resultsPerPage = 9;
+
 class ResourcesTable extends Component {
 	constructor() {
 		super();
@@ -46,7 +48,7 @@ class ResourcesTable extends Component {
 			this.setState({
 				allResources: data.resources,
 				resources: data.resources, 
-				currentPage: data.resources.slice(0,9),
+				currentPage: data.resources.slice(0,resultsPerPage),
 				openResources: openResources
 			});
 		});
@@ -56,7 +58,7 @@ class ResourcesTable extends Component {
 		let page = this.state.page + 1;
 		this.setState({
 			page: page,
-			currentPage: this.state.resources.slice(page * 9 + 1, page * 9 + 10)
+			currentPage: this.state.resources.slice(page * resultsPerPage, page * resultsPerPage + (resultsPerPage + 1))
 		});
 	}
 
@@ -65,7 +67,7 @@ class ResourcesTable extends Component {
 		let offset = page ? 1 : 0;
 		this.setState({
 			page: page,
-			currentPage: this.state.resources.slice(page * 9 + offset, (page + 1) * 9 + offset)
+			currentPage: this.state.resources.slice(page * resultsPerPage + offset, (page + 1) * resultsPerPage + offset)
 		});
 	}
 
@@ -98,16 +100,16 @@ class ResourcesTable extends Component {
 		let page = 0;
 		if(this.state.openFilter) {
 			this.setState({
-				page: page,
+				page,
 				resources: this.state.allResources,
-				currentPage: this.state.allResources.slice(page, page + 9),
+				currentPage: this.state.allResources.slice(page, resultsPerPage),
 				openFilter: false
 			});
 		} else {
 			this.setState({
-				page: page,
+				page,
 				resources: this.state.openResources,
-				currentPage: this.state.openResources.slice(page, page + 9),
+				currentPage: this.state.openResources.slice(page, resultsPerPage),
 				openFilter: true
 			});
 		}
@@ -159,7 +161,7 @@ class ResourcesTable extends Component {
 						<div className="results-table">
 							<header>
                 <h1 className="results-title">{this.state.categoryName}</h1>
-                <span className="results-count">{this.state.allResources.length - 1} Results</span>
+                <span className="results-count">{this.state.allResources.length} Results</span>
               </header>
 							<div className="results-filters">
 								<ul>
@@ -171,10 +173,10 @@ class ResourcesTable extends Component {
                 <ResourcesList resources={this.state.currentPage} location={this.state.location} page={this.state.page} />
                 <div className="pagination">
                   <div className="pagination-count">
-                    <p>{this.state.page * 9 + 1} — {(this.state.page + 1) * 9 < this.state.resources.length ? (this.state.page + 1) * 9 : this.state.resources.length - 1} of {this.state.resources.length - 1} Results</p>
+                    <p>{this.state.page * resultsPerPage + 1} — {(this.state.page + 1) * resultsPerPage < this.state.resources.length ? (this.state.page + 1) * resultsPerPage : this.state.resources.length} of {this.state.resources.length} Results</p>
                   </div>
                   {this.state.page ? <button className="btn btn-link" onClick={this.getPreviousResources.bind(this)}> Previous </button> : null}
-                  {this.state.page <= Math.floor(this.state.resources.length / 9) - 1 ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null}
+                  {this.state.page <= Math.floor(this.state.resources.length / resultsPerPage) - 1 ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null}
                 </div>
               </div>
 						</div>
@@ -196,7 +198,7 @@ class ResourcesList extends Component {
 		let location = this.props.location;
 		let resourcesRows = this.props.resources.map((resource, index) => {
 			return (
-				<ResourcesRow resource={resource} key={index} number={index + 1 + (9 * this.props.page)} location={location || {}}/>
+				<ResourcesRow resource={resource} key={index} number={index + 1 + (resultsPerPage * this.props.page)} location={location || {}}/>
 			);
 		});
 
