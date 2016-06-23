@@ -1,18 +1,17 @@
 import React from 'react';
+import { images } from '../assets';
 
-let bgImage = require('../assets/images/bg.png');
-let smallLogo = require('../assets/images/logo-small-white@3x.png');
 
 function LargeHeader() {
   return (
     <header className="header-large">
       <nav className="navbar navbar-default" role="navigation">
         <a className="navbar-brand" href="#">
-          <img src={smallLogo} alt="Ask Darcel"/>
+          <img src={images.logoSmall} alt="Ask Darcel"/>
         </a>
       </nav>
       <div className="push"></div>
-      <div className="hero" style={{backgroundImage: 'url(' + bgImage +')'}} role="banner">
+      <div className="hero" style={{backgroundImage: 'url(' + images.background +')'}} role="banner">
         <h1>
           Find the best community<br />
           resources for your needs

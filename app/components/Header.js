@@ -1,14 +1,14 @@
 
 import React from 'react';
 import { Link } from 'react-router';
-let smallLogo = require('../assets/images/logo-small-white@3x.png');
+import { images } from '../assets';
 
 function Header() {
   return (
 	<header>
     <nav className="navbar" role="navigation">
       <a className="navbar-brand" href="/">
-        <img src={smallLogo} alt="Ask Darcel"/>
+        <img src={images.logoSmall} alt="Ask Darcel"/>
       </a>
       <div className="nav-search">
         <div className="form-row" role="search">
