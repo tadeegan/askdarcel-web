@@ -30,13 +30,13 @@ class ResourcesTable extends Component {
 		};
 	}
 
-	loadResourcesFromServer() {
+	loadResourcesFromServer(userLocation) {
 		let { query } = this.props.location;
 		let categoryId = query.categoryid;
 		this.setState({
 			categoryName: cats[categoryId]
 		});
-		let url = '/api/resources?category_id=' + categoryId;
+		let url = '/api/resources?category_id=' + categoryId + '&lat=' + userLocation.lat + '&long=' + userLocation.lng;
 		fetch(url).then(r => r.json())
 		.then(data => {
 			let openResources = data.resources.filter(resource => {
@@ -74,10 +74,11 @@ class ResourcesTable extends Component {
 	getLocationGoogle() {
 		// Results are not very accurate
 		let url = 'https://www.googleapis.com/geolocation/v1/geolocate?key= AIzaSyBrt0fmU5Iarh0LdqEDp6bjMIqEOQB2hqU';
-		fetch(url, {method: 'post'}).then(r => r.json())
+		return fetch(url, {method: 'post'}).then(r => r.json())
 		.then(data => {
 			this.setState({location: data.location});
-		});
+			return data.location;
+		})
 	}
 
 	getWalkTime(dest, cb) {
@@ -118,26 +119,20 @@ class ResourcesTable extends Component {
 	componentDidMount() {
 		if(this.props.userLocation) {
 			let position = this.props.userLocation;
-			let userPosition = {lat: position.coords.latitude, lng: position.coords.longitude};
+			let userLocation = {lat: position.coords.latitude, lng: position.coords.longitude};
 			this.setState({
-				location: userPosition
+				location: userLocation
 			});
+			this.loadResourcesFromServer(userLocation);
 		} else {
-			this.getLocationGoogle();
-			// this.props.getLocation(position => {
-			// 	let userPosition = {lat: position.coords.latitude, lng: position.coords.longitude};
-			// 	console.log("got it!", userPosition);
-			// 	this.setState({
-			// 		location: userPosition
-			// 	});
-		 //  },
-		 //  error => {
-		 //  	console.error(error);
-		 //  });
+			let self = this;
+			this.getLocationGoogle()
+			.then(loc => {
+				self.loadResourcesFromServer(loc);
+			});
+			
 		}
-
-		this.loadResourcesFromServer();
-
+		this.loadResourcesFromServer({lat: 1, lng: 1});
 	}
 
 	render() {
