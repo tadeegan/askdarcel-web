@@ -56,18 +56,18 @@ class ResourcesTable extends Component {
 
 	getNextResources() {
 		let page = this.state.page + 1;
+		let currentPage = this.state.resources.slice(page * resultsPerPage, page * resultsPerPage + (resultsPerPage));
 		this.setState({
-			page: page,
-			currentPage: this.state.resources.slice(page * resultsPerPage, page * resultsPerPage + (resultsPerPage + 1))
+			page,
+			currentPage
 		});
 	}
 
 	getPreviousResources() {
 		let page = this.state.page - 1;
-		let offset = page ? 1 : 0;
 		this.setState({
 			page: page,
-			currentPage: this.state.resources.slice(page * resultsPerPage + offset, (page + 1) * resultsPerPage + offset)
+			currentPage: this.state.resources.slice(page * resultsPerPage, (page + 1) * resultsPerPage)
 		});
 	}
 
@@ -168,10 +168,10 @@ class ResourcesTable extends Component {
                 <ResourcesList resources={this.state.currentPage} location={this.state.location} page={this.state.page} />
                 <div className="pagination">
                   <div className="pagination-count">
-                    <p>{this.state.page * resultsPerPage + 1} — {(this.state.page + 1) * resultsPerPage < this.state.resources.length ? (this.state.page + 1) * resultsPerPage : this.state.resources.length} of {this.state.resources.length} Results</p>
+                    <p>{this.state.page * resultsPerPage + 1} — {Math.min(this.state.resources.length, (this.state.page + 1) * resultsPerPage)} Results</p>
                   </div>
                   {this.state.page ? <button className="btn btn-link" onClick={this.getPreviousResources.bind(this)}> Previous </button> : null}
-                  {this.state.page <= Math.floor(this.state.resources.length / resultsPerPage) - 1 ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null}
+                  {Math.floor(this.state.currentPage.length / resultsPerPage) && this.state.allResources.length !== (this.state.page + 1) * resultsPerPage ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null}
                 </div>
               </div>
 						</div>
