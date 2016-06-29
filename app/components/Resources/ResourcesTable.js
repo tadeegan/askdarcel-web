@@ -98,19 +98,18 @@ class ResourcesTable extends Component {
 	}
 
 	filterResources() {
-		let page = 0;
 		if(this.state.openFilter) {
 			this.setState({
-				page,
+				page: 0,
 				resources: this.state.allResources,
-				currentPage: this.state.allResources.slice(page, resultsPerPage),
+				currentPage: this.state.allResources.slice(0, resultsPerPage),
 				openFilter: false
 			});
 		} else {
 			this.setState({
-				page,
+				page: 0,
 				resources: this.state.openResources,
-				currentPage: this.state.openResources.slice(page, resultsPerPage),
+				currentPage: this.state.openResources.slice(0, resultsPerPage),
 				openFilter: true
 			});
 		}
@@ -132,7 +131,6 @@ class ResourcesTable extends Component {
 			});
 			
 		}
-		this.loadResourcesFromServer({lat: 1, lng: 1});
 	}
 
 	render() {
