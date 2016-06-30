@@ -207,7 +207,7 @@ class ResourcesRow extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			dest: {lat: props.resource.addresses[0].latitude, lng: props.resource.addresses[0].longitude},
+			dest: {lat: props.resource.address.latitude, lng: props.resource.address.longitude},
 			walkTime: null
 		};
 		this.handleClick = this.handleClick.bind(this);
@@ -270,7 +270,7 @@ class ResourcesRow extends Component {
           <div className="entry-details">
             <h4 className="entry-title">{this.props.number}. {this.props.resource.short_description || this.props.resource.long_description || "Description"}</h4>
             <p className="entry-organization">{this.props.resource.name}</p>
-            <p className="entry-meta">{buildAddressCell(this.props.resource.addresses)} &bull; {this.state.walkTime || "unknown"} walking</p>
+            <p className="entry-meta">{buildAddressCell(this.props.resource.address)} &bull; {this.state.walkTime || "unknown"} walking</p>
             <div className="quote">
               <img className="quote-img" src="http://lorempixel.com/100/100/people/" />
               <div className="quote-content">
@@ -296,7 +296,7 @@ class ResourcesRow extends Component {
 function getMapMarkers(resources, userLoc) {
 	const processAddress = (resource) => {
 		if(resource) {
-			let address = resource.addresses[0];
+			let address = resource.address;
 			if(!address) {
 				return null;
 			}
@@ -342,23 +342,21 @@ function buildHoursCell(schedule_days) {
 	);
 }
 
-function buildAddressCell(addresses) {
+function buildAddressCell(address) {
 	let addressString = "";
-	if(addresses.length && addresses.length > 0) {
-		let address = addresses[0];
 		addressString += address.address_1;
 		if(address.address_2) {
 			addressString += ", " + address.address_2;
 		}
-	}
+
 
 	return <span>{addressString}</span>
 }
 
-function buildImgURL(addresses) {
-	if(addresses.length) {
+function buildImgURL(address) {
+	if(address) {
 		return "https://maps.googleapis.com/maps/api/streetview?size=400x400&location=" +
-		  addresses[0].latitude + "," + addresses[0].longitude +
+		  address.latitude + "," + address.longitude +
 		  "&fov=90&heading=235&pitch=10";
 	} else {
 		return "http://lorempixel.com/200/200/city/";
