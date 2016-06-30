@@ -261,7 +261,7 @@ class ResourcesRow extends Component {
 			<li className="results-table-entry">
 				<Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
 					<div className="entry-photo-rating">
-					  <img className="entry-img" src={buildImgURL(this.props.resource.addresses)} />
+					  <img className="entry-img" src={buildImgURL(this.props.resource.address)} />
             <div className="entry-rating excellent">
               <i className="material-icons">sentiment_very_satisfied</i>
               <span>{Math.floor(Math.random()*10)%6}</span>

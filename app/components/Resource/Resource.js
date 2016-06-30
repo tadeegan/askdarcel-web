@@ -36,7 +36,7 @@ class Resource extends React.Component {
                 <div className="org-info">
                   <h1>{this.state.resource.name}</h1>
                   <h4>Category 1, Category 2, Category 3</h4>
-                  <p><AddressInfo addresses={this.state.resource.addresses} /></p>
+                  <p><AddressInfo address={this.state.resource.address} /></p>
                 </div>
               </header>
               <div className="rating-summary-container">
@@ -52,7 +52,7 @@ class Resource extends React.Component {
                 <p>This is an organisation's long description{this.props.description}</p>
               </div>
               <ul className="org-details">
-                <BusinessHours schedule_days={this.state.resource.addresses} />
+                <BusinessHours schedule_days={this.state.resource.schedule_days} />
                 <PhoneNumber phones={this.state.resource.phones} />
                 <Website website={this.state.resource.website} />
                 <Languages />
