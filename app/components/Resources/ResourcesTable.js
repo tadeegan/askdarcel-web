@@ -19,7 +19,7 @@ class ResourcesTable extends Component {
 	constructor() {
 		super();
 		this.state = {
-			categoryName: 'Category Name', 
+			categoryName: 'Category Name',
 			allResources: [],
 			openResources: [],
 			resources: [],

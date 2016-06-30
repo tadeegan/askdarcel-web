@@ -105,7 +105,7 @@ h1 {
 h2 {
   @extend .font-size-large;
   font-weight: 400;
-  font-style: italic;
+  color: $color-brand;
 }
 h3 {
   @extend .font-size-medium;
@@ -159,4 +159,8 @@ textarea, input{
   vertical-align: middle;
   position: relative;
   top: -2px;
+
+  &.blue {
+    color: $color-brand;
+  }
 }

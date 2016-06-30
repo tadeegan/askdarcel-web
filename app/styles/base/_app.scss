@@ -207,3 +207,32 @@ body {
     40% { opacity: 1; }
   }
 }
+
+.rating-summary {
+  width: calc-em(100px);
+  border-radius: 4px;
+  text-align: center;
+  padding: calc-em(5px) 0;
+  color: $color-white;
+  &.excellent {
+    background: $color-green;
+  }
+  &.above-average {
+    background: $color-green-yellow;
+  }
+  &.average {
+    background: $color-orange;
+  }
+  &.below-average {
+    background: $color-red;
+  }
+  i {
+    display: inline-block;
+    margin-right: calc-em(5px);
+  }
+  span {
+    display: inline-block;
+    @extend .font-size-default;
+    font-weight: 700;
+  }
+}
