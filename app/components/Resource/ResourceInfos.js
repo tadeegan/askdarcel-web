@@ -5,7 +5,7 @@ class AddressInfo extends React.Component {
 	render() {
 		return (
 			<div className="address">
-				{buildLocation(this.props.addresses)}
+				{buildLocation(this.props.address)}
 			</div>
 		);
 	}
@@ -95,13 +95,11 @@ function buildHoursText(schedule_days) {
 	);
 }
 
-function buildLocation(addresses) {
+function buildLocation(address) {
 	let line1 = "";
 	let line2 = "";
 
-	if(addresses && addresses.length && addresses.length > 0) {
-		let address = addresses[0];
-
+	if(address) {
 		if(address.address_1) {
 			line1 += address.address_1;
 		}
