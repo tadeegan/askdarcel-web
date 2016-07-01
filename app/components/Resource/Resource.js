@@ -15,7 +15,7 @@ class Resource extends Component {
   loadResourceFromServer() {
     let { query } = this.props.location;
     let resourceID = query.id;
-    let url = 'http://localhost:3000/resources/' + resourceID;
+    let url = '/api/resources/' + resourceID;
     fetch(url).then(r => r.json())
     .then(data => {
       this.setState({resource: data.resource});
