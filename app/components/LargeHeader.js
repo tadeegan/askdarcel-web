@@ -6,7 +6,7 @@ function LargeHeader() {
   return (
     <header className="header-large">
       <nav className="navbar navbar-default" role="navigation">
-        <a className="navbar-brand" href="#">
+        <a className="navbar-brand" href="/#">
           <img src={images.logoSmall} alt="Ask Darcel"/>
         </a>
       </nav>
