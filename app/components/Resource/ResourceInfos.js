@@ -1,20 +1,43 @@
-import React from 'react';
+import React, { Component } from 'react';
 import classNames from 'classnames/bind';
 
-class AddressInfo extends React.Component {
-	render() {
-		return (
-			<div className="address">
-				{buildLocation(this.props.address)}
-			</div>
-		);
-	}
+class Cat extends Component {
+  render() {
+    return <span>{this.props.category}</span>;
+  }
 }
 
-class BusinessHours extends React.Component {
-	render() {
-		return (
-			<li className="hours">
+class ResourceCategories extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    if(this.props.categories.length) {
+      let cats = this.props.categories.map((cat, i) =>{
+        return <Cat category={cat.name} key={i} />
+      });
+      return <div>{cats}</div>;
+    } else {
+      return null;
+    }
+  }
+}
+
+class AddressInfo extends Component {
+  render() {
+    return (
+      <span className="address">
+        {buildLocation(this.props.address)}
+      </span>
+    );
+  }
+}
+
+class BusinessHours extends Component {
+  render() {
+    return (
+      <li className="hours">
         <i className="material-icons">schedule</i>
         <a href="" className="expand-hours">
           <div className="current-hours">
@@ -22,139 +45,159 @@ class BusinessHours extends React.Component {
             <i className="material-icons">expand_more</i>
           </div>
         </a>
-			</li>
-		);
-	}
+      </li>
+    );
+  }
 }
 
-class PhoneNumber extends React.Component {
-	render() {
-		return (
-			<li className="phone">
+class PhoneNumber extends Component {
+  render() {
+    return (
+      <li className="phone">
         <i className="material-icons">call</i>
-				{buildPhoneNumber(this.props.phones)}
-			</li>
-		);
-	}
+        {buildPhoneNumber(this.props.phones)}
+      </li>
+    );
+  }
 }
 
-class Languages extends React.Component {
-	render() {
-		return (
-			<li className="lang">
+class Languages extends Component {
+  render() {
+    return (
+      <li className="lang">
         <i className="material-icons">translate</i>
-				<p>English, Spanish</p>
-			</li>
-		);
-	}
+        <p>English, Spanish</p>
+      </li>
+    );
+  }
 }
 
-class Website extends React.Component {
-	render() {
-		return (
-			<li className="website">
+class Website extends Component {
+  render() {
+    return (
+      <li className="website">
         <i className="material-icons">public</i>
-				<p><a href="{this.props.website}" target="_blank">Website</a></p>
-			</li>
-		);
-	}
+        <p><a href="{this.props.website}" target="_blank">Website</a></p>
+      </li>
+    );
+  }
+}
+
+class StreetView extends Component {
+  render() {
+    return (
+      <div>
+        <img className="org-img" src={buildImgURL(this.props.address)} />
+      </div>
+    );
+  }
 }
 
 function buildHoursText(schedule_days) {
-	if(!schedule_days) {
-		return;
-	}
+  if(!schedule_days) {
+    return;
+  }
 
-	let hours = "";
-	let styles = {
-		cell: true
-	};
-	const currentDate = new Date();
-	const currentHour = currentDate.getHours();
+  let hours = "";
+  let styles = {
+    cell: true
+  };
+  const currentDate = new Date();
+  const currentHour = currentDate.getHours();
 
-	const days = schedule_days.filter(schedule_day => {
-		return (schedule_day && schedule_day.day == daysOfTheWeek()[currentDate.getDay()] &&
-				currentHour > schedule_day.opens_at && currentHour < schedule_day.closes_at);
-	});
+  const days = schedule_days.filter(schedule_day => {
+    return (schedule_day && schedule_day.day == daysOfTheWeek()[currentDate.getDay()] &&
+        currentHour > schedule_day.opens_at && currentHour < schedule_day.closes_at);
+  });
 
-	if(days.length && days.length > 0) {
-		for(let i = 0; i < days.length; i++) {
-			let day = days[i];
-			hours = "Open Now: " + timeToString(day.opens_at) + "-" + timeToString(day.closes_at);
-			if(i != days.length - 1) {
-				hours += ", ";
-			}
-		}
-	} else {
-		hours = "Closed Now";
-		styles.closed = true;
-	}
+  if(days.length && days.length > 0) {
+    for(let i = 0; i < days.length; i++) {
+      let day = days[i];
+      hours = "Open Now: " + timeToString(day.opens_at) + "-" + timeToString(day.closes_at);
+      if(i != days.length - 1) {
+        hours += ", ";
+      }
+    }
+  } else {
+    hours = "Closed Now";
+    styles.closed = true;
+  }
 
-	return (
-		<p>{hours}</p>
-	);
+  return (
+    <p>{hours}</p>
+  );
 }
 
 function buildLocation(address) {
-	let line1 = "";
-	let line2 = "";
+  let line1 = "";
+  let line2 = "";
 
-	if(address) {
-		if(address.address_1) {
-			line1 += address.address_1;
-		}
+  if(address) {
+    if(address.address_1) {
+      line1 += address.address_1;
+    }
 
-		if(address.address_1) {
-			line1 += ", " + address.address_2;
-		}
+    if(address.address_2) {
+      line1 += ", " + address.address_2;
+    }
 
-		if(address.city) {
-			line2 += address.city;
-		}
+    if(address.city) {
+      line2 += address.city;
+    }
 
-		if(address.state_province) {
-			line2 += ", " + address.state_province;
-		}
+    if(address.state_province) {
+      line2 += ", " + address.state_province;
+    }
 
-		if(address.postal_code) {
-			line2 += ", " + address.postal_code;
-		}
-	}
+    if(address.postal_code) {
+      line2 += ", " + address.postal_code;
+    }
+  }
 
-	return (
-		<p>
-		{line1}<br />{line2}
-		</p>
-	);
+  return (
+    <span>
+    {line1}<br />{line2}
+    </span>
+  );
 }
 
 function buildPhoneNumber(phones) {
-	if(!phones) {
-		return;
-	}
+  if(!phones) {
+    return;
+  }
 
-	let phone = {};
+  let phone = {};
 
-	if(phones.length && phones.length > 0) {
-		phone = phones[0];
-	}
+  if(phones.length && phones.length > 0) {
+    phone = phones[0];
+  }
 
-	return (
-		<p>{phone.number}</p>
-	);
+  return (
+    <p>{phone.number}</p>
+  );
+}
+
+function buildImgURL(address) {
+  if(address) {
+    return "https://maps.googleapis.com/maps/api/streetview?size=400x400&location=" +
+      address.latitude + "," + address.longitude +
+      "&fov=90&heading=235&pitch=10";
+  } else {
+    return "http://lorempixel.com/200/200/city/";
+  }
 }
 
 function daysOfTheWeek() {
-	return [
-		"Sunday",
-		"Monday",
-		"Tuesday",
-		"Wednesday",
-		"Thursday",
-		"Friday",
-		"Saturday"
-	];
+  return [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ];
 }
 
 
-export {AddressInfo, BusinessHours, PhoneNumber, Website, Languages};
+export {AddressInfo, BusinessHours, PhoneNumber, ResourceCategories, Website, Languages, StreetView};

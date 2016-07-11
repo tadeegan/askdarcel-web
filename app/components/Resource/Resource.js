@@ -1,41 +1,43 @@
 
-import React, { PropTypes } from 'react';
-import {AddressInfo, BusinessHours, PhoneNumber, Website, Languages} from './ResourceInfos';
+import React, { Component } from 'react';
+import {AddressInfo, BusinessHours, PhoneNumber, ResourceCategories, Website, Languages, StreetView} from './ResourceInfos';
 import CommunicationBoxes from './CommunicationBoxes';
-import Services from './Services.js';
+import Services from './Services';
+import Loader from '../Loader';
+import ResourceMap from './ResourceMap';
 
-class Resource extends React.Component {
-	constructor() {
-		super();
-		this.state = {resource: {}};
-	}
+class Resource extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { resource: null };
+  }
 
-	loadResourceFromServer() {
-		let { query } = this.props.location;
-		let resourceID = query.id;
-		let url = '/api/resources/' + resourceID;
-		fetch(url).then(r => r.json())
-		.then(data => {
-			this.setState({resource: data.resource});
-		})
-		;
-	}
+  loadResourceFromServer() {
+    let { query } = this.props.location;
+    let resourceID = query.id;
+    let url = '/api/resources/' + resourceID;
+    fetch(url).then(r => r.json())
+    .then(data => {
+      this.setState({resource: data.resource});
+    })
+    ;
+  }
 
-	componentDidMount() {
-		this.loadResourceFromServer();
-	}
+  componentDidMount() {
+    this.loadResourceFromServer();
+  }
 
-	render() {
-		return (
+  render() {
+    return ( !this.state.resource ? <Loader /> :
       <div className="org-container">
         <article className="org">
           <div className="main-column">
             <section className="org-summary">
               <header>
-                <img className="org-img" src="http://lorempixel.com/100/100/city/" />
+                <StreetView address={this.state.resource.address} />
                 <div className="org-info">
                   <h1>{this.state.resource.name}</h1>
-                  <h4>Category 1, Category 2, Category 3</h4>
+                  <h4><ResourceCategories categories={this.state.resource.categories} /></h4>
                   <p><AddressInfo address={this.state.resource.address} /></p>
                 </div>
               </header>
@@ -66,21 +68,17 @@ class Resource extends React.Component {
           </div>
 
           <aside className="org-map">
-            <div className="map-container"></div>
+            <div className="map-container">
+              <ResourceMap name={this.state.resource.name} lat={ this.state.resource.address.latitude} long={this.state.resource.address.longitude} />
+            </div>
           </aside>
 
         </article>
       </div>
-		);
-	}
+    );
+  }
 }
 
-// Resource.propTypes = {
-//   news: PropTypes.arrayOf(PropTypes.shape({
-//     title: PropTypes.string.isRequired,
-//     link: PropTypes.string.isRequired,
-//     contentSnippet: PropTypes.string,
-//   })).isRequired,
-// };
+
 
 export default Resource;
