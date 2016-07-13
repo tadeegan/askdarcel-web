@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 import Gmap from './ResourcesMap.js';
+import queryString from 'query-string';
 
 // Show the span of results (11 - 20 for example rather than the #10)
 // Make the map update with proper markers
@@ -23,7 +24,7 @@ class ResourcesTable extends Component {
       categoryName: 'Category Name', 
       allResources: [],
       openResources: [],
-      resources: null,
+      resources: [],
       openFilter: false,
       currentPage: [],
       page: 0,
@@ -34,25 +35,38 @@ class ResourcesTable extends Component {
   loadResourcesFromServer(userLocation) {
     let { query } = this.props.location;
     let categoryId = query.categoryid;
-    this.setState({
-      categoryName: cats[categoryId]
-    });
-    let url = '/api/resources?category_id=' + categoryId + '&lat=' + userLocation.lat + '&long=' + userLocation.lng;
-    fetch(url).then(r => r.json())
-    .then(data => {
-      let openResources = data.resources.filter(resource => {
-        let hours = openHours(resource.schedule.schedule_days);
-        if(hours) {
-          return resource;
-        }
-      });
+    let searchQuery = query.query;
+
+    var path = '/api/resources';
+    var params = {
+      lat: userLocation.lat,
+      long: userLocation.lng
+    };
+    if (categoryId) {
       this.setState({
-        allResources: data.resources,
-        resources: data.resources, 
-        currentPage: data.resources.slice(0,resultsPerPage),
-        openResources: openResources
+        categoryName: cats[categoryId]
       });
-    });
+      params.category_id = categoryId;
+    } else if (searchQuery) {
+      path += '/search';
+      params.query = searchQuery;
+    }
+    let url = path + '?' + queryString.stringify(params);
+    fetch(url).then(r => r.json())
+      .then(data => {
+        let openResources = data.resources.filter(resource => {
+          let hours = openHours(resource.schedule.schedule_days);
+          if(hours) {
+            return resource;
+          }
+        });
+        this.setState({
+          allResources: data.resources,
+          resources: data.resources,
+          currentPage: data.resources.slice(0,resultsPerPage),
+          openResources: openResources
+        });
+      });
   }
 
   getNextResources() {
@@ -66,10 +80,9 @@ class ResourcesTable extends Component {
 
   getPreviousResources() {
     let page = this.state.page - 1;
-    let currentPage = this.state.resources.slice(page * resultsPerPage, (page + 1) * resultsPerPage);
     this.setState({
-      page,
-      currentPage 
+      page: page,
+      currentPage: this.state.resources.slice(page * resultsPerPage, (page + 1) * resultsPerPage)
     });
   }
 
@@ -77,10 +90,10 @@ class ResourcesTable extends Component {
     // Results are not very accurate
     let url = 'https://www.googleapis.com/geolocation/v1/geolocate?key= AIzaSyBrt0fmU5Iarh0LdqEDp6bjMIqEOQB2hqU';
     return fetch(url, {method: 'post'}).then(r => r.json())
-    .then(data => {
-      this.setState({location: data.location});
-      return data.location;
-    })
+      .then(data => {
+        this.setState({location: data.location});
+        return data.location;
+      })
   }
 
   getWalkTime(dest, cb) {
@@ -128,16 +141,14 @@ class ResourcesTable extends Component {
     } else {
       let self = this;
       this.getLocationGoogle()
-      .then(loc => {
-        self.loadResourcesFromServer(loc);
-      });
-      
+        .then(loc => {
+          self.loadResourcesFromServer(loc);
+        });
     }
   }
 
   render() {
-    return !this.state.resources || !this.state.location ? <div className="loader">
-
+    return !this.state.resources.length || !this.state.location ? <div className="loader">
       <div className="sk-fading-circle">
         <div className="sk-circle1 sk-circle"></div>
         <div className="sk-circle2 sk-circle"></div>
@@ -153,18 +164,18 @@ class ResourcesTable extends Component {
         <div className="sk-circle12 sk-circle"></div>
       </div>
     </div> : (
-      <div className="results">
-            <div className="results-table">
-              <header>
+                        <div className="results">
+                                                <div className="results-table">
+                                                        <header>
                 <h1 className="results-title">{this.state.categoryName}</h1>
                 <span className="results-count">{this.state.allResources.length} Results</span>
               </header>
-              <div className="results-filters">
-                <ul>
-                  <li>Filter:</li>
-                  <li><a className="filters-button disabled" onClick={this.filterResources.bind(this)}>{this.state.openFilter ? "All" : "Open Now"}</a></li>
-                </ul>
-              </div>
+                                                        <div className="results-filters">
+                                                                <ul>
+                                                                        <li>Filter:</li>
+                                                                        <li><a className="filters-button disabled" onClick={this.filterResources.bind(this)}>{this.state.openFilter ? "All" : "Open Now"}</a></li>
+                                                                </ul>
+                                                        </div>
               <div className="results-table-body">
                 <ResourcesList resources={this.state.currentPage} location={this.state.location} page={this.state.page} />
                 <div className="pagination">
@@ -175,11 +186,11 @@ class ResourcesTable extends Component {
                   {Math.floor(this.state.currentPage.length / resultsPerPage) && this.state.allResources.length !== (this.state.page + 1) * resultsPerPage ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null}
                 </div>
               </div>
-            </div>
-          <div className="map">
+                                                </div>
+                                        <div className="map">
             <Gmap markers={getMapMarkers(this.state.currentPage, this.state.location)} />
           </div>
-      </div>
+                        </div>
     );
   }
 }
@@ -194,7 +205,7 @@ class ResourcesList extends Component {
     let location = this.props.location;
     let resourcesRows = this.props.resources.map((resource, index) => {
       return (
-        <ResourcesRow resource={resource} key={index} number={index + 1 + (resultsPerPage * this.props.page)} location={location || {}}/>
+          <ResourcesRow resource={resource} key={index} number={index + 1 + (resultsPerPage * this.props.page)} location={location || {}}/>
       );
     });
 
@@ -261,10 +272,10 @@ class ResourcesRow extends Component {
 
   render() {
     return (
-      <li className="results-table-entry">
-        <Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
-          <div className="entry-photo-rating">
-            <img className="entry-img" src={buildImgURL(this.props.resource.address)} />
+                        <li className="results-table-entry">
+                                <Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
+                                        <div className="entry-photo-rating">
+                                          <img className="entry-img" src={buildImgURL(this.props.resource.address)} />
             <div className="entry-rating excellent">
               <i className="material-icons">sentiment_very_satisfied</i>
               <span>{Math.floor(Math.random()*10)%6}</span>
@@ -290,8 +301,8 @@ class ResourcesRow extends Component {
               </li>
             </ul>
           </div>
-        </Link>
-      </li>
+                                </Link>
+                        </li>
     );
   }
 }
@@ -317,15 +328,14 @@ function getMapMarkers(resources, userLoc) {
   markers.user = userLoc;
 
   return markers;
-
 }
 
 function displayCategories(categories) {
-    let categoryNames = categories.map(category => category.name);
-    let categoryString = '';
-    categoryNames.forEach(category => categoryString += category + ', ');
+  let categoryNames = categories.map(category => category.name);
+  let categoryString = '';
+  categoryNames.forEach(category => categoryString += category + ', ');
 
-    return categoryString.substr(0, categoryString.length-2);
+  return categoryString.substr(0, categoryString.length-2);
 }
 
 function buildHoursCell(schedule_days) {
@@ -342,16 +352,16 @@ function buildHoursCell(schedule_days) {
   }
 
   return (
-    <span className="resourcetable_hours">{hours}</span>
+      <span className="resourcetable_hours">{hours}</span>
   );
 }
 
 function buildAddressCell(address) {
   let addressString = "";
-    addressString += address.address_1;
-    if(address.address_2) {
-      addressString += ", " + address.address_2;
-    }
+  addressString += address.address_1;
+  if(address.address_2) {
+    addressString += ", " + address.address_2;
+  }
 
 
   return <span>{addressString}</span>
@@ -376,7 +386,7 @@ function openHours(scheduleDays) {
   const days = scheduleDays.filter(scheduleDay => {
     let day = scheduleDay ? scheduleDay.day.replace(/,/g, '') : null;
     return (day && day === daysOfTheWeek()[currentDate.getDay()] &&
-        currentHour > scheduleDay.opens_at && currentHour < scheduleDay.closes_at);
+            currentHour > scheduleDay.opens_at && currentHour < scheduleDay.closes_at);
   });
 
   if(days.length) {
