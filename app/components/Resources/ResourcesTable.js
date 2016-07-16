@@ -282,8 +282,8 @@ class ResourcesRow extends Component {
             </div>
           </div>
           <div className="entry-details">
-            <h4 className="entry-title">{this.props.number}. {this.props.resource.short_description || this.props.resource.long_description || "Description"}</h4>
-            <p className="entry-organization">{this.props.resource.name}</p>
+            <h4 className="entry-title">{this.props.number}. {this.props.resource.name}</h4>
+            <p className="entry-organization">{this.props.resource.long_description || this.props.resource.short_description || "Description"}</p>
             <p className="entry-meta">{buildAddressCell(this.props.resource.address)} &bull; {this.state.walkTime || "unknown"} walking</p>
             <div className="quote">
               <img className="quote-img" src="http://lorempixel.com/100/100/people/" />
