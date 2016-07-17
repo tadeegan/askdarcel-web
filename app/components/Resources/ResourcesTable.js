@@ -24,7 +24,7 @@ class ResourcesTable extends Component {
       categoryName: 'Category Name', 
       allResources: [],
       openResources: [],
-      resources: [],
+      resources: null,
       openFilter: false,
       currentPage: [],
       page: 0,
@@ -148,7 +148,7 @@ class ResourcesTable extends Component {
   }
 
   render() {
-    return !this.state.resources.length || !this.state.location ? <div className="loader">
+    return !this.state.resources ? <div className="loader">
       <div className="sk-fading-circle">
         <div className="sk-circle1 sk-circle"></div>
         <div className="sk-circle2 sk-circle"></div>
@@ -180,7 +180,7 @@ class ResourcesTable extends Component {
                 <ResourcesList resources={this.state.currentPage} location={this.state.location} page={this.state.page} />
                 <div className="pagination">
                   <div className="pagination-count">
-                    <p>{this.state.page * resultsPerPage + 1} — {Math.min(this.state.resources.length, (this.state.page + 1) * resultsPerPage)} Results</p>
+                    {this.state.resources && this.state.resources.length ? <p>{this.state.page * resultsPerPage + 1} — {Math.min(this.state.resources.length, (this.state.page + 1) * resultsPerPage)} Results</p> : <p>No results found</p>}
                   </div>
                   {this.state.page ? <button className="btn btn-link" onClick={this.getPreviousResources.bind(this)}> Previous </button> : null}
                   {Math.floor(this.state.currentPage.length / resultsPerPage) && this.state.allResources.length !== (this.state.page + 1) * resultsPerPage ? <button className="btn btn-link" onClick={this.getNextResources.bind(this)}> Next </button> : null}

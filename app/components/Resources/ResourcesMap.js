@@ -71,11 +71,12 @@ class Gmap extends Component {
       userMarker: userMarker
     })
 
-    let latLang = new google.maps.LatLng(this.props.markers.results[0][0], this.props.markers.results[0][1]);
-    map.setCenter(latLang);
+    if(this.props.markers.results && this.props.markers.results.length) {
+      // let latLang = new google.maps.LatLng(this.props.markers.results[0][0], this.props.markers.results[0][1]);
+      // map.setCenter(latLang);
 
-    this.generateMarkers(this.props.markers.results, map);
-
+      this.generateMarkers(this.props.markers.results, map);
+    }
   }
 
   componentWillReceiveProps(newProps) {
