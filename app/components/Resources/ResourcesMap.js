@@ -72,9 +72,6 @@ class Gmap extends Component {
     })
 
     if(this.props.markers.results && this.props.markers.results.length) {
-      // let latLang = new google.maps.LatLng(this.props.markers.results[0][0], this.props.markers.results[0][1]);
-      // map.setCenter(latLang);
-
       this.generateMarkers(this.props.markers.results, map);
     }
   }
