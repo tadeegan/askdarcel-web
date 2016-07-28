@@ -51,7 +51,7 @@ class Resource extends Component {
                 </div>
               </div>
               <div className="org-desc">
-                <p>This is an organisation's long description{this.props.description}</p>
+                <p>{this.state.resource.long_description || this.state.resource.short_description || "No Description available"}</p>
               </div>
               <ul className="org-details">
                 <BusinessHours schedule_days={this.state.resource.schedule_days} />
