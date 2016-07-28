@@ -271,6 +271,10 @@ class ResourcesRow extends Component {
   }
 
   render() {
+    let firstService = this.props.resource.services[0];
+    let resourceDescription = this.props.resource.long_description ||
+          this.props.resource.short_description ||
+          (firstService && firstService.long_description);
     return (
                         <li className="results-table-entry">
                                 <Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
@@ -283,7 +287,7 @@ class ResourcesRow extends Component {
           </div>
           <div className="entry-details">
             <h4 className="entry-title">{this.props.number}. {this.props.resource.name}</h4>
-            <p className="entry-organization">{this.props.resource.long_description || this.props.resource.short_description || "Description"}</p>
+            <p className="entry-organization">{resourceDescription}</p>
             <p className="entry-meta">{buildAddressCell(this.props.resource.address)} &bull; {this.state.walkTime || "unknown"} walking</p>
             <div className="quote">
               <img className="quote-img" src="http://lorempixel.com/100/100/people/" />
