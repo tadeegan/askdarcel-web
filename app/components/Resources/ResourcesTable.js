@@ -311,7 +311,7 @@ class Rating extends Component {
     return (this.props.ratings.length ?
       <div>
         <i className="material-icons">sentiment_very_satisfied</i>
-        <span>{Math.round(props.ratings.reduce((total, rating) => {return total + rating}) / 5)}</span>
+        <span>{Math.round(this.props.ratings.reduce((total, rating) => {return total + rating}) / 5)}</span>
       </div> :
       null
     )
