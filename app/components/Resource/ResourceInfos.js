@@ -39,12 +39,9 @@ class BusinessHours extends Component {
     return (
       <li className="hours">
         <i className="material-icons">schedule</i>
-        <a href="" className="expand-hours">
           <div className="current-hours">
             {buildHoursText(this.props.schedule_days)}
-            <i className="material-icons">expand_more</i>
           </div>
-        </a>
       </li>
     );
   }
