@@ -54,7 +54,7 @@ class Resource extends Component {
                 <p>{this.state.resource.long_description || this.state.resource.short_description || "No Description available"}</p>
               </div>
               <ul className="org-details">
-                <BusinessHours schedule_days={this.state.resource.schedule_days} />
+                <BusinessHours schedule_days={this.state.resource.schedule.schedule_days} />
                 <PhoneNumber phones={this.state.resource.phones} />
                 <Website website={this.state.resource.website} />
                 <Languages />
