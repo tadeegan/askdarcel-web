@@ -3,7 +3,7 @@ import classNames from 'classnames/bind';
 
 class Cat extends Component {
   render() {
-    return <span>{this.props.category}</span>;
+    return <span className="org-category">{this.props.category}</span>;
   }
 }
 
@@ -14,8 +14,13 @@ class ResourceCategories extends Component {
 
   render() {
     if(this.props.categories.length) {
-      let cats = this.props.categories.map((cat, i) =>{
-        return <Cat category={cat.name} key={i} />
+      let categoryMap = {};
+      this.props.categories.forEach(category => {
+        categoryMap[category.name] = true;
+      });
+
+      let cats = Object.keys(categoryMap).map((cat, i) =>{
+        return <Cat category={cat} key={i} />
       });
       return <div>{cats}</div>;
     } else {
