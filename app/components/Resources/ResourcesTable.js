@@ -274,6 +274,7 @@ class ResourcesRow extends Component {
     let resourceDescription = this.props.resource.long_description ||
           this.props.resource.short_description ||
           (firstService && firstService.long_description);
+    let hiddenStyle = {visibility: 'hidden'};      
     return (
         <li className="results-table-entry">
           <Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
@@ -288,7 +289,7 @@ class ResourcesRow extends Component {
             <p className="entry-organization">{resourceDescription}</p>
             <p className="entry-meta">{buildAddressCell(this.props.resource.address)} &bull; {this.state.walkTime || "unknown"} walking</p>
             <Quote quote={this.props.resource.quote}/>
-            <ul className="entry-actions">
+            <ul className="entry-actions" style={hiddenStyle}>
               <li>
                 <div className="button">
                   <i className="material-icons">turned_in</i>
