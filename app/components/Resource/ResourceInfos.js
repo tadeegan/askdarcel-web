@@ -74,7 +74,7 @@ class Website extends Component {
     return (
       <li className="website">
         <i className="material-icons">public</i>
-        <p><a href="{this.props.website}" target="_blank">Website</a></p>
+        <p><a href={this.props.website} target="_blank">Website</a></p>
       </li>
     );
   }
