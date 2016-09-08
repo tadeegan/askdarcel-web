@@ -10,7 +10,7 @@ var CategoryBox = React.createClass({
     var callback = function callback(response, textStatus, jqXHR) {
       if (httpRequest.readyState === XMLHttpRequest.DONE) {
         if (httpRequest.status === 200) {
-          categories = JSON.parse(httpRequest.responseText);
+          categories = JSON.parse(httpRequest.responseText).categories;
           this.setState({categories: categories});
         } else {
           console.log('error...');
@@ -45,7 +45,7 @@ var CategoryList = React.createClass({
 
     var categoryNodes = this.props.categories.map(function(category) {
       return (
-        <Category name={category.name} key={category.id} categoryid={category.id} image_path={category.image_path}/>
+        <Category name={category.name} key={category.id} categoryid={category.id} />
       );
     });
 
@@ -71,4 +71,3 @@ class ContentPage extends Component {
 }
 
 export default ContentPage;
-
