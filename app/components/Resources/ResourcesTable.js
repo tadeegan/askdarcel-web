@@ -21,7 +21,7 @@ class ResourcesTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      categoryName: 'Category Name', 
+      categoryName: 'Category Name',
       allResources: [],
       openResources: [],
       resources: null,
@@ -50,6 +50,9 @@ class ResourcesTable extends Component {
     } else if (searchQuery) {
       path += '/search';
       params.query = searchQuery;
+      this.setState({
+        categoryName: 'Search: ' + searchQuery
+      });
     }
     let url = path + '?' + queryString.stringify(params);
     fetch(url).then(r => r.json())
@@ -274,7 +277,7 @@ class ResourcesRow extends Component {
     let resourceDescription = this.props.resource.long_description ||
           this.props.resource.short_description ||
           (firstService && firstService.long_description);
-    let hiddenStyle = {visibility: 'hidden'};      
+    let hiddenStyle = {visibility: 'hidden'};
     return (
         <li className="results-table-entry">
           <Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
