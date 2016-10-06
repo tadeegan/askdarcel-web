@@ -91,7 +91,10 @@ class ResourcesTable extends Component {
 
   getLocationGoogle() {
     // Results are not very accurate
-    let url = 'https://www.googleapis.com/geolocation/v1/geolocate?key= AIzaSyBrt0fmU5Iarh0LdqEDp6bjMIqEOQB2hqU';
+    let url = 'https://www.googleapis.com/geolocation/v1/geolocate';
+    if(CONFIG.GOOGLE_API_KEY) {
+      url += '?key=' + CONFIG.GOOGLE_API_KEY;
+    }
     return fetch(url, {method: 'post'}).then(r => r.json())
       .then(data => {
         this.setState({location: data.location});
@@ -406,6 +409,9 @@ function buildImgURL(address) {
     return "https://maps.googleapis.com/maps/api/streetview?size=400x400&location=" +
       address.latitude + "," + address.longitude +
       "&fov=90&heading=235&pitch=10";
+      if(CONFIG.GOOGLE_API_KEY) {
+        url += '&key=' + CONFIG.GOOGLE_API_KEY;
+      }
   } else {
     return "http://lorempixel.com/200/200/city/";
   }
