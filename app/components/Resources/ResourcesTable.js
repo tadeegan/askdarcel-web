@@ -406,12 +406,13 @@ function buildAddressCell(address) {
 
 function buildImgURL(address) {
   if(address) {
-    return "https://maps.googleapis.com/maps/api/streetview?size=400x400&location=" +
+    let url = "https://maps.googleapis.com/maps/api/streetview?size=400x400&location=" +
       address.latitude + "," + address.longitude +
       "&fov=90&heading=235&pitch=10";
-      if(CONFIG.GOOGLE_API_KEY) {
-        url += '&key=' + CONFIG.GOOGLE_API_KEY;
-      }
+    if(CONFIG.GOOGLE_API_KEY) {
+      url += '&key=' + CONFIG.GOOGLE_API_KEY;
+    }
+    return url;
   } else {
     return "http://lorempixel.com/200/200/city/";
   }
