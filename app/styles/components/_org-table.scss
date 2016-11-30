@@ -34,6 +34,7 @@
   position: relative;
   z-index: 2;
   background: $color-white;
+  height: 100%;
   @include r_max($break-tablet-s) {
     order: 2;
   }
