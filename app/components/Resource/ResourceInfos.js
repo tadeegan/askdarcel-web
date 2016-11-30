@@ -32,9 +32,12 @@ class ResourceCategories extends Component {
 class AddressInfo extends Component {
   render() {
     return (
-      <span className="address">
-        {buildLocation(this.props.address)}
-      </span>
+      <li className="address">
+        <i className="material-icons">place</i>
+        <div className="address-block">
+          {buildLocation(this.props.address)}
+        </div>
+      </li>
     );
   }
 }
@@ -79,7 +82,7 @@ class Website extends Component {
     return (
       <li className="website">
         <i className="material-icons">public</i>
-        <p><a href={this.props.website} target="_blank">Website</a></p>
+        <p><a href={this.props.website} target="_blank">{this.props.website}</a></p>
       </li>
     );
   }
@@ -88,7 +91,7 @@ class Website extends Component {
 class StreetView extends Component {
   render() {
     return (
-      <div>
+      <div className="org-streetview">
         <img className="org-img" src={buildImgURL(this.props.address)} />
       </div>
     );

@@ -178,7 +178,7 @@ class ResourcesTable extends Component {
                   <div className="results-filters">
                     <ul>
                       <li>Filter:</li>
-                      <li><a className="filters-button disabled" onClick={this.filterResources.bind(this)}>{this.state.openFilter ? "All" : "Open Now"}</a></li>
+                      <li><a className="filters-button" onClick={this.filterResources.bind(this)}>{this.state.openFilter ? "All" : "Open Now"}</a></li>
                     </ul>
                   </div>
                   <div className="results-table-body">
@@ -192,7 +192,7 @@ class ResourcesTable extends Component {
                     </div>
                   </div>
               </div>
-              <div className="map">
+              <div className="results-map">
               <Gmap markers={getMapMarkers(this.state.currentPage, this.state.location)} />
               </div>
             </div>
@@ -284,28 +284,23 @@ class ResourcesRow extends Component {
     return (
         <li className="results-table-entry">
           <Link to={{ pathname: "resource", query: { id: this.props.resource.id } }}>
-          <div className="entry-photo-rating">
-            <img className="entry-img" src={buildImgURL(this.props.resource.address)} />
-            <div className="entry-rating excellent">
-              <Rating ratings={this.props.resource.ratings} />
-            </div>
-          </div>
-          <div className="entry-details">
-            <h4 className="entry-title">{this.props.number}. {this.props.resource.name}</h4>
-            <p className="entry-organization">{resourceDescription}</p>
-            <p className="entry-meta">{buildAddressCell(this.props.resource.address)} &bull; {this.state.walkTime || "unknown"} walking</p>
-            <Quote quote={this.props.resource.quote}/>
-            <ul className="entry-actions" style={hiddenStyle}>
-              <li>
-                <div className="button">
-                  <i className="material-icons">turned_in</i>
-                  <span>Save</span>
+            <header>
+              <div className="entry-details">
+                <h4 className="entry-headline">{this.props.number}. {firstService.name}</h4>
+                <div className="entry-subhead">
+                  <Rating ratings={this.props.resource.ratings} />
+                  <p className="entry-distance">{buildAddressCell(this.props.resource.address)} &bull; {this.state.walkTime || "unknown"} walking</p>
                 </div>
-              </li>
-            </ul>
-          </div>
-                                </Link>
-                        </li>
+              </div>
+              <img className="entry-photo entry-img" src={buildImgURL(this.props.resource.address)} />
+            </header>
+            <div className="entry-meta">
+              <p className="entry-organization">{this.props.resource.name}</p>
+              <p className="entry-description">{resourceDescription}</p>
+              <p className="entry-hours">Open until 6:00pm</p>
+            </div>
+          </Link>
+        </li>
     );
   }
 }
@@ -316,9 +311,8 @@ class Rating extends Component {
   }
   render() {
     return (this.props.ratings.length ?
-      <div>
-        <i className="material-icons">sentiment_very_satisfied</i>
-        <span>{Math.round(this.props.ratings.reduce((total, rating) => {return total + rating}) / 5)}</span>
+      <div className="entry-rating">
+        {Math.round(this.props.ratings.reduce((total, rating) => {return total + rating}) / 5)}
       </div> :
       null
     )
