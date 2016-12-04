@@ -183,6 +183,13 @@ class ResourcesTable extends Component {
                   </div>
                   <div className="results-table-body">
                     <ResourcesList resources={this.state.currentPage} location={this.state.location} page={this.state.page} />
+                    <div className="add-resource">
+                      <li className="results-table-entry">
+                        <Link to={"ADD_PAGE"}>
+                          <h4 className="entry-headline"><i className="material-icons">add_circle</i> Add a new resource</h4>
+                        </Link>
+                      </li>
+                    </div>
                     <div className="pagination">
                       <div className="pagination-count">
                         {this.state.resources && this.state.resources.length ? <p>{this.state.page * resultsPerPage + 1} — {Math.min(this.state.resources.length, (this.state.page + 1) * resultsPerPage)} Results</p> : <p>No results found</p>}

@@ -4,7 +4,7 @@ import { Router, Route, Link, browserHistory, IndexRoute } from 'react-router';
 
 import App from './components/App';
 import CategoryPage from './components/Find/FindPage';
-import ResourcesTable from './components/ResourcesList/ResourcesTable';
+import ResourcesTable from './components/Search/ResourcesTable';
 import Resource from './components/Resource/Resource';
 import Google from './utils/google';
 

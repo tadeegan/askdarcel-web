@@ -98,6 +98,7 @@
 // RESOURCE ENTRY
 
 .results-table-entry {
+  list-style-type: none;
   transition: all 200ms ease;
   border-left: calc-em(7px) solid $color-white;
   border-bottom: 1px solid $color-grey3;
@@ -166,4 +167,11 @@
   text-overflow: ellipsis;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// ADD ENTRY BUTTON
 
+.add-resource {
+  h4 {
+    margin-bottom: 0;
+  }
+}
