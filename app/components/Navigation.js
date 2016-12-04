@@ -26,7 +26,7 @@ class Navigation extends React.Component {
           <input ref={(c) => this.searchComponent = c} type="text" className="search-field" placeholder="I'm looking for..." name="srch-term" id="srch-term" />
         </form>
       </div>
-      <ul className="nav-list">
+      <ul className="nav-list disabled-feature">
         <li><a className="find">Find</a></li>
         <li><a className="saved">Saved</a></li>
         <li><a className="review">Review</a></li>

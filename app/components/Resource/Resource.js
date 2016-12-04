@@ -40,7 +40,7 @@ class Resource extends Component {
               <div className="org-info">
                 <div className="org-details">
                   <h1 className="org-title">{this.state.resource.name}</h1>
-                  <div className="org-rating-summary">
+                  <div className="org-rating-summary disabled-feature">
                     <p className="excellent">{Math.floor(Math.random()*10)%6} <i className="material-icons">sentiment_very_satisfied</i><i className="material-icons">sentiment_very_satisfied</i><i className="material-icons">sentiment_very_satisfied</i><i className="material-icons">sentiment_very_satisfied</i><i className="material-icons">sentiment_very_satisfied</i></p>
                   </div>
                   <div className="org-desc">

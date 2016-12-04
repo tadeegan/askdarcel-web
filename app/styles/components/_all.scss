@@ -14,3 +14,7 @@
 @import 'org-page';
 @import 'org-table';
 @import 'map';
+
+.disabled-feature {
+  display: none !important;
+}
