@@ -222,7 +222,7 @@ class ResourcesList extends Component {
     });
 
     return (
-      <ul className="resource-table-entries">
+      <ul className="results-table-entries">
         {resourcesRows}
       </ul>
     );

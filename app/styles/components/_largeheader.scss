@@ -42,6 +42,9 @@
     background-size: calc-em(18px);
     background-position: calc-em(17px) center;
     padding-left: calc-em(45px);
+    @include r_min($break-tablet-s) {
+      border-right: 1px solid $color-grey3;
+    }
   }
   .location-field {
     max-width: calc-em(240px);

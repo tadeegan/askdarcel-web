@@ -87,10 +87,15 @@
 
 .pagination {
   padding: calc-em(30px) calc-em(20px);
+
   .pagination-count {
     @extend %font-size-small;
     color: $color-grey5;
     margin-bottom: calc-em(10px);
+  }
+
+  .btn:first-of-type {
+    margin-right: calc-em(10px);
   }
 }
 
@@ -98,12 +103,16 @@
 // RESOURCE ENTRY
 
 .results-table-entry {
+  position: relative;
   list-style-type: none;
   transition: all 200ms ease;
   border-left: calc-em(7px) solid $color-white;
   border-bottom: 1px solid $color-grey3;
-  &:hover {
+  background: $color-white;
+  &:active, &:hover, &:focus {
     border-left: calc-em(7px) solid $color-brand;
+    z-index: 1;
+    box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
   }
   > a {
     display: block;

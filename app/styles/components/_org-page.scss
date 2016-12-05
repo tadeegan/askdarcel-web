@@ -139,7 +139,9 @@
   border-radius: 50%;
   width: calc-em(70px);
   height: calc-em(70px);
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2);
+  &:active, &:hover, &:focus {
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.4);
+  }
 }
 
 .org-distance {

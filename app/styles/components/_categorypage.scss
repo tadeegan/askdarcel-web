@@ -28,8 +28,8 @@
   height: calc-em(140px);
   border: 1px solid $color-grey3;
   margin: 0 calc-em(10px) calc-em(10px) 0;
-  &:hover {
-    border: 1px solid $color-grey6;
+  &:active, &:hover, &:focus {
+    box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.2);
   }
   @include r_max($break-tablet-s) {
     width: 100%;
