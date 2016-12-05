@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 // FORM ELEMENTS
 
 .form-row {
@@ -8,14 +8,15 @@
   }
 }
 
-input[type="text"] {
+input {
+  @extend %font-size-default;
   background: $color-white;
   border: 0;
-  height: calc-em(50px);
   padding: calc-em(6px) calc-em(15px);
-  box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.2);
   display: inline-block;
-  @extend %font-size-default;
+  &:focus {
+    box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.2);
+  }
 }
 
 button {
@@ -42,7 +43,7 @@ button, input, textarea {
   transition: all 200ms ease;
 }
 
-.st-btn {
+%st-btn {
   @extend %font-size-small;
   @extend %flex-center;
   color: $color-grey4;
@@ -101,4 +102,13 @@ button, input, textarea {
       color: $color-brand;
     }
   }
+}
+
+.back-btn {
+  @extend %bg-image;
+  display: block;
+  width: calc-em(50px);
+  height: calc-em(50px);
+  background-size: calc-em(20px);
+  background-image: url(../assets/img/ic-back-white.png);
 }

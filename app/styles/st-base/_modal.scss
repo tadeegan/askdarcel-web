@@ -14,7 +14,7 @@
   @extend %flex-center;
 
   button {
-    @extend .st-btn;
+    @extend %st-btn;
   }
 }
 

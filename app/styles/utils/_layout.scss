@@ -81,4 +81,7 @@ $max-content-width: 1200px;
   max-width: calc-em($max-content-width);
   width: 90%;
   margin: 0 auto;
+  @include r_max($break-tablet-s) {
+    width: 100%;
+  }
 }
