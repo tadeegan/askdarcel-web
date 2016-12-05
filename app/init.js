@@ -7,6 +7,8 @@ import CategoryPage from './components/Find/FindPage';
 import ResourcesTable from './components/Search/ResourcesTable';
 import Resource from './components/Resource/Resource';
 import Edit from './components/Edit/Edit';
+import Login from './components/User/Login';
+import CreateAccount from './components/User/CreateAccount';
 import Google from './utils/google';
 
 require('./styles/main.scss');
