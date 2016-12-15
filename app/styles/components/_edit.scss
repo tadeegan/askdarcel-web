@@ -1,6 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 // ADD/EDIT PAGE
-
+.edit-page {
+    width: 100%;
+    overflow: hidden;
+    margin-top: #{$navigation-height};
+}
 .edit-header {
   @extend %flex-row;
   @extend %bg-image;
@@ -52,6 +56,14 @@
   }
 }
 
+.edit-section-list {
+    label {
+        @extend %font-size-large;
+        display: block;
+        margin-bottom: calc-em(3px);
+    }
+}
+
 .edit-section-item {
   label {
     @extend %font-size-small;
@@ -60,7 +72,7 @@
     margin-bottom: calc-em(10px);
   }
 
-  input {
+  input, textarea {
     @extend %font-size-default;
     background: $color-grey0;
     display: block;
