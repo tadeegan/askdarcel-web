@@ -40,7 +40,9 @@ class App extends Component {
     return (!this.props.error && this.props.location.pathname != '/') ? (
       <div>
         <Navigation />
-        {childrenWithProps}
+        <div className="container">
+          {childrenWithProps}
+        </div>
       </div>
     ) : <div>
     	{childrenWithProps}

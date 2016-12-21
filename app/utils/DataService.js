@@ -9,3 +9,9 @@ export function post(url, body) {
         body: JSON.stringify(body)
     });
 }
+
+export function get(url) {
+    return fetch(url).then(resp => {
+        return resp.json();
+    });
+}

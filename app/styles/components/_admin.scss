@@ -1,0 +1,68 @@
+.admin {
+    .change-requests {
+        width: 70%;
+        margin: 0 auto;
+
+        .group-container {
+            padding-top: calc-em(15px);
+
+            h1 {
+                padding-bottom: calc-em(5px);
+            }
+        }
+
+        .request-container {
+            // display: inline-block;
+            display: flex;
+
+            .change-log {
+                width: 100%;
+            }
+
+            .request-fields {
+                // float: left;
+                display: table;
+                width: 100%;
+                border-collapse: collapse;
+                vertical-align: top;
+                margin-bottom: calc-em(10px);
+                
+
+                .request-entry {
+                    display: table-row;
+                    min-height: calc-em(50px);
+                    border: 1px solid black;
+
+                    .existing {
+                        color: red;
+                    }
+
+                    .request-cell {
+                        display: table-cell;
+                        text-align: center;
+                        vertical-align: middle;
+                        padding: calc-em(10px);
+                    }
+
+                    .name {
+                        width: 25%;
+                        border-right: 1px solid black;
+                    }
+
+                    .value {
+                        width: 75%;
+                    }
+                }
+            }
+        }
+    }
+
+    .actions {
+        display: inline-block;
+        .material-icons {
+            display: block;
+            cursor: pointer;
+            width: calc-em(24px);
+        }
+    }
+}

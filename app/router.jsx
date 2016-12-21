@@ -8,6 +8,7 @@ import Resource from './components/Resource/Resource';
 import EditSections from './components/Edit/EditSections';
 import Login from './components/User/Login';
 import CreateAccount from './components/User/CreateAccount';
+import Admin from './components/Admin/Admin';
 import Google from './utils/google';
 
 
@@ -25,6 +26,7 @@ export default (
       <Route name="resources" path="/resources" component={ ResourcesTable } />
       <Route name="editResource" path="/resource/edit" component={ EditSections } />
       <Route name="resource" path="/resource" component={ Resource } />
+      <Route name="admin" path="/admin" component={ Admin } />
       <Route path="*" onEnter={ redirectToRoot } />
     </Route>
   </Router>

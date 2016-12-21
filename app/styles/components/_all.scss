@@ -16,7 +16,12 @@
 @import 'map';
 @import 'edit';
 @import 'login';
+@import 'admin';
 
 .disabled-feature {
   display: none !important;
+}
+
+.container {
+  margin-top: #{$navigation-height}
 }
