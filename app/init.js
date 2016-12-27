@@ -32,7 +32,6 @@ function redirectToRoot (nextState, replace) {
 
 
 function requireAuth(store, nextState, replace, next) {
-  debugger;
   if (!store.getState().auth.getIn(['user', 'isSignedIn'])) {
     replace('/');
   }
@@ -62,7 +61,7 @@ store.dispatch(configure(
   },
   {
     serverSideRendering: false, 
-    cleanSession: true
+    clientOnly: true,
   }
   )).then(() => {
 
