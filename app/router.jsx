@@ -18,6 +18,14 @@ function redirectToRoot (nextState, replace) {
 };
 
 
+function requireAuth(store, nextState, replace, next) {
+  if (!store.getState().auth.getIn(['user', 'isSignedIn'])) {
+    replace('/');
+  }
+  next();
+}
+
+
 export default (
   <Router history={ browserHistory }>
     <Route path="/" component={ App } >
