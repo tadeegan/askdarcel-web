@@ -4,6 +4,8 @@ import { browserHistory } from 'react-router'
 import { images } from '../../assets';
 import { fetch } from "redux-auth";
 
+import { getAuthRequestHeaders } from '../../utils/index';
+
 
 class TestAuth extends React.Component {
   constructor(props) {
@@ -14,14 +16,7 @@ class TestAuth extends React.Component {
 
   componentDidMount() {
     let authHeaders = JSON.parse(localStorage.authHeaders);
-    fetch("/api/change_requests", {
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "access-token": authHeaders['access-token'],
-        "client": authHeaders.client,
-        "uid": authHeaders.uid
-      }}).then(resp => {
+    fetch("/api/change_requests", {headers: getAuthRequestHeaders()}).then(resp => {
       console.log(`Api response: ${resp}`);
     })
     .catch(err => console.log('auth err:',err));
