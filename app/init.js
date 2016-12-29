@@ -33,7 +33,7 @@ function redirectToRoot (nextState, replace) {
 
 function requireAuth(store, nextState, replace, next) {
   if (!store.getState().auth.getIn(['user', 'isSignedIn'])) {
-    replace('/');
+    replace('/admin/login');
   }
   next();
 }
@@ -60,13 +60,16 @@ store.dispatch(configure(
     apiUrl: '/api/admin',
   },
   {
-    serverSideRendering: false, 
+    cleanSession: true,
     clientOnly: true,
+    serverSideRendering: false,
+    storage: 'localStorage'
+
   }
   )).then(() => {
 
     ReactDOM.render((
-      <Provider store={store} >
+      <Provider store={store} key="provider">
         {routes}
       </Provider>
     ), document.getElementById('root'));

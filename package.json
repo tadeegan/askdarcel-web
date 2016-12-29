@@ -27,6 +27,7 @@
     "react-router-redux": "^4.0.7",
     "redux": "^3.6.0",
     "redux-auth": "0.0.5-beta5",
+    "redux-auth-wrapper": "^0.9.0",
     "redux-immutable-state-invariant": "^1.2.4",
     "redux-thunk": "^2.1.0",
     "webpack": "^1.13.0",
