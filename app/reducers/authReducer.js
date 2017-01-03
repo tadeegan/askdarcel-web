@@ -1,7 +1,8 @@
 import * as types from '../actions/actionTypes';
 
 const authHeaders = JSON.parse(localStorage.getItem('authHeaders'));
-const isAuthenticated = authHeaders['access-token'] && authHeaders.client ? true : false;
+
+const isAuthenticated = authHeaders && authHeaders['access-token'] && authHeaders.client ? true : false;
 
 
 const initialState = {
