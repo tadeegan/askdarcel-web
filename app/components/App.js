@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Navigation from './Navigation';
 import CategoryPage from './Find/FindPage';
 import ResourcesTable from './Search/ResourcesTable';
-import { AuthGlobals } from "redux-auth/default-theme";
 
 
 class App extends Component {
@@ -40,12 +39,10 @@ class App extends Component {
 
     return (!this.props.error && this.props.location.pathname != '/') ? (
       <div>
-        <AuthGlobals />
         <Navigation />
         {childrenWithProps}
       </div>
     ) : <div>
-      <AuthGlobals />
     	{childrenWithProps}
     	</div>
   }
