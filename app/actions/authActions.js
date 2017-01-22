@@ -34,7 +34,7 @@ export default {
               client: headers.get('client'),
               uid: headers.get('uid')
             }));
-            browserHistory.push('/testAuth');
+            browserHistory.push('/admin');
           } else if( response.status === 401) {
             alert('Incorrect email or password, please try again.');
             dispatch(adminLoginError());

@@ -195,6 +195,20 @@ function buildImgURL(address) {
     return "http://lorempixel.com/200/200/city/";
   }
 }
+function timeToString(hours) {
+  let hoursString = "";
+  if(hours < 12) {
+    hoursString += hours + "am";
+  } else {
+    if(hours > 12) {
+      hours -= 12;
+    }
+
+    hoursString += hours + "pm";
+  }
+
+  return hoursString;
+}
 
 function daysOfTheWeek() {
   return [
