@@ -43,9 +43,9 @@ function renderIndividualRequests(changeRequests, props) {
     let requestsToRender = [];
     changeRequests.forEach((changeRequest) => {
         requestsToRender.push(
-            <div>
+            <div key={changeRequest.id}>
                 <p>{changeRequest.type}</p>
-                <div className="request-container" key={changeRequest.id}>
+                <div className="request-container">
                     <ChangeRequest changeRequest={changeRequest} />
                     <Actions changeRequestID={changeRequest.id} actionHandler={props.actionHandler}/>
                 </div>

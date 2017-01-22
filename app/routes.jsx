@@ -29,8 +29,7 @@ export default (
     <Route name="resources" path="/resources" component={ ResourcesTable } />
     <Route name="editResource" path="/resource/edit" component={ EditSections } />
     <Route name="resource" path="/resource" component={ Resource }  />
-    <Route name="testAuth" path="/testAuth" component={ RequireAuth(TestAuth) } />
-    <Route name="admin" path="/admin" component={ Admin } />
+    <Route name="admin" path="/admin" component={ RequireAuth(Admin) } />
     <Route name="login" path="/login" component={ Login } />
     <Route path="*" onEnter={ redirectToRoot } />
   </Route>

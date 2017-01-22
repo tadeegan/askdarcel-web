@@ -3,6 +3,7 @@ import Loader from '../Loader';
 import ChangeRequests from './ChangeRequests';
 import * as dataService from '../../utils/DataService';
 import * as changeRequestConstants from './ChangeRequestTypes';
+import { getAuthRequestHeaders } from '../../utils/index';
 
 class Admin extends React.Component {
     constructor() {
@@ -15,6 +16,7 @@ class Admin extends React.Component {
         this.actionHandler = this.actionHandler.bind(this);
         this.auth = this.auth.bind(this);
         this.getChangeRequests = this.getChangeRequests.bind(this);
+        this.removeChangeRequest = this.removeChangeRequest.bind(this);
     }
 
     componentDidMount() {
@@ -39,47 +41,46 @@ class Admin extends React.Component {
     }
 
     getChangeRequests() {
-        let that = this;
-        this.auth(function() {
-          dataService.get('/api/change_requests', that.state.auth).then((json) => {
-            let changeRequestsMap = {};
-            let resources = {};
-            json.change_requests.forEach((changeRequest) => {
-              changeRequestsMap[changeRequest.id] = changeRequest;
-              let resource = changeRequest.resource;
-              if(resource) {
-                  resources[resource.id] = resource;
-              }
-            });
-
-            that.setState({
-              change_requests: json.change_requests,
-              changeRequestsMap: changeRequestsMap,
-              resources: resources
-            });
-          });
+      dataService.get('/api/change_requests', getAuthRequestHeaders()).then((json) => {
+        let changeRequestsMap = {};
+        let resources = {};
+        json.change_requests.forEach((changeRequest) => {
+          changeRequestsMap[changeRequest.id] = changeRequest;
+          let resource = changeRequest.resource;
+          if(resource) {
+              resources[resource.id] = resource;
+          }
         });
+
+        this.setState({
+          change_requests: json.change_requests
+        });
+      });
     }
 
     actionHandler(changeRequestID, action) {
       if(action === changeRequestConstants.APPROVE) {
-        console.log(changeRequestID + ' ' + "Approveeeeed");
+
         dataService.post(
-            '/api/change_requests/' + changeRequestID + '/approve'
+            '/api/change_requests/' + changeRequestID + '/approve',
+            getAuthRequestHeaders()
         ).then((response) => {
             if(response.ok) {
-                this.getChangeRequests();
+                console.log(changeRequestID + ' ' + "Approveeeeed");
+                this.removeChangeRequest(changeRequestID);
             } else {
                 console.log("Error while trying to approve change request.");
             }
         });
       } else if(action === changeRequestConstants.DELETE) {
-        console.log(changeRequestID + ' ' + "BALEETED");
+
         dataService.post(
-            '/api/change_requests/' + changeRequestID + '/reject'
+            '/api/change_requests/' + changeRequestID + '/reject',
+            getAuthRequestHeaders()
         ).then((response) => {
             if(response.ok) {
-                this.getChangeRequests();
+                console.log(changeRequestID + ' ' + "BALEETED");
+                this.removeChangeRequest(changeRequestID);
             } else {
                 console.log("Error while trying to reject change request.");
             }
@@ -87,11 +88,16 @@ class Admin extends React.Component {
       }
     }
 
+    removeChangeRequest(changeRequestID) {
+        let changeRequests = this.state.change_requests;
+        this.setState({ change_requests: changeRequests.filter(changeRequest => changeRequest.id != changeRequestID) });
+    }
+
     render() {
         return (
             this.state.change_requests.length == 0 ? <Loader /> :
             <div className="admin">
-              <ChangeRequests changeRequests={this.state.change_requests} resources={this.state.resources} actionHandler={this.actionHandler}/>
+              <ChangeRequests changeRequests={this.state.change_requests} actionHandler={this.actionHandler}/>
             </div>
         )
     }
