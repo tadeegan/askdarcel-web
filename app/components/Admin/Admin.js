@@ -10,7 +10,7 @@ class Admin extends React.Component {
         super();
         this.state = {
             change_requests: [],
-            auth: {}
+            loaded: false
         };
 
         this.actionHandler = this.actionHandler.bind(this);
@@ -35,7 +35,8 @@ class Admin extends React.Component {
         });
 
         this.setState({
-          change_requests: json.change_requests
+          change_requests: json.change_requests,
+          loaded: true
         });
       });
     }
@@ -73,7 +74,7 @@ class Admin extends React.Component {
 
     render() {
         return (
-            this.state.change_requests.length == 0 ? <Loader /> :
+            !this.state.loaded ? <Loader /> :
             <div className="admin">
               <ChangeRequests changeRequests={this.state.change_requests} actionHandler={this.actionHandler}/>
             </div>
