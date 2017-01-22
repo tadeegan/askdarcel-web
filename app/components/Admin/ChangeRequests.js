@@ -11,11 +11,40 @@ var ChangeRequests = (props) => {
 };
 
 function renderChangeRequests(props) {
-    let changeRequests = [];
+    let resourceToChangeRequests = {};
+    let resourceObjects = {};
+    let changeRequestWrappers = [];
     props.changeRequests.forEach((changeRequest) => {
-        changeRequests.push(
-            <div key={changeRequest.id} className="group-container">
-                <h1>Resource Name</h1>
+        let resourceID = changeRequest.resource.id;
+
+        if(!resourceToChangeRequests.hasOwnProperty(resourceID)) {
+            resourceToChangeRequests[resourceID] = [];
+        }
+
+        resourceToChangeRequests[resourceID].push(changeRequest);
+        resourceObjects[resourceID] = changeRequest.resource;
+    });
+
+    for(var resourceID in resourceToChangeRequests) {
+        if(resourceToChangeRequests.hasOwnProperty(resourceID)) {
+            changeRequestWrappers.push(
+                <div key={resourceID} className="group-container">
+                    <h1>{resourceObjects[resourceID].name}</h1>
+                    {renderIndividualRequests(resourceToChangeRequests[resourceID], props)}
+                </div>
+            );
+        }
+    }
+
+    return changeRequestWrappers;
+}
+
+function renderIndividualRequests(changeRequests, props) {
+    let requestsToRender = [];
+    changeRequests.forEach((changeRequest) => {
+        requestsToRender.push(
+            <div>
+                <p>{changeRequest.type}</p>
                 <div className="request-container" key={changeRequest.id}>
                     <ChangeRequest changeRequest={changeRequest} />
                     <Actions changeRequestID={changeRequest.id} actionHandler={props.actionHandler}/>
@@ -24,7 +53,7 @@ function renderChangeRequests(props) {
         );
     });
 
-    return changeRequests;
+    return requestsToRender;
 }
 
 export default ChangeRequests;

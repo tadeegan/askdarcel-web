@@ -14,13 +14,27 @@ class ChangeRequest extends React.Component {
 
     retrieveModifiedObject() {
         let changeRequest = this.props.changeRequest;
+        let resource = changeRequest.resource;
         //"ChangeRequest" is 13 characters, so this will give us the first part of the string
-        let objectType = changeRequest.type.slice(0, -13).toLowerCase();
-        
-        //TODO: hook up data
-        // dataService.get('/api/' + objectType + '/' + changeRequest.object_id).then(function(data) {
-        //     this.setState({ existingRecord: data });
-        // });
+        let objectType = changeRequest.type;
+        let object = {};
+
+        switch(objectType) {
+            case 'ResourceChangeRequest':
+                object = resource;
+                break;
+            case 'ServiceChangeRequest':
+                object = resource.services.filter(service => service.id === changeRequest.object_id)[0];
+                break;
+            case 'ScheduleDayChangeRequest':
+                object = resource.schedule.schedule_days.filter(day => day.id === changeRequest.object_id)[0];
+                break;
+            case 'AddressChangeRequest':
+                object = resources.address;
+                break;
+        }
+
+        this.setState({existingRecord: object});
     }
 
     renderChangeRequest() {
@@ -30,9 +44,6 @@ class ChangeRequest extends React.Component {
         this.props.changeRequest.field_changes.forEach((fieldChange) => {
             let fieldName = fieldChange.field_name;
             let fieldValue = fieldChange.field_value;
-
-            //FIXME
-            existingRecord[fieldName] = "Description";
 
             changedFields.push(
                 <div key={fieldName} className="request-fields">
