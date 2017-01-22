@@ -14,30 +14,12 @@ class Admin extends React.Component {
         };
 
         this.actionHandler = this.actionHandler.bind(this);
-        this.auth = this.auth.bind(this);
         this.getChangeRequests = this.getChangeRequests.bind(this);
         this.removeChangeRequest = this.removeChangeRequest.bind(this);
     }
 
     componentDidMount() {
         this.getChangeRequests();
-    }
-
-    auth(callback) {
-      dataService.post('/api/admin/auth/sign_in', {
-        "email":"dev-admin@sheltertech.org",
-        "password":"dev-test-01"
-      }).then((resp) => {
-        let headers = resp.headers;
-        let auth = {
-          "access-token": headers.get("access-token"),
-          "client": headers.get("client"),
-          "uid": headers.get("uid")
-        };
-        this.setState({ auth: auth }, () => {
-          callback();
-        });
-      });
     }
 
     getChangeRequests() {
@@ -60,26 +42,22 @@ class Admin extends React.Component {
 
     actionHandler(changeRequestID, action) {
       if(action === changeRequestConstants.APPROVE) {
-
         dataService.post(
             '/api/change_requests/' + changeRequestID + '/approve',
             getAuthRequestHeaders()
         ).then((response) => {
             if(response.ok) {
-                console.log(changeRequestID + ' ' + "Approveeeeed");
                 this.removeChangeRequest(changeRequestID);
             } else {
                 console.log("Error while trying to approve change request.");
             }
         });
       } else if(action === changeRequestConstants.DELETE) {
-
         dataService.post(
             '/api/change_requests/' + changeRequestID + '/reject',
             getAuthRequestHeaders()
         ).then((response) => {
             if(response.ok) {
-                console.log(changeRequestID + ' ' + "BALEETED");
                 this.removeChangeRequest(changeRequestID);
             } else {
                 console.log("Error while trying to reject change request.");
