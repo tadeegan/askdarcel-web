@@ -51,7 +51,7 @@ class ResourcesRow extends Component {
       };
     });
 
-    if(closingOpeningTimes[currDay] && hour <= closingOpeningTimes[currDay].close) {
+    if(closingOpeningTimes[currDay] && hour < closingOpeningTimes[currDay].close) {
       return {
         open:true, 
         time: timeToString(closingOpeningTimes[currDay].close)
