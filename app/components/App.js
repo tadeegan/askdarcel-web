@@ -37,16 +37,14 @@ class App extends Component {
       });
     });
 
-    return (!this.props.error && this.props.location.pathname != '/') ? (
+    return (
       <div>
         <Navigation />
         <div className="container">
           {childrenWithProps}
         </div>
       </div>
-    ) : <div>
-    	{childrenWithProps}
-    	</div>
+    )
   }
 
 };
