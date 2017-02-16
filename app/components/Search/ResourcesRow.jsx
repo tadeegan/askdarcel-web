@@ -68,7 +68,7 @@ class ResourcesRow extends Component {
         }
       });
 
-      if(result.time) return;
+      if(result.time) return result;
 
       days.some(d => {
         if(closingOpeningTimes[d]) {
