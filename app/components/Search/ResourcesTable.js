@@ -28,8 +28,7 @@ class ResourcesTable extends Component {
       resources: null,
       openFilter: false,
       currentPage: [],
-      page: 0,
-      location: null
+      page: 0
     };
   }
 
@@ -90,22 +89,9 @@ class ResourcesTable extends Component {
     });
   }
 
-  getLocationGoogle() {
-    // Results are not very accurate
-    let url = 'https://www.googleapis.com/geolocation/v1/geolocate';
-    if(CONFIG.GOOGLE_API_KEY) {
-      url += '?key=' + CONFIG.GOOGLE_API_KEY;
-    }
-    return fetch(url, {method: 'post'}).then(r => r.json())
-      .then(data => {
-        this.setState({location: data.location});
-        return data.location;
-      })
-  }
-
   getWalkTime(dest, cb) {
     let directionsService = new google.maps.DirectionsService();
-    let myLatLng = new google.maps.LatLng(this.state.location.lat, this.state.location.lng);
+    let myLatLng = new google.maps.LatLng(this.props.userLocation.lat, this.props.userLocation.lng);
     let destLatLang = new google.maps.LatLng(dest.lat, dest.lng);
     let preferences = {
       origin: myLatLng,
@@ -138,19 +124,14 @@ class ResourcesTable extends Component {
   }
 
   componentDidMount() {
-    if(this.props.userLocation) {
-      let position = this.props.userLocation;
-      let userLocation = {lat: position.coords.latitude, lng: position.coords.longitude};
-      this.setState({
-        location: userLocation
-      });
-      this.loadResourcesFromServer(userLocation);
-    } else {
-      let self = this;
-      this.getLocationGoogle()
-        .then(loc => {
-          self.loadResourcesFromServer(loc);
-        });
+    if (this.props.userLocation) {
+      this.loadResourcesFromServer(this.props.userLocation);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.userLocation) {
+      this.loadResourcesFromServer(nextProps.userLocation);
     }
   }
 
@@ -183,7 +164,7 @@ class ResourcesTable extends Component {
                     </ul>
                   </div>
                   <div className="results-table-body">
-                    <ResourcesList resources={this.state.currentPage} location={this.state.location} page={this.state.page} resultsPerPage={resultsPerPage} />
+                    <ResourcesList resources={this.state.currentPage} location={this.props.userLocation} page={this.state.page} resultsPerPage={resultsPerPage} />
                     <div className="add-resource">
                       <li className="results-table-entry">
                         <Link to={"ADD_PAGE"}>
@@ -201,7 +182,7 @@ class ResourcesTable extends Component {
                   </div>
               </div>
               <div className="results-map">
-              <Gmap markers={getMapMarkers(this.state.currentPage, this.state.location)} />
+              <Gmap markers={getMapMarkers(this.state.currentPage, this.props.userLocation)} />
               </div>
             </div>
     );
