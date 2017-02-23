@@ -111,9 +111,11 @@ function buildHoursText(schedule_days) {
   const currentHour = currentDate.getHours();
 
   const days = schedule_days.filter(schedule_day => {
-    return (schedule_day && schedule_day.day == daysOfTheWeek()[currentDate.getDay()] &&
-        currentHour > schedule_day.opens_at && currentHour < schedule_day.closes_at);
+    return (schedule_day && schedule_day.day.replace(/,/g, '') == daysOfTheWeek()[currentDate.getDay()] &&
+        currentHour >= schedule_day.opens_at && currentHour < schedule_day.closes_at);
   });
+
+
 
   if(days.length && days.length > 0) {
     for(let i = 0; i < days.length; i++) {
