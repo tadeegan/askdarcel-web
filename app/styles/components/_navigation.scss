@@ -16,7 +16,6 @@ $navigation-height: calc-em(60px);
   background: $color-brand;
   padding: calc-em(10px) calc-em(20px);
   @include r_max($break-tablet-s) {
-    border-top: 1px solid $color-grey3;
     padding-top: 0;
     padding-bottom: 0;
   }
