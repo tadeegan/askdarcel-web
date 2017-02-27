@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Hours from './Hours';
 import classNames from 'classnames/bind';
 
 class Cat extends Component {
@@ -45,12 +46,7 @@ class AddressInfo extends Component {
 class BusinessHours extends Component {
   render() {
     return (
-      <li className="hours">
-        <i className="material-icons">schedule</i>
-          <div className="current-hours">
-            {buildHoursText(this.props.schedule_days)}
-          </div>
-      </li>
+      <Hours schedule={this.props.schedule_days} />
     );
   }
 }
