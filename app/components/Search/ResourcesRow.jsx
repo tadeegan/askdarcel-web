@@ -35,6 +35,55 @@ class ResourcesRow extends Component {
     });
   }
 
+  getOpenTime(schedule) {
+    let date = new Date();
+    let day = date.getDay();
+    let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    let hour = date.getHours();
+    let closingOpeningTimes = {};
+    let currDay = days[day];
+    let result = { open: false };
+
+    schedule.forEach(item => {
+      closingOpeningTimes[item.day.replace(/,/g, '')] = {
+        open: item.opens_at,
+        close: item.closes_at
+      };
+    });
+
+    if(closingOpeningTimes[currDay] && hour < closingOpeningTimes[currDay].close) {
+      return {
+        open:true, 
+        time: timeToString(closingOpeningTimes[currDay].close)
+      };
+    } else {
+      let remainingDays = days.splice(day+1);
+      remainingDays.some(d => {
+        if(closingOpeningTimes[d]) {
+          result = {
+            open: false,
+            time: `${timeToString(closingOpeningTimes[d].open)} ${d}`
+          };
+          return true;
+        }
+      });
+
+      if(result.time) return result;
+
+      days.some(d => {
+        if(closingOpeningTimes[d]) {
+          result =  {
+            open: false,
+            time: `${timeToString(closingOpeningTimes[d].open)} ${d}`
+          };
+          return true;
+        }
+      })
+    }
+
+    return result;
+  }
+
   getReview() {
     let placeHolderReviews = [
       "safe and friendly",
@@ -73,7 +122,10 @@ class ResourcesRow extends Component {
           this.props.resource.short_description ||
           (service && service.long_description);
     let hiddenStyle = {visibility: 'hidden'};
-    
+
+    let schedule = this.props.resource.schedule ? this.props.resource.schedule.schedule_days : [];
+    let { open, time } = this.getOpenTime(schedule);
+
     return (
         <li className="results-table-entry">
           <Link to={{ pathname: "resource", query: { id: this.props.resource.id, time: this.state.walkTime } }}>
@@ -90,7 +142,7 @@ class ResourcesRow extends Component {
             <div className="entry-meta">
               <p className="entry-organization">{this.props.resource.name}</p>
               <p className="entry-description">{resourceDescription}</p>
-              <p className="entry-hours">Open until 6:00pm</p>
+              <p className="entry-hours">{open ? `Open until ${time}` : time ? `Closed until ${time}` : 'No hours found for this location'}</p>
             </div>
           </Link>
         </li>
@@ -121,6 +173,21 @@ function buildImgURL(address) {
   } else {
     return "http://lorempixel.com/200/200/city/";
   }
+}
+
+function timeToString(hours) {
+  let hoursString = "";
+  if(hours < 12) {
+    hoursString += hours + "am";
+  } else {
+    if(hours > 12) {
+      hours -= 12;
+    }
+
+    hoursString += hours + "pm";
+  }
+
+  return hoursString;
 }
 
 export default ResourcesRow;
