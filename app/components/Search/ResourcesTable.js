@@ -28,13 +28,15 @@ class ResourcesTable extends Component {
       resources: null,
       openFilter: false,
       currentPage: [],
-      page: 0
+      page: 0,
+      categoryId: null
     };
   }
 
   loadResourcesFromServer(userLocation) {
     let { query } = this.props.location;
     let categoryId = query.categoryid;
+    this.setState({categoryId});
     let searchQuery = query.query;
 
     var path = '/api/resources';
@@ -164,7 +166,7 @@ class ResourcesTable extends Component {
                     </ul>
                   </div>
                   <div className="results-table-body">
-                    <ResourcesList resources={this.state.currentPage} location={this.props.userLocation} page={this.state.page} resultsPerPage={resultsPerPage} />
+                    <ResourcesList resources={this.state.currentPage} location={this.props.userLocation} page={this.state.page} resultsPerPage={resultsPerPage} categoryId={this.state.categoryId} />
                     <div className="add-resource">
                       <li className="results-table-entry">
                         <Link to={"ADD_PAGE"}>
