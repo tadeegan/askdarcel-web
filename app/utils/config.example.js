@@ -1,4 +1,4 @@
 
 module.exports = {
-GOOGLE_API_KEY : process.env.GOOGLE_API_KEY || 'AIzaSyD2V6Ilu6q9N5Cm2RX5l56UtmGUhkuI_5E'
+GOOGLE_API_KEY : process.env.GOOGLE_API_KEY || 'AIzaSyCZxTONKtTHyz3qp-x4tJlH4c6VUKn9sd4'
 };
