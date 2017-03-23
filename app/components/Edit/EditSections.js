@@ -17,6 +17,7 @@ class EditSections extends React.Component {
             resourceFields: {},
             serviceFields: {},
             addressFields: {},
+            services: {},
             submitting: false
         };
         this.handleResourceFieldChange = this.handleResourceFieldChange.bind(this);
@@ -112,7 +113,7 @@ class EditSections extends React.Component {
         }
 
         //Services
-        this.postObject(this.state.services, 'services', promises);
+        this.postServices(this.state.services.services, promises);
 
         var that = this;
         Promise.all(promises).then(function(resp) {
@@ -131,13 +132,29 @@ class EditSections extends React.Component {
         }
     }
 
+    postServices(servicesObj, promises) {
+        let newServices = [];
+        for(let key in servicesObj) {
+            if(servicesObj.hasOwnProperty(key)) {
+                let currentService = servicesObj[key];
+                if(key < 0) {
+                    newServices.push(currentService);
+                } else {
+                    let uri = '/api/services/' + key + '/change_requests';
+                    promises.push(dataService.post(uri, {change_request: currentService}));
+                }
+            }
+        }
+
+        if(newServices.length > 0) {
+            let uri = '/api/resources/' + this.state.resource.id + '/services';
+            promises.push(dataService.post(uri, {services: newServices}));
+        }
+    }
+
     handlePhoneChange(e) {
         if(this.state.resource.phones[0]) {
-            let phoneObj = {};
-            phoneObj[e.target.dataset.id] = {
-                number: e.target.value
-            }
-            this.setState({phone: phoneObj});
+            this.setState({phone: {number: e.target.value}});
         }
     }
 
@@ -224,7 +241,7 @@ class EditSections extends React.Component {
                 </li>
                 <label>Address</label>
                 <EditAddress address={this.state.resource.address} updateAddress={this.handleAddressChange}/>
-                <label>Services</label>
+
                 <EditServices services={this.state.resource.services} handleServiceChange={this.handleServiceChange} />
 
                 <label>Hours</label>
