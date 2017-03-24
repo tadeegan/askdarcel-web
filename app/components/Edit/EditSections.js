@@ -9,6 +9,7 @@ import EditNotes from './EditNotes';
 import EditSchedule from './EditSchedule';
 import * as dataService from '../../utils/DataService';
 import { withRouter } from 'react-router';
+import { daysOfTheWeek } from '../../utils/index';
 
 class EditSections extends React.Component {
     constructor(props) {
@@ -34,6 +35,7 @@ class EditSections extends React.Component {
         this.postServices = this.postServices.bind(this);
         this.postObject = this.postObject.bind(this);
         this.postNotes = this.postNotes.bind(this);
+        this.postSchedule = this.postSchedule.bind(this);
     }
 
     hasKeys(object) {
@@ -154,11 +156,10 @@ class EditSections extends React.Component {
                         currentService.notes = notes;
                     }
 
-                    // if(currentService.scheduleObj) {
-                    //     let schedule_days = this.objToArray(currentService.scheduleObj);
-                    //     delete currentService.scheduleObj;
-                    //     currentService.schedule = {schedule_days: scheduleDays};
-                    // }
+                    if(currentService.scheduleObj) {
+                        currentService.schedule = this.createFullSchedule(currentService.scheduleObj);
+                        delete currentService.scheduleObj;
+                    }
 
                     if(!isEmpty(currentService)) {
                         newServices.push(currentService);
@@ -167,6 +168,8 @@ class EditSections extends React.Component {
                     let uri = '/api/services/' + key + '/change_requests';
                     this.postNotes(currentService.notesObj, promises, {path: "services", id: key});
                     delete currentService.notesObj;
+                    this.postSchedule(currentService.scheduleObj, promises);
+                    delete currentService.scheduleObj;
                     if(!isEmpty(currentService)) {
                         promises.push(dataService.post(uri, {change_request: currentService}));
                     }
@@ -181,6 +184,36 @@ class EditSections extends React.Component {
         }
     }
 
+    createFullSchedule(scheduleObj) {
+        let daysTemplate = {};
+        for(let i = 0; i < daysOfTheWeek().length; i++) {
+            let day = daysOfTheWeek()[i];
+            daysTemplate[day] = {
+                day: day,
+                opens_at: null,
+                closes_at: null
+            }
+        }
+
+        for(let key in scheduleObj) {
+            if(scheduleObj.hasOwnProperty(key)) {
+                let scheduleDay = scheduleObj[key];
+                for(let dayKey in scheduleDay) {
+                    daysTemplate[scheduleDay.day][dayKey] = scheduleDay[dayKey];
+                }
+            }
+        }
+
+        let scheduleDays = [];
+        for(let day in daysTemplate) {
+            if(daysTemplate.hasOwnProperty(day)) {
+                scheduleDays.push(daysTemplate[day]);
+            }
+        }
+
+        return {schedule_days: scheduleDays};
+    }
+
     objToArray(obj) {
         let arr = [];
         for(let key in obj) {
@@ -192,14 +225,18 @@ class EditSections extends React.Component {
         return arr;
     }
 
-
+    postSchedule(scheduleObj, promises, uriObj) {
+        if(scheduleObj) {
+            this.postObject(scheduleObj, 'schedule_days', promises);
+        }
+    }
 
     postNotes(notesObj, promises, uriObj) {
         if(notesObj) {
             let notes = notesObj.notes;
             let newNotes = [];
             for(let key in notes) {
-                if(notesObj.hasOwnProperty(key)) {
+                if(notes.hasOwnProperty(key)) {
                     let currentNote = notes[key];
                     if(key < 0) {
                         let uri = '/api/' + uriObj.path + '/' + uriObj.id + '/notes';
