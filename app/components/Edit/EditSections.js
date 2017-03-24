@@ -5,6 +5,8 @@ import { images } from '../../assets';
 import Loader from '../Loader';
 import EditAddress from './EditAddress';
 import EditServices from './EditServices';
+import EditNotes from './EditNotes';
+import EditSchedule from './EditSchedule';
 import * as dataService from '../../utils/DataService';
 import { withRouter } from 'react-router';
 
@@ -13,11 +15,13 @@ class EditSections extends React.Component {
         super(props);
 
         this.state = {
+            scheduleObj: {},
             schedule_days: {},
             resourceFields: {},
             serviceFields: {},
             addressFields: {},
             services: {},
+            notes: {},
             submitting: false
         };
         this.handleResourceFieldChange = this.handleResourceFieldChange.bind(this);
@@ -25,9 +29,11 @@ class EditSections extends React.Component {
         this.handlePhoneChange = this.handlePhoneChange.bind(this);
         this.handleAddressChange = this.handleAddressChange.bind(this);
         this.handleServiceChange = this.handleServiceChange.bind(this);
-        this.formatTime = this.formatTime.bind(this);
-        this.getDayHours = this.getDayHours.bind(this);
+        this.handleNotesChange = this.handleNotesChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.postServices = this.postServices.bind(this);
+        this.postObject = this.postObject.bind(this);
+        this.postNotes = this.postNotes.bind(this);
     }
 
     hasKeys(object) {
@@ -103,7 +109,7 @@ class EditSections extends React.Component {
         this.postObject(phoneChangeRequests, 'phones', promises);
 
         //schedule
-        this.postObject(this.state.schedule_days, 'schedule_days', promises);
+        this.postObject(this.state.scheduleObj, 'schedule_days', promises);
 
         //address
         if(this.hasKeys(this.state.address) && this.state.resource.address) {
@@ -114,6 +120,9 @@ class EditSections extends React.Component {
 
         //Services
         this.postServices(this.state.services.services, promises);
+
+        //Notes
+        this.postNotes(this.state.notes.notes, promises, {path: "resources", id: this.state.resource.id});
 
         var that = this;
         Promise.all(promises).then(function(resp) {
@@ -137,11 +146,28 @@ class EditSections extends React.Component {
         for(let key in servicesObj) {
             if(servicesObj.hasOwnProperty(key)) {
                 let currentService = servicesObj[key];
+
                 if(key < 0) {
-                    newServices.push(currentService);
+                    if(currentService.notesObj) {
+                        let notes = this.objToArray(currentService.notesObj.notes);
+                        // let schedule_days = this.objToArray(currentService.scheduleObj);
+                        delete currentService.notesObj;
+                        // delete currentService.scheduleObj;
+                        currentService.notes = notes;
+                        // currentService.schedule = {schedule_days: scheduleDays};
+                    }
+
+                    if(!isEmpty(currentService)) {
+                        newServices.push(currentService);
+                    }
                 } else {
                     let uri = '/api/services/' + key + '/change_requests';
-                    promises.push(dataService.post(uri, {change_request: currentService}));
+                    this.postNotes(currentService.notesObj.notes, promises, {path: "services", id: key});
+                    delete currentService.notesObj;
+                    if(!isEmpty(currentService)) {
+                        promises.push(dataService.post(uri, {change_request: currentService}));
+                    }
+
                 }
             }
         }
@@ -149,6 +175,33 @@ class EditSections extends React.Component {
         if(newServices.length > 0) {
             let uri = '/api/resources/' + this.state.resource.id + '/services';
             promises.push(dataService.post(uri, {services: newServices}));
+        }
+    }
+
+    objToArray(obj) {
+        let arr = [];
+        for(let key in obj) {
+            if(obj.hasOwnProperty(key)) {
+                arr.push(obj[key]);
+            }
+        }
+
+        return arr;
+    }
+
+    postNotes(notesObj, promises, uriObj) {
+        let newNotes = [];
+        for(let key in notesObj) {
+            if(notesObj.hasOwnProperty(key)) {
+                let currentNote = notesObj[key];
+                if(key < 0) {
+                    let uri = '/api/' + uriObj.path + '/' + uriObj.id + '/notes';
+                    promises.push(dataService.post(uri, {note: currentNote}));
+                } else {
+                    let uri = '/api/notes/' + key + '/change_requests';
+                    promises.push(dataService.post(uri, {change_request: currentNote}));
+                }
+            }
         }
     }
 
@@ -166,21 +219,8 @@ class EditSections extends React.Component {
         this.setState(object);
 	}
 
-    handleScheduleChange(e) {
-        let currScheduleMap = this.state.scheduleMap;
-        let field = e.target.dataset.field;
-        let day = e.target.dataset.key;
-        let value = e.target.value;
-        let serverDay = currScheduleMap[day];
-        let formattedTime = this.formatTime(value);
-
-        if(formattedTime !== serverDay[field]) {
-            let schedule_days = this.state.schedule_days;
-            let newDay = schedule_days[serverDay.id] ? schedule_days[serverDay.id] : {};
-            newDay[field] = value;
-            schedule_days[serverDay.id] = newDay;
-            this.setState({schedule_days: schedule_days});
-        }
+    handleScheduleChange(scheduleObj) {
+        this.setState({scheduleObj: scheduleObj});
     }
 
     handleAddressChange(addressObj) {
@@ -191,24 +231,17 @@ class EditSections extends React.Component {
         this.setState({services: servicesObj});
     }
 
+    handleNotesChange(notesObj) {
+        this.setState({notes: notesObj});
+    }
+
+    handleServiceNotesChange(notesObj) {
+        this.setState({serviceNotes: notesObj});
+    }
+
     formatTime(time) {
         //FIXME: Use full times once db holds such values.
         return time.substring(0, 2);
-    }
-
-    getDayHours(day, field) {
-        let dayRecord = this.state.scheduleMap[day];
-        if(!dayRecord) {
-            return null;
-        }
-
-        let hours = dayRecord[field];
-        let returnStr = '' + hours;
-
-        if(returnStr.length == 1) {
-            returnStr = '0'+returnStr;
-        }
-        return returnStr + ':00';
     }
 
     renderSectionFields() {
@@ -242,56 +275,19 @@ class EditSections extends React.Component {
                 <label>Address</label>
                 <EditAddress address={this.state.resource.address} updateAddress={this.handleAddressChange}/>
 
+                <EditNotes notes={this.state.resource.notes} handleNotesChange={this.handleNotesChange} />
+
                 <EditServices services={this.state.resource.services} handleServiceChange={this.handleServiceChange} />
 
                 <label>Hours</label>
-                <li key="hours" className="edit-section-item hours">
-                    <label>Hours of Operation</label>
-                    <ul className="edit-hours-list">
-                        <li>
-                            <p>M</p>
-                            <input type="time" defaultValue={this.getDayHours("Monday,", "opens_at")} data-key="Monday," data-field="opens_at" onChange={this.handleScheduleChange}/>
-                            <input type="time" defaultValue={this.getDayHours("Monday,", "closes_at")} data-key="Monday," data-field="closes_at" onChange={this.handleScheduleChange}/>
-                        </li>
-                        <li>
-                            <p>T</p>
-                            <input type="time" defaultValue={this.getDayHours("Tuesday,", "opens_at")} data-key="Tuesday," data-field="opens_at" onChange={this.handleScheduleChange}/>
-                            <input type="time" defaultValue={this.getDayHours("Tuesday,", "closes_at")} data-key="Tuesday," data-field="closes_at" onChange={this.handleScheduleChange}/>
-                        </li>
-                        <li>
-                            <p>W</p>
-                            <input type="time" defaultValue={this.getDayHours("Wednesday,", "opens_at")} data-key="Wednesday," data-field="opens_at" onChange={this.handleScheduleChange}/>
-                            <input type="time" defaultValue={this.getDayHours("Wednesday,", "closes_at")} data-key="Wednesday," data-field="closes_at" onChange={this.handleScheduleChange}/>
-                        </li>
-                        <li>
-                            <p>Th</p>
-                            <input type="time" defaultValue={this.getDayHours("Thursday,", "opens_at")} data-key="Thursday," data-field="opens_at" onChange={this.handleScheduleChange}/>
-                            <input type="time" defaultValue={this.getDayHours("Thursday,", "closes_at")} data-key="Thursday," data-field="closes_at" onChange={this.handleScheduleChange}/>
-                        </li>
-                        <li>
-                            <p>F</p>
-                            <input type="time" defaultValue={this.getDayHours("Friday,", "opens_at")} data-key="Friday," data-field="opens_at" onChange={this.handleScheduleChange}/>
-                            <input type="time" defaultValue={this.getDayHours("Friday,", "closes_at")} data-key="Friday," data-field="closes_at" onChange={this.handleScheduleChange}/>
-                        </li>
-                        <li>
-                            <p>S</p>
-                            <input type="time" defaultValue={this.getDayHours("Saturday", "opens_at")} data-key="Saturday" data-field="opens_at" onChange={this.handleScheduleChange}/>
-                            <input type="time" defaultValue={this.getDayHours("Saturday", "closes_at")} data-key="Saturday" data-field="closes_at" onChange={this.handleScheduleChange}/>
-                        </li>
-                        <li>
-                            <p>Su</p>
-                            <input type="time" defaultValue={this.getDayHours("Sunday,", "opens_at")} data-key="Sunday," data-field="opens_at" onChange={this.handleScheduleChange}/>
-                            <input type="time" defaultValue={this.getDayHours("Sunday,", "closes_at")} data-key="Sunday," data-field="closes_at" onChange={this.handleScheduleChange}/>
-                        </li>
-                    </ul>
-                </li>
+                <EditSchedule schedule={this.state.resource.schedule} handleScheduleChange={this.handleScheduleChange} />
             </ul>
         );
     }
 
     render() {
         return (
-            !this.state.resource || !this.state.scheduleMap? <Loader /> :
+            !this.state.resource ? <Loader /> :
             <div className="edit-page">
                 <header className="edit-header">
                     <a className="back-btn"></a>
@@ -307,6 +303,13 @@ class EditSections extends React.Component {
 
         )
     }
+}
+
+function isEmpty(map) {
+   for(var key in map) {
+      return !map.hasOwnProperty(key);
+   }
+   return true;
 }
 
 export default withRouter(EditSections);
