@@ -156,10 +156,8 @@ class EditSections extends React.Component {
                         currentService.notes = notes;
                     }
 
-                    if(currentService.scheduleObj) {
-                        currentService.schedule = this.createFullSchedule(currentService.scheduleObj);
-                        delete currentService.scheduleObj;
-                    }
+                    currentService.schedule = this.createFullSchedule(currentService.scheduleObj);
+                    delete currentService.scheduleObj;
 
                     if(!isEmpty(currentService)) {
                         newServices.push(currentService);
@@ -195,15 +193,17 @@ class EditSections extends React.Component {
             }
         }
 
-        for(let key in scheduleObj) {
-            if(scheduleObj.hasOwnProperty(key)) {
-                let scheduleDay = scheduleObj[key];
-                for(let dayKey in scheduleDay) {
-                    daysTemplate[scheduleDay.day][dayKey] = scheduleDay[dayKey];
+        if(scheduleObj) {
+            for(let key in scheduleObj) {
+                if(scheduleObj.hasOwnProperty(key)) {
+                    let scheduleDay = scheduleObj[key];
+                    for(let dayKey in scheduleDay) {
+                        daysTemplate[scheduleDay.day][dayKey] = scheduleDay[dayKey];
+                    }
                 }
             }
         }
-
+        
         let scheduleDays = [];
         for(let day in daysTemplate) {
             if(daysTemplate.hasOwnProperty(day)) {
