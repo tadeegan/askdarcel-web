@@ -176,18 +176,15 @@ function buildImgURL(address) {
 }
 
 function timeToString(hours) {
-  let hoursString = "";
-  if(hours < 12) {
-    hoursString += hours + "am";
-  } else {
-    if(hours > 12) {
-      hours -= 12;
-    }
+  let date = new Date();
+  let hoursString = hours.toString();
 
-    hoursString += hours + "pm";
-  }
+  date.setHours(hoursString.substring(0,hoursString.length - 2));
+  date.setMinutes(hoursString.substring(hoursString.length - 2,hoursString.length));
+  date.setSeconds(0)
 
-  return hoursString;
+  let timeString = date.toLocaleTimeString().replace(/:\d+ /, ' ');
+  return timeString;
 }
 
 export default ResourcesRow;
