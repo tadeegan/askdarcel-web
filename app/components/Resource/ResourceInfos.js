@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Hours from './Hours';
 import classNames from 'classnames/bind';
+import { timeToString, stringToTime, daysOfTheWeek } from '../../utils/index';
 
 class Cat extends Component {
   render() {
@@ -193,32 +194,5 @@ function buildImgURL(address) {
     return "http://lorempixel.com/200/200/city/";
   }
 }
-function timeToString(hours) {
-  let hoursString = "";
-  if(hours < 12) {
-    hoursString += hours + "am";
-  } else {
-    if(hours > 12) {
-      hours -= 12;
-    }
-
-    hoursString += hours + "pm";
-  }
-
-  return hoursString;
-}
-
-function daysOfTheWeek() {
-  return [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
-  ];
-}
-
 
 export {AddressInfo, BusinessHours, PhoneNumber, ResourceCategories, Website, Languages, StreetView};

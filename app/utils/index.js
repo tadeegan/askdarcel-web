@@ -9,34 +9,16 @@ export function getAuthRequestHeaders() {
       };
 }
 
-export function timeToString(time, twentyFourHour) {
-  let timeString = "" + time;
-  let conversionArray = timeString.split('');
-  let length = conversionArray.length;
-  for(let i = length; i < 4; i++) {
-      conversionArray.unshift('0');
-  }
+export function timeToString(hours) {
+  let date = new Date();
+  let hoursString = hours.toString();
 
-  let hoursString = conversionArray[0]+conversionArray[1];
-  let hours = parseInt(hoursString);
-  let minutesString = conversionArray[2]+conversionArray[3];
-  let timeOfDay = "";
+  date.setHours(hoursString.substring(0,hoursString.length - 2));
+  date.setMinutes(hoursString.substring(hoursString.length - 2,hoursString.length));
+  date.setSeconds(0)
 
-  if(!twentyFourHour) {
-      if(hours > 12) {
-          timeOfDay = "pm";
-          hours -= 12;
-      } else if(hours === 0) {
-          timeOfDay = "am";
-          hours = 12;
-      } else {
-          timeOfDay = "am";
-      }
-
-      hoursString = "" + hours;
-  }
-
-  return ""+hoursString+":"+minutesString+timeOfDay;
+  let timeString = date.toLocaleTimeString().replace(/:\d+ /, ' ');
+  return timeString;
 }
 
 export function stringToTime(timeString, twentyFourHour) {
