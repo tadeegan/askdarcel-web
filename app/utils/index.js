@@ -50,3 +50,38 @@ export function createTemplateSchedule() {
 
     return daysTemplate;
 }
+
+export function buildHoursText(schedule_days) {
+  if(!schedule_days) {
+    return;
+  }
+
+  let hours = "";
+  let styles = {
+    cell: true
+  };
+  const currentDate = new Date();
+  const currentHour = currentDate.getHours();
+
+  const days = schedule_days.filter(schedule_day => {
+    return (schedule_day && schedule_day.day.replace(/,/g, '') == daysOfTheWeek()[currentDate.getDay()] &&
+        currentHour >= schedule_day.opens_at && currentHour < schedule_day.closes_at);
+  });
+
+
+
+  if(days.length && days.length > 0) {
+    for(let i = 0; i < days.length; i++) {
+      let day = days[i];
+      hours = "Open Now: " + timeToString(day.opens_at) + "-" + timeToString(day.closes_at);
+      if(i != days.length - 1) {
+        hours += ", ";
+      }
+    }
+  } else {
+    hours = "Closed Now";
+    styles.closed = true;
+  }
+
+  return hours;
+}
