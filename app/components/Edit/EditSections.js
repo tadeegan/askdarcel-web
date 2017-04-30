@@ -227,7 +227,11 @@ class EditSections extends React.Component {
 
     postSchedule(scheduleObj, promises, uriObj) {
         if(scheduleObj) {
-            this.postObject(scheduleObj, 'schedule_days', promises);
+            if(scheduleObj.inheritSchedule) {
+                //Post schedule with flag set
+            } else {
+                this.postObject(scheduleObj, 'schedule_days', promises);
+            }
         }
     }
 

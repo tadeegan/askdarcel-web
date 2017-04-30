@@ -107,8 +107,8 @@ class EditService extends Component {
 		return (
 			<li className="edit--service edit--section">
 				<header className="edit--section--header">
-      		<h4>Service {this.props.index+1}: {this.props.service.name}</h4>
-      	</header>
+      				<h4>Service {this.props.index+1}: {this.props.service.name}</h4>
+      			</header>
 
 				<ul className="edit--section--list">
 					<li className="edit--section--list--item">
