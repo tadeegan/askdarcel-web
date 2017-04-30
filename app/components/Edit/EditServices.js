@@ -141,7 +141,7 @@ class EditService extends Component {
 						<textarea placeholder='Required Documents' data-field='required_documents' defaultValue={this.props.service.required_documents} onChange={this.handleFieldChange} />
 					</li>
 
-					<EditSchedule schedule={this.props.service.schedule} handleScheduleChange={this.handleScheduleChange} />
+					<EditSchedule schedule={this.props.service.schedule} inheritable={true} handleScheduleChange={this.handleScheduleChange} />
 
 					<EditNotes notes={this.props.service.notes} handleNotesChange={this.handleNotesChange} />
 				</ul>

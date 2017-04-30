@@ -69,7 +69,7 @@ class EditSchedule extends Component {
         return (
             <li key="hours" className="edit--section--list--item hours">
                 <label>Hours</label>
-                <div className="checkbox-label">
+                <div className={"checkbox-label" + (this.props.inheritable ? "" : " hidden")}>
                     <input 
                         className="checkbox"
                         type="checkbox"
