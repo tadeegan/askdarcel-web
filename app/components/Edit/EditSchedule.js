@@ -11,6 +11,7 @@ class EditSchedule extends Component {
         });
 
         this.state = {
+            inheritSchedule: false,
             scheduleMap: scheduleMap,
             schedule_days: {},
             uuid: -1
@@ -18,6 +19,13 @@ class EditSchedule extends Component {
 
         this.getDayHours = this.getDayHours.bind(this);
         this.handleScheduleChange = this.handleScheduleChange.bind(this);
+        this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
+    }
+
+    handleCheckboxChange(e) {
+        this.setState({
+            inheritSchedule: e.target.checked
+        });
     }
 
     handleScheduleChange(e) {
@@ -61,7 +69,16 @@ class EditSchedule extends Component {
         return (
             <li key="hours" className="edit--section--list--item hours">
                 <label>Hours</label>
-                <ul className="edit-hours-list">
+                <div className="checkbox-label">
+                    <input 
+                        className="checkbox"
+                        type="checkbox"
+                        checked={this.state.inheritSchedule}
+                        onChange={this.handleCheckboxChange}
+                    />
+                    <label>Use Resource Schedule</label>
+                </div>
+                <ul className={"edit-hours-list" + (this.state.inheritSchedule ? " hidden" : "")}>
                     <li>
                         <p>M</p>
                         <input type="time" defaultValue={this.getDayHours("Monday", "opens_at")} data-key="Monday" data-field="opens_at" onChange={this.handleScheduleChange}/>
