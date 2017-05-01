@@ -73,7 +73,11 @@ export function buildHoursText(schedule_days) {
   if(days.length && days.length > 0) {
     for(let i = 0; i < days.length; i++) {
       let day = days[i];
-      hours = "Open Now: " + timeToString(day.opens_at) + "-" + timeToString(day.closes_at);
+      if(day.opens_at == 0 && day.closes_at >= 2359) {
+        hours = "Open 24 Hours";
+      } else {
+        hours = "Open Now: " + timeToString(day.opens_at) + "-" + timeToString(day.closes_at);
+      }
       if(i != days.length - 1) {
         hours += ", ";
       }
@@ -84,4 +88,11 @@ export function buildHoursText(schedule_days) {
   }
 
   return hours;
+}
+
+export function sortScheduleDays(schedule_days) {
+  let days = daysOfTheWeek();
+  return schedule_days.sort(function(a, b) {
+      return a.day != b.day ? days.indexOf(a.day) - days.indexOf(b.day) : a.opens_at - b.opens_at;
+  });
 }
