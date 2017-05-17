@@ -92,6 +92,10 @@ class EditSections extends React.Component {
             resourceChangeRequest.name = this.state.name;
             resourceModified = true;
         }
+        if(this.state.email && this.state.email !== resource.email) {
+            resourceChangeRequest.email = this.state.email;
+            resourceModified = true;
+        }
         //fire off resource request
         if(resourceModified) {
             promises.push(dataService.post('/api/resources/' + resource.id + '/change_requests', {change_request: resourceChangeRequest}));
@@ -314,6 +318,11 @@ class EditSections extends React.Component {
             <li key="website" className="edit--section--list--item email">
                 <label>Website</label>
                 <input type="url" defaultValue={resource.website} data-field='website' onChange={this.handleResourceFieldChange}/>
+            </li>
+
+            <li key="email" className="edit--section--list--item email">
+                <label>E-Mail</label>
+                <input type="url" defaultValue={resource.email} data-field='email' onChange={this.handleResourceFieldChange}/>
             </li>
 
             <li key="long_description" className="edit--section--list--item">
