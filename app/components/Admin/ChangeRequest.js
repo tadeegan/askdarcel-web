@@ -58,7 +58,6 @@ class ChangeRequest extends React.Component {
         }
         break;
     }
-
     this.setState({ existingRecord: object });
   }
 
