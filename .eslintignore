@@ -24,7 +24,6 @@ app/components/Footer.js
 app/components/Loader.js
 app/components/Navigation.js
 app/components/Resource/CommunicationBoxes.js
-app/components/Resource/DetailedHours.js
 app/components/Resource/Hours.js
 app/components/Resource/Resource.js
 app/components/Resource/ResourceInfos.js
