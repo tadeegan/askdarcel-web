@@ -44,4 +44,3 @@ app/store/configureStore.prod.js
 app/utils/DataService.js
 app/utils/config.example.js
 app/utils/google.js
-app/utils/index.js
