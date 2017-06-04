@@ -1,8 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { timeToString, sortScheduleDays } from '../../utils/index';
 
-export default function DetailedHours() {
-  let { schedule } = this.props;
+export default function DetailedHours(props) {
+  let { schedule } = props;
   schedule = sortScheduleDays(schedule);
   const hoursList = schedule.map((item) => {
     const key = `${item.day}-${item.opens_at}-${item.closes_at}`;
@@ -28,3 +29,12 @@ export default function DetailedHours() {
     </span>
   );
 }
+
+DetailedHours.propTypes = {
+  schedule: PropTypes.arrayOf(PropTypes.shape({
+    closes_at: PropTypes.number.isRequired,
+    opens_at: PropTypes.number.isRequired,
+    day: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
+  })).isRequired,
+};
