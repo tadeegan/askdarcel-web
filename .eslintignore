@@ -35,7 +35,6 @@ app/components/Search/ResourcesTable.js
 app/components/User/CreateAccount.js
 app/components/User/Login.js
 app/components/User/Splash.js
-app/init.js
 app/reducers/authReducer.js
 app/reducers/index.js
 app/reducers/resourceReducer.js
