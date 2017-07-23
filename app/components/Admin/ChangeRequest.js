@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import TextareaAutosize from 'react-autosize-textarea';
 import * as ChangeRequestTypes from './ChangeRequestTypes';
 import Actions from './Actions';
@@ -7,8 +8,6 @@ class ChangeRequest extends React.Component {
   constructor(props) {
     super(props);
     this.state = { existingRecord: {}, changeRequestFields: {} };
-    this.renderChangeRequest = this.renderChangeRequest.bind(this);
-    this.changeFieldValue = this.changeFieldValue.bind(this);
   }
 
   componentDidMount() {
@@ -44,6 +43,7 @@ class ChangeRequest extends React.Component {
         object = resource.address;
         break;
       case 'PhoneChangeRequest':
+        // console.log(resource, changeRequest);
         object = resource.phones.filter(phone => phone.id === changeRequest.object_id)[0];
         break;
       case 'NoteChangeRequest':
@@ -55,7 +55,7 @@ class ChangeRequest extends React.Component {
         }
         break;
       default:
-        // console.log('Unknown Change Request Type', objectType);
+        console.log('Unknown Change Request Type', objectType);
     }
     this.setState({ existingRecord: object });
   }
@@ -79,37 +79,75 @@ class ChangeRequest extends React.Component {
     this.setState({ changeRequestFields: tempChangeRequestFields });
   }
 
-  renderChangeRequest() {
-    const changedFields = [];
-    const existingRecord = this.state.existingRecord;
-    const changeRequestFields = this.state.changeRequestFields;
+  getExistingValueFromChangeRequest(changeRequest, fieldName, fieldValue) {
+    let { resource } = changeRequest
+    switch (changeRequest.type) {
+      case 'ResourceChangeRequest':
+        return resource[fieldName] ? resource[fieldName] : '[NEW]';
+      case 'ServiceChangeRequest':
+        return resource.services.find(service => service.id === changeRequest.object_id)[fieldName]
+      case 'PhoneChangeRequest':
+        // console.log(resource.phones)
+        return 'phone';
+      default:
+        console.log('unknown type', changeRequest, fieldName, fieldValue)
+        return 'Some Change';
+    }
+  }
 
-    // TODO: existingRecord && existingRecord[field], need to fix this still
-    for (let field in changeRequestFields) {
-      changedFields.push(
-        <div key={field} className="change-wrapper">
-          <label htmlFor={field}>{field.replace(/_/g, ' ')}</label>
-          <div key={field} className="request-fields">
+  renderChangeRequest(changeRequest) {
+    return changeRequest.field_changes.map(fieldChange => {
+      let { field_name, field_value } = fieldChange
+      return (
+        <div key={field_name} className="change-wrapper">
+          <label htmlFor={field_name}>{field_name.replace(/_/g, ' ')}</label>
+          <div key={field_name} className="request-fields">
             <div className="request-entry">
               <TextareaAutosize
-                value={changeRequestFields[field]}
-                onChange={e => this.changeFieldValue(field, e.target.value)}
-                className="request-cell value">
-              </TextareaAutosize>
+                value={field_value}
+                onChange={e => this.changeFieldValue(field_name, e.target.value)}
+                className="request-cell value"
+              ></TextareaAutosize>
             </div>
             <div className="request-entry">
-              <p className="request-cell value existing">{existingRecord[field] || '{ NEW }'}</p>
+              <p className="request-cell value existing">
+                { this.getExistingValueFromChangeRequest(changeRequest, field_name, field_value)}
+              </p>
             </div>
           </div>
         </div>
-      );
-    }
+      )
+    });
+    // const changedFields = [];
+    // const existingRecord = this.state.existingRecord;
+    // const changeRequestFields = this.state.changeRequestFields;
 
-    return changedFields;
+    // // TODO: existingRecord && existingRecord[field], need to fix this still
+    // for (let field in changeRequestFields) {
+    //   console.log(field, existingRecord, changeRequestFields)
+    //   changedFields.push(
+    //     <div key={field} className="change-wrapper">
+    //       <label htmlFor={field}>{field.replace(/_/g, ' ')}</label>
+    //       <div key={field} className="request-fields">
+    //         <div className="request-entry">
+    //           <TextareaAutosize
+    //             value={changeRequestFields[field]}
+    //             onChange={e => this.changeFieldValue(field, e.target.value)}
+    //             className="request-cell value">
+    //           </TextareaAutosize>
+    //         </div>
+    //         <div className="request-entry">
+    //           <p className="request-cell value existing">{existingRecord[field] || '{ NEW }'}</p>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   );
+    // }
+
+    // return changedFields;
   }
 
   render() {
-    // console.log(this.props.changeRequest, this.changeRequestFields)
     return (
       <div className="change-log">
         <Actions
@@ -125,5 +163,9 @@ class ChangeRequest extends React.Component {
   }
 }
 
+ChangeRequest.propTypes = {
+  actionHandler: PropTypes.func.isRequired,
+  changeRequest: PropTypes.object.isRequired,
+};
 
 export default ChangeRequest;

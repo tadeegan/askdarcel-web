@@ -1,13 +1,13 @@
 
 import React, { Component } from 'react';
-import {AddressInfo, TodaysHours, PhoneNumber, WeeklyHours, ResourceCategories, Website, StreetView} from './ResourceInfos';
+import { Link } from 'react-router';
+import { AddressInfo, TodaysHours, PhoneNumber, WeeklyHours, ResourceCategories, Website, StreetView } from './ResourceInfos';
 import DetailedHours from './DetailedHours';
 import CommunicationBoxes from './CommunicationBoxes';
 import Services from './Services';
 import Notes from './Notes';
 import Loader from '../Loader';
 import ResourceMap from './ResourceMap';
-import { Link } from 'react-router';
 
 class Resource extends Component {
   constructor(props) {

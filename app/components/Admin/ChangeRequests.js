@@ -1,20 +1,13 @@
 // import * as ChangeRequestTypes from './ChangeRequestTypes';
 // import Actions from './Actions';
 import React from 'react';
+import PropTypes from 'prop-types';
 import * as _ from 'lodash/fp/object';
 import ChangeRequest from './ChangeRequest';
 import * as ChangeRequestTypes from './ChangeRequestTypes';
 import ProposedService from './ProposedService';
 
 class ChangeRequests extends React.Component {
-
-  static renderRequestWrapper(changeRequest, actionHandler) {
-    return (
-      <div className="request-container">
-        <ChangeRequest changeRequest={changeRequest} actionHandler={actionHandler} />
-      </div>
-    );
-  }
 
   static renderIndividualRequests(changeRequests, actionHandler) {
     if (!changeRequests) { return; }
@@ -24,21 +17,23 @@ class ChangeRequests extends React.Component {
     changeRequests.forEach((changeRequest) => {
       switch (changeRequest.type) {
         case 'ResourceChangeRequest':
+        case 'PhoneChangeRequest':
           resourceInfoToRender.push(
             <div key={`cr${changeRequest.id}`}>
-              <span> { ChangeRequests.renderRequestWrapper(changeRequest, actionHandler) } </span>
+              <span>{ ChangeRequests.renderIndividualChangeRequest(changeRequest, actionHandler) }</span>
             </div>,
           );
           break;
         case 'ServiceChangeRequest':
+          console.log(changeRequest)
           requestsToRender.push(
             <div key={`cr${changeRequest.id}`} className="service-wrapper">
-              { ChangeRequests.renderRequestWrapper(changeRequest, actionHandler) }
+              { ChangeRequests.renderIndividualChangeRequest(changeRequest, actionHandler) }
             </div>,
           );
           break;
         default:
-          // console.log('rendering unknown', changeRequest);
+          console.log('rendering unknown', changeRequest);
           // TODO: Pretty sure there are no other types for now
       }
     });
@@ -53,6 +48,14 @@ class ChangeRequests extends React.Component {
     }
 
     return resourceInfoToRender.concat(requestsToRender);
+  }
+
+  static renderIndividualChangeRequest(changeRequest, actionHandler) {
+    return (
+      <div className="request-container">
+        <ChangeRequest changeRequest={changeRequest} actionHandler={actionHandler} />
+      </div>
+    );
   }
 
   static renderProposedServices(services, actionHandler) {
@@ -73,11 +76,11 @@ class ChangeRequests extends React.Component {
       resourceToCollapsed: {},
     };
     this.props.changeRequests.forEach((changeRequest) => {
-      let resourceID = changeRequest.resource.id;
+      const resourceID = changeRequest.resource.id;
       this.state.resourceToCollapsed[resourceID] = true;
     });
     this.props.services.forEach((service) => {
-      let resourceID = service.resource.id;
+      const resourceID = service.resource.id;
       this.state.resourceToCollapsed[resourceID] = true;
     });
   }
@@ -86,7 +89,7 @@ class ChangeRequests extends React.Component {
     let resourceToCollapsed = _.extend({}, this.state.resourceToCollapsed);
     resourceToCollapsed[resourceID] ^= true;
     this.setState({
-      resourceToCollapsed: resourceToCollapsed,
+      resourceToCollapsed,
     });
   }
 
@@ -96,10 +99,11 @@ class ChangeRequests extends React.Component {
     const changeRequestWrappers = [];
     const resourceToServices = {};
 
+    // Arrange change requests by resource ID
     changeRequests.forEach((changeRequest) => {
       const resourceID = changeRequest.resource.id;
 
-      if (!resourceToChangeRequests.hasOwnProperty(resourceID)) {
+      if (resourceToChangeRequests[resourceID] === undefined) {
         resourceToChangeRequests[resourceID] = [];
       }
 
@@ -107,38 +111,57 @@ class ChangeRequests extends React.Component {
       resourceObjects[resourceID] = changeRequest.resource;
     });
 
+    // Arrange services by resource ID
     services.forEach((service) => {
+      // console.log(service)
       const resourceID = service.resource.id;
-      if (!resourceToServices.hasOwnProperty(resourceID)) {
+      if (resourceToServices[resourceID] === undefined) {
         resourceToServices[resourceID] = [];
       }
       resourceToServices[resourceID].push(service);
       resourceObjects[resourceID] = service.resource;
     });
 
-    for (let resourceID in resourceObjects) {
+    // Render each change request
+    Object.keys(resourceObjects).forEach((resourceID) => {
       const collapsed = this.state.resourceToCollapsed[resourceID] ? 'collapsed' : '';
       changeRequestWrappers.push(
         <div key={resourceID} className={`group-container ${collapsed}`}>
           <h2 onClick={() => this.toggleCollapsed(resourceID)}>
             {resourceObjects[resourceID].name}
-            <span className={`sub`}>#{resourceID}</span>
+            <span className={'sub'}>#{resourceID}</span>
             <span className={`material-icons expander ${collapsed} right`}>expand_less</span>
           </h2>
           <div className={`group-content ${collapsed}`}>
             <div className="btn-group right">
-              <button className="btn" onClick={() => this.props.bulkActionHandler(ChangeRequestTypes.APPROVE, resourceToChangeRequests[resourceID])}>Accept All</button>
+              <button
+                className="btn"
+                onClick={() => this.props.bulkActionHandler(
+                    ChangeRequestTypes.APPROVE,
+                    resourceToChangeRequests[resourceID])}
+              >
+                Accept All
+              </button>
             </div>
-            {ChangeRequests.renderIndividualRequests(resourceToChangeRequests[resourceID], actionHandler)}
-            {ChangeRequests.renderProposedServices(resourceToServices[resourceID], actionHandler)}
+            {
+              ChangeRequests
+                .renderIndividualRequests(resourceToChangeRequests[resourceID], actionHandler)
+            }
+            {
+              ChangeRequests
+                .renderProposedServices(resourceToServices[resourceID], actionHandler)
+            }
           </div>
         </div>
       );
-    }
+    });
 
+    // If there are no requests, render a happy message
     if (!changeRequestWrappers.length) {
       changeRequestWrappers.push(
-        <p className="message">Hurrah, it looks like you've handled all the outstanding change requests!</p>
+        <p className="message">
+          Hurrah, it looks like you&#39;ve handled all the outstanding change requests!
+        </p>
       );
     }
 
@@ -160,5 +183,12 @@ class ChangeRequests extends React.Component {
     );
   }
 }
+
+ChangeRequests.propTypes = {
+  changeRequests: PropTypes.array.isRequired,
+  services: PropTypes.array.isRequired,
+  actionHandler: PropTypes.func.isRequired,
+  bulkActionHandler: PropTypes.func.isRequired,
+};
 
 export default ChangeRequests;

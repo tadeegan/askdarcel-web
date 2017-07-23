@@ -13,12 +13,6 @@ class Admin extends React.Component {
       changeRequestsLoaded: false,
       pendingServicesLoaded: false,
     };
-
-    this.actionHandler = this.actionHandler.bind(this);
-    this.getChangeRequests = this.getChangeRequests.bind(this);
-    this.removeChangeRequest = this.removeChangeRequest.bind(this);
-    this.getPendingServices = this.getPendingServices.bind(this);
-    this.removeService = this.removeService.bind(this);
   }
 
   componentDidMount() {
@@ -36,12 +30,16 @@ class Admin extends React.Component {
   }
 
   getChangeRequests() {
-    dataService.get('/api/change_requests', getAuthRequestHeaders()).then((json) => {
-      this.setState({
-        change_requests: json.change_requests,
-        changeRequestsLoaded: true,
+    dataService.get('/api/change_requests', getAuthRequestHeaders())
+      .then((json) => {
+        this.setState({
+          change_requests: json.change_requests,
+          changeRequestsLoaded: true,
+        });
+      })
+      .catch((err) => {
+        console.log('wrong', err)
       });
-    });
   }
 
   bulkActionHandler(action, changeRequests) {
@@ -105,28 +103,30 @@ class Admin extends React.Component {
   }
 
   removeChangeRequest(changeRequestID) {
-    let changeRequests = this.state.change_requests;
-    this.setState({ change_requests: changeRequests.filter(changeRequest => changeRequest.id != changeRequestID) });
+    this.setState({
+      change_requests: this.state.changeRequests
+        .filter(changeRequest => changeRequest.id !== changeRequestID),
+    });
   }
 
   removeService(serviceID) {
-    let services = this.state.services;
-    this.setState({ services: services.filter(service => service.id != serviceID) });
+    this.setState({
+      services: this.state.services.filter(service => service.id !== serviceID),
+    });
   }
 
   render() {
-    let pendingServicesLoaded = this.state.pendingServicesLoaded;
-    let changeRequestsLoaded = this.state.changeRequestsLoaded;
-    return (!(this.state.pendingServicesLoaded &&
-        this.state.changeRequestsLoaded) ? <Loader /> :
-      <div className="admin">
+    // console.log(this.state.change_requests)
+    return (!(this.state.pendingServicesLoaded && this.state.changeRequestsLoaded)
+      ? <Loader />
+      : <div className="admin">
         <ChangeRequests
           changeRequests={this.state.change_requests}
           services={this.state.services}
           bulkActionHandler={this.bulkActionHandler}
           actionHandler={this.actionHandler} />
       </div>
-    )
+    );
   }
 }
 
