@@ -27,33 +27,32 @@ class ProposedService extends React.Component {
 
     for (let field in tempService) {
       if (tempService.hasOwnProperty(field) && field !== 'id' && field !== 'resource') {
-        if (field === "notes") {
+        if (field === 'notes') {
           let notes = tempService[field];
           let tempNoteObj = {};
           notes.forEach((curr, i) => {
             tempNotes[i] = curr.note;
           });
-        } else if (field === "schedule") {
+        } else if (field === 'schedule') {
           let schedule = tempService[field];
           let scheduleDays = schedule.schedule_days;
           scheduleDays.forEach((day, i) => {
-            tempSchedule[i] = { day: day.day, opens_at: day.opens_at, closes_at: day.closes_at }
-          })
-        } else if (field === "categories") {
+            tempSchedule[i] = { day: day.day, opens_at: day.opens_at, closes_at: day.closes_at };
+          });
+        } else if (field === 'categories') {
           tempCategories = tempService[field].map(category => category.name);
         } else {
           newServiceFields[field] = tempService[field];
         }
       }
     }
-    this.setState({ 
-      serviceFields: newServiceFields, 
-      notes: tempNotes, 
-      schedule: tempSchedule, 
-      categories: tempCategories 
+    this.setState({
+      serviceFields: newServiceFields,
+      notes: tempNotes,
+      schedule: tempSchedule,
+      categories: tempCategories,
     });
   }
-
 
   changeScheduleValue(day, value, time) {
     console.log('time', time);
@@ -76,6 +75,7 @@ class ProposedService extends React.Component {
     let tempServiceFields = Object.assign({}, this.state.serviceFields, { [serviceField]: value });
     this.setState({ serviceFields: tempServiceFields });
   }
+
   renderScheduleFields() {
     let { schedule } = this.state;
     let scheduleOutput = [];
@@ -112,7 +112,11 @@ class ProposedService extends React.Component {
       notesOutput.push(
         <div key={"note" + note} className="request-entry">
           <p className="request-cell name">{`note ${note}`}</p>
-          <textarea className="request-cell value" value={notes[note] || ''} onChange={(e) => this.changeNoteValue(note, e.target.value)} />
+          <TextareaAutosize
+            value={notes[note] || ''}
+            onChange={(e) => this.changeNoteValue(note, e.target.value)}
+            className="request-cell value"
+          />
         </div>
       );
     }
@@ -125,8 +129,12 @@ class ProposedService extends React.Component {
     for(let field in serviceFields) {
       additionalOutput.push(
         <div key={field} className="request-entry">
-          <p className="request-cell name">{field}</p>
-          <textarea className="request-cell value" value={serviceFields[field] || ''} onChange={(e) => this.changeServiceValue(field, e.target.value)} />
+          <label htmlFor={field} className="request-cell">{field.replace(/_/g, ' ')}</label>
+          <TextareaAutosize
+            value={serviceFields[field] || ''}
+            onChange={(e) => this.changeServiceValue(field, e.target.value)}
+            className="request-cell value"
+          />
         </div>
       );
     }
@@ -137,12 +145,11 @@ class ProposedService extends React.Component {
     let { notes, schedule, serviceFields } = this.state;
     return (
       <div className="change-log">
-        <div className="request-fields">
+        <div className="request-fields change-wrapper">
           {this.renderAdditionalFields()}
           {this.renderCategoryFields()}
           {this.renderNotesFields()}
           {this.renderScheduleFields()}
-          
         </div>
         <Actions
             id={this.props.service.id}
@@ -155,6 +162,5 @@ class ProposedService extends React.Component {
     );
   }
 }
-
 
 export default ProposedService;

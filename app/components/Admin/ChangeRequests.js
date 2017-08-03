@@ -25,7 +25,7 @@ class ChangeRequests extends React.Component {
           );
           break;
         case 'ServiceChangeRequest':
-          console.log(changeRequest)
+          // console.log(changeRequest)
           requestsToRender.push(
             <div key={`cr${changeRequest.id}`} className="service-wrapper">
               { ChangeRequests.renderIndividualChangeRequest(changeRequest, actionHandler) }
@@ -41,8 +41,8 @@ class ChangeRequests extends React.Component {
     if (requestsToRender.length) {
       requestsToRender.unshift(
         <span key="title">
+          <h3>Service Changes Requests</h3>
           <hr />
-          <h3>Services</h3>
         </span>
       );
     }
@@ -60,9 +60,11 @@ class ChangeRequests extends React.Component {
 
   static renderProposedServices(services, actionHandler) {
     if (!services) { return; }
-    return services.map(service => (
+    console.log('services', services);
+    return services.map((service, i) => (
       <div key={`svc${service.id}`}>
-        <p>Proposed Service</p>
+        <h3>New Service {i+1}:</h3>
+        <hr />
         <div className="request-container">
           <ProposedService service={service} actionHandler={actionHandler} />
         </div>

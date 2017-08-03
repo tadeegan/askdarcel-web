@@ -62,14 +62,15 @@ class ChangeRequest extends React.Component {
 
   findNoteFromServices(services, noteID) {
     for (let i = 0; i < services.length; i++) {
-      let notes = services[i].notes;
+      const notes = services[i].notes;
       for (let j = 0; j < notes.length; j++) {
-        let note = notes[j];
+        const note = notes[j];
         if (note.id === noteID) {
           return note;
         }
       }
     }
+    return false;
   }
 
   changeFieldValue(key, value) {
@@ -116,7 +117,7 @@ class ChangeRequest extends React.Component {
             </div>
           </div>
         </div>
-      )
+      );
     });
     // const changedFields = [];
     // const existingRecord = this.state.existingRecord;
