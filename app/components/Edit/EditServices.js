@@ -135,7 +135,7 @@ class EditService extends Component {
 
 					<li key="email" className="edit--section--list--item email">
 						<label>Service E-Mail</label>
-						<input type="url" defaultValue={this.props.service.email} data-field='email' onChange={this.handleFieldChange}/>
+						<input type="email" defaultValue={this.props.service.email} data-field='email' onChange={this.handleFieldChange}/>
 					</li>
 
 					<li className="edit--section--list--item">
