@@ -60,7 +60,7 @@ class ChangeRequests extends React.Component {
 
   static renderProposedServices(services, actionHandler) {
     if (!services) { return; }
-    console.log('services', services);
+    // console.log('services', services);
     return services.map((service, i) => (
       <div key={`svc${service.id}`}>
         <h3>New Service {i+1}:</h3>
@@ -126,7 +126,8 @@ class ChangeRequests extends React.Component {
 
     // Render each change request
     Object.keys(resourceObjects).forEach((resourceID) => {
-      const collapsed = this.state.resourceToCollapsed[resourceID] ? 'collapsed' : '';
+      // TODO Switch back to closed by default
+      const collapsed = this.state.resourceToCollapsed[resourceID] ? '' : 'collapsed';
       changeRequestWrappers.push(
         <div key={resourceID} className={`group-container ${collapsed}`}>
           <h2 onClick={() => this.toggleCollapsed(resourceID)}>

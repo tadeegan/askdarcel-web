@@ -81,15 +81,15 @@ class ProposedService extends React.Component {
     let scheduleOutput = [];
     for(let day in schedule) {
       scheduleOutput.push(
-          <div key={"sched" + day} className="request-entry">
-            <p className="request-cell name">{schedule[day].day + "(Opens at)"}</p>
-            <textarea className="value request-cell" value={schedule[day].opens_at || ''} onChange={(e) => this.changeScheduleValue(day, e.target.value, 'open')} />
+          <div key={"sched" + day} className="change-wrapper request-entry half">
+            <label className="request-cell name">{schedule[day].day + " (Opens at)"}</label>
+            <input className="value request-cell" value={schedule[day].opens_at || ''} onChange={(e) => this.changeScheduleValue(day, e.target.value, 'open')} />
           </div>
       );
       scheduleOutput.push(
-        <div key={"sched closes" + day} className="request-entry">
-          <p className="request-cell name">{schedule[day].day + "(Closes at)"}</p>
-          <textarea className="value request-cell" value={schedule[day].closes_at || ''} onChange={(e) => this.changeScheduleValue(day, e.target.value, 'close')} />
+        <div key={"sched closes" + day} className="change-wrapper request-entry half">
+          <label className="request-cell name">{schedule[day].day + " (Closes at)"}</label>
+          <input className="value request-cell" value={schedule[day].closes_at || ''} onChange={(e) => this.changeScheduleValue(day, e.target.value, 'close')} />
         </div>
       )
     }
@@ -98,9 +98,9 @@ class ProposedService extends React.Component {
 
   renderCategoryFields() {
     return (
-      <div className="request-entry">
-        <p className="request-cell name">Categories</p>
-        <textarea readOnly className="request-cell value" value={this.state.categories} />
+      <div className="change-wrapper request-entry">
+        <label className="request-cell name">Categories</label>
+        <input readOnly className="request-cell value" value={this.state.categories} />
       </div>
     );
   }
@@ -108,10 +108,10 @@ class ProposedService extends React.Component {
   renderNotesFields() {
     let { notes } = this.state;
     let notesOutput = [];
-    for(let note in notes) {
+    for (let note in notes) {
       notesOutput.push(
-        <div key={"note" + note} className="request-entry">
-          <p className="request-cell name">{`note ${note}`}</p>
+        <div key={`note-${note}`} className="change-wrapper request-entry">
+          <label className="request-cell name">{`Note ${note}`}</label>
           <TextareaAutosize
             value={notes[note] || ''}
             onChange={(e) => this.changeNoteValue(note, e.target.value)}
@@ -128,7 +128,7 @@ class ProposedService extends React.Component {
     let additionalOutput = [];
     for(let field in serviceFields) {
       additionalOutput.push(
-        <div key={field} className="request-entry">
+        <div key={field} className="change-wrapper request-entry">
           <label htmlFor={field} className="request-cell">{field.replace(/_/g, ' ')}</label>
           <TextareaAutosize
             value={serviceFields[field] || ''}
