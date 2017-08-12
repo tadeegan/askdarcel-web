@@ -81,7 +81,7 @@ class ChangeRequest extends React.Component {
   }
 
   getExistingValueFromChangeRequest(changeRequest, fieldName, fieldValue) {
-    let { resource } = changeRequest
+    let { resource } = changeRequest;
     switch (changeRequest.type) {
       case 'ResourceChangeRequest':
         return resource[fieldName] ? resource[fieldName] : '[NEW]';
@@ -110,11 +110,9 @@ class ChangeRequest extends React.Component {
                 className="request-cell value"
               ></TextareaAutosize>
             </div>
-            <div className="request-entry">
-              <p className="request-cell value existing">
-                { this.getExistingValueFromChangeRequest(changeRequest, field_name, field_value)}
-              </p>
-            </div>
+            <p className="change-existing">
+              { this.getExistingValueFromChangeRequest(changeRequest, field_name, field_value)}
+            </p>
           </div>
         </div>
       );

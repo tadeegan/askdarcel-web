@@ -38,7 +38,7 @@ class Admin extends React.Component {
         });
       })
       .catch((err) => {
-        console.log('wrong', err)
+        // console.log('wrong', err)
       });
   }
 
