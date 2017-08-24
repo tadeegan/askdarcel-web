@@ -18,6 +18,7 @@ class EditSchedule extends Component {
 
         this.getDayHours = this.getDayHours.bind(this);
         this.handleScheduleChange = this.handleScheduleChange.bind(this);
+        this.set24Hours = this.set24Hours.bind(this);
     }
 
     handleScheduleChange(e) {
@@ -33,6 +34,40 @@ class EditSchedule extends Component {
             let schedule_days = this.state.schedule_days;
             let newDay = schedule_days[serverDay.id] ? schedule_days[serverDay.id] : {};
             newDay[field] = formattedTime;
+            newDay.day = day;
+            let key = serverDay.id ? serverDay.id : newUUID;
+            schedule_days[key] = newDay;
+            this.setState({schedule_days: schedule_days, uuid: newUUID}, function() {
+                this.props.handleScheduleChange(schedule_days);
+            });
+        }
+    }
+
+    set24Hours(e) {
+        let currScheduleMap = this.state.scheduleMap;
+        let openTime = 0;
+        let closeTime = 2359;
+        let day = e.target.dataset.key;
+        let value = e.target.value;
+        let serverDay = currScheduleMap[day];
+        let formattedTime = stringToTime(value);
+        let newUUID = this.state.uuid-1;
+
+        if(openTime !== serverDay["opens_at"]) {
+            let schedule_days = this.state.schedule_days;
+            let newDay = schedule_days[serverDay.id] ? schedule_days[serverDay.id] : {};
+            newDay["opens_at"] = openTime;
+            newDay.day = day;
+            let key = serverDay.id ? serverDay.id : newUUID;
+            schedule_days[key] = newDay;
+            this.setState({schedule_days: schedule_days, uuid: newUUID}, function() {
+                this.props.handleScheduleChange(schedule_days);
+            });
+        }
+        if(closeTime !== serverDay["closes_at"]) {
+            let schedule_days = this.state.schedule_days;
+            let newDay = schedule_days[serverDay.id] ? schedule_days[serverDay.id] : {};
+            newDay["closes_at"] = openTime;
             newDay.day = day;
             let key = serverDay.id ? serverDay.id : newUUID;
             schedule_days[key] = newDay;
@@ -66,6 +101,7 @@ class EditSchedule extends Component {
                         <p>M</p>
                         <input type="time" defaultValue={this.getDayHours("Monday", "opens_at")} data-key="Monday" data-field="opens_at" onChange={this.handleScheduleChange}/>
                         <input type="time" defaultValue={this.getDayHours("Monday", "closes_at")} data-key="Monday" data-field="closes_at" onChange={this.handleScheduleChange}/>
+                        <input type="checkbox" data-key="Monday" data-field="opens_at" onChange={this.set24Hours} />
                     </li>
                     <li>
                         <p>T</p>
