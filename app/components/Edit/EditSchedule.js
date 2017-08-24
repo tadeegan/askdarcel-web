@@ -13,7 +13,16 @@ class EditSchedule extends Component {
         this.state = {
             scheduleMap: scheduleMap,
             schedule_days: {},
-            uuid: -1
+            uuid: -1, 
+            open24Hours: {
+                "Monday": false,
+                "Tuesday": false,
+                "Wednesday": false,
+                "Thursday": false,
+                "Friday": false,
+                "Saturday": false,
+                "Sunday": false,
+            }
         };
 
         this.getDayHours = this.getDayHours.bind(this);
@@ -48,33 +57,24 @@ class EditSchedule extends Component {
         let openTime = 0;
         let closeTime = 2359;
         let day = e.target.dataset.key;
+        let open24Hours = Object.assign({}, this.state.open24Hours);
+        open24Hours[day] = true;
+        this.setState({ open24Hours });
         let value = e.target.value;
         let serverDay = currScheduleMap[day];
         let formattedTime = stringToTime(value);
         let newUUID = this.state.uuid-1;
 
-        if(openTime !== serverDay["opens_at"]) {
-            let schedule_days = this.state.schedule_days;
-            let newDay = schedule_days[serverDay.id] ? schedule_days[serverDay.id] : {};
-            newDay["opens_at"] = openTime;
-            newDay.day = day;
-            let key = serverDay.id ? serverDay.id : newUUID;
-            schedule_days[key] = newDay;
-            this.setState({schedule_days: schedule_days, uuid: newUUID}, function() {
-                this.props.handleScheduleChange(schedule_days);
-            });
-        }
-        if(closeTime !== serverDay["closes_at"]) {
-            let schedule_days = this.state.schedule_days;
-            let newDay = schedule_days[serverDay.id] ? schedule_days[serverDay.id] : {};
-            newDay["closes_at"] = openTime;
-            newDay.day = day;
-            let key = serverDay.id ? serverDay.id : newUUID;
-            schedule_days[key] = newDay;
-            this.setState({schedule_days: schedule_days, uuid: newUUID}, function() {
-                this.props.handleScheduleChange(schedule_days);
-            });
-        }
+        let schedule_days = this.state.schedule_days;
+        let newDay = schedule_days[serverDay.id] ? schedule_days[serverDay.id] : {};
+        newDay["opens_at"] = openTime;
+        newDay["closes_at"] = closeTime;
+        newDay.day = day;
+        let key = serverDay.id ? serverDay.id : newUUID;
+        schedule_days[key] = newDay;
+        this.setState({schedule_days: schedule_days, uuid: newUUID}, function() {
+            this.props.handleScheduleChange(schedule_days);
+        });
     }
 
     formatTime(time) {
@@ -99,9 +99,14 @@ class EditSchedule extends Component {
                 <ul className="edit-hours-list">
                     <li>
                         <p>M</p>
-                        <input type="time" defaultValue={this.getDayHours("Monday", "opens_at")} data-key="Monday" data-field="opens_at" onChange={this.handleScheduleChange}/>
-                        <input type="time" defaultValue={this.getDayHours("Monday", "closes_at")} data-key="Monday" data-field="closes_at" onChange={this.handleScheduleChange}/>
-                        <input type="checkbox" data-key="Monday" data-field="opens_at" onChange={this.set24Hours} />
+                        {
+                            this.state.open24Hours["Monday"] ? <p>Open 24 Hours</p> :
+                                <div>
+                                    <input type="time" defaultValue={this.getDayHours("Monday", "opens_at")} data-key="Monday" data-field="opens_at" onChange={this.handleScheduleChange}/>
+                                    <input type="time" defaultValue={this.getDayHours("Monday", "closes_at")} data-key="Monday" data-field="closes_at" onChange={this.handleScheduleChange}/>
+                                    <input type="checkbox" data-key="Monday" data-field="opens_at" onChange={this.set24Hours} />
+                                </div>
+                        }
                     </li>
                     <li>
                         <p>T</p>
