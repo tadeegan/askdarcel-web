@@ -21,6 +21,7 @@
     "html-webpack-plugin": "^2.19.0",
     "image-webpack-loader": "^1.8.0",
     "lodash": "^4.17.4",
+    "moment": "^2.18.1",
     "prop-types": "^15.5.10",
     "react": "^15.1.0",
     "react-autosize-textarea": "^0.4.3",
