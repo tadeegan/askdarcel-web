@@ -226,8 +226,11 @@ class ChangeRequests extends React.Component {
 
     resource._changeRequests.forEach((changeRequest) => {
       switch (changeRequest.type) {
-        case 'ResourceChangeRequest':
+        case 'AddressChangeRequest':
+        case 'NoteChangeRequest':
         case 'PhoneChangeRequest':
+        case 'ResourceChangeRequest':
+        case 'ScheduleDayChangeRequest':
           sections.resourceChanges.push(
             <div key={`change-request-${changeRequest.id}`} className="request-container resource-change-wrapper">
               <ChangeRequest changeRequest={changeRequest} actionHandler={this.props.actionHandler} />
@@ -240,11 +243,11 @@ class ChangeRequests extends React.Component {
             services[changeRequest.object_id] = [];
           }
           services[changeRequest.object_id].push(changeRequest);
-          console.log(changeRequest)
+          // console.log(changeRequest)
           break;
 
         default:
-          console.log('unknown change request type');
+          console.log('unknown change request type', changeRequest.type, changeRequest);
       }
     });
 

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import TextareaAutosize from 'react-autosize-textarea';
 import * as ChangeRequestTypes from './ChangeRequestTypes';
 import Actions from './Actions';
+import utils from './helpers/utils';
 
 class ChangeRequest extends React.Component {
   constructor(props) {
@@ -57,6 +58,7 @@ class ChangeRequest extends React.Component {
       default:
         console.log('Unknown Change Request Type', objectType);
     }
+
     this.setState({ existingRecord: object });
   }
 
@@ -84,39 +86,157 @@ class ChangeRequest extends React.Component {
     let { resource } = changeRequest;
     switch (changeRequest.type) {
       case 'ResourceChangeRequest':
-        return resource[fieldName] ? resource[fieldName] : '[NEW]';
-      case 'ServiceChangeRequest':
-        return resource.services.find(service => service.id === changeRequest.object_id)[fieldName]
+      case 'AddressChangeRequest':
       case 'PhoneChangeRequest':
-        // console.log(resource.phones)
-        return 'phone';
+      case 'NoteChangeRequest':
+        return resource[fieldName] ? resource[fieldName] : false;
+      case 'ScheduleDayChangeRequest':
+        return 'date change';
+      case 'ServiceChangeRequest':
+        return resource.services.find(service => service.id === changeRequest.object_id)[fieldName];
       default:
-        console.log('unknown type', changeRequest, fieldName, fieldValue)
-        return 'Some Change';
+        console.log('unknown type', changeRequest, fieldName, fieldValue);
+        return '<Some Change>';
+    }
+  }
+
+  renderChangeRequestPretext(changeRequest) {
+    let { type, resource, field_changes } = changeRequest;
+
+    switch (changeRequest.type) {
+      // Render the current address in full, and what the new address would be.
+      case 'AddressChangeRequest':
+        const addressKeys = ['address_1', 'address_2', 'address_3', 'address_4', 'city', 'state', 'country', 'postal_code']
+        const generateAddressString = key => `${resource.address[key] || '-'}\n`;
+        const currentAddress = addressKeys.map(generateAddressString);
+        const newAddress = addressKeys.map((key) => {
+          const valueIfChanged = field_changes.find(change => change.field_name === key);
+          if (valueIfChanged) {
+            return `${valueIfChanged.field_value}\n`;
+          }
+          return generateAddressString(key);
+        });
+
+        return (
+          <div key="change-request-helper" className="change-request-helper">
+            <div className="compare-half">
+              Current Address
+              <p className="change-existing address-box">
+                { currentAddress }
+              </p>
+            </div>
+            <div className="compare-half">
+              Suggested Address
+              <p className="change-existing address-box">
+                { newAddress }
+              </p>
+            </div>
+          </div>
+        );
+
+      case 'PhoneChangeRequest':
+      case 'ResourceChangeRequest':
+      case 'ServiceChangeRequest':
+      case 'NoteChangeRequest':
+      case 'ScheduleDayChangeRequest':
+        return '';
+
+      default:
+        console.log('unknown pretext type, rendering nothing', changeRequest);
+        return false;
     }
   }
 
   renderChangeRequest(changeRequest) {
-    return changeRequest.field_changes.map(fieldChange => {
-      let { field_name, field_value } = fieldChange
-      return (
-        <div key={field_name} className="change-wrapper">
-          <label htmlFor={field_name}>{field_name.replace(/_/g, ' ')}</label>
-          <div key={field_name} className="request-fields">
-            <div className="request-entry">
-              <TextareaAutosize
-                value={field_value}
-                onChange={e => this.changeFieldValue(field_name, e.target.value)}
-                className="request-cell value"
-              ></TextareaAutosize>
+    switch (changeRequest.type) {
+      case 'ScheduleDayChangeRequest':
+        let schedule = utils.getScheduleChanges(changeRequest);
+        console.log(schedule);
+        return (
+          <div key="address-change" className="change-wrapper">
+            <div className="compare-third">
+              <label htmlFor="day">Day</label>
+              <div className="request-fields">
+                <div className="request-entry">
+                  <TextareaAutosize
+                    value={schedule.day}
+                    onChange={e => this.changeFieldValue(field_name, e.target.value)}
+                    className="request-cell value"/>
+                </div>
+              </div>
             </div>
-            <p className="change-existing">
-              { this.getExistingValueFromChangeRequest(changeRequest, field_name, field_value)}
-            </p>
+            <div className="compare-third">
+              <label htmlFor="start">Opens</label>
+              <div className="request-fields">
+                <div className="request-entry">
+                  <TextareaAutosize
+                    value={schedule.opens_at}
+                    onChange={e => this.changeFieldValue(field_name, e.target.value)}
+                    className="request-cell value"/>
+                </div>
+                {
+                  <p className="change-existing">{ schedule.opened_at || 'NEW' }</p>
+                }
+              </div>
+            </div>
+            <div className="compare-third">
+              <label htmlFor="end">Closes</label>
+              <div className="request-fields">
+                <div className="request-entry">
+                  <TextareaAutosize
+                    value={schedule.closes_at}
+                    onChange={e => this.changeFieldValue(field_name, e.target.value)}
+                    className="request-cell value"/>
+                </div>
+                {
+                  <p className="change-existing">{ schedule.closed_at || 'NEW' }</p>
+                }
+              </div>
+            </div>
           </div>
-        </div>
-      );
-    });
+        );
+
+      default:
+        return changeRequest.field_changes.map(fieldChange => {
+          let { field_name, field_value } = fieldChange;
+          let existingValue = this.getExistingValueFromChangeRequest(changeRequest, field_name, field_value)
+          return (
+            <div key={field_name} className="change-wrapper">
+              <label htmlFor={field_name}>
+                {field_name.replace(/_/g, ' ')}
+                { existingValue ? '' : (<sub>NEW</sub>) }
+              </label>
+              <div className="request-fields">
+                <div className="request-entry">
+                  <TextareaAutosize
+                    value={field_value}
+                    onChange={e => this.changeFieldValue(field_name, e.target.value)}
+                    className="request-cell value" />
+                </div>
+                {
+                  existingValue
+                  ? (
+                    <p className="change-existing">
+                      { this.getExistingValueFromChangeRequest(changeRequest, field_name, field_value)}
+                    </p>
+                  )
+                  : ''
+                }
+              </div>
+            </div>
+          );
+        });
+    }
+    // const pretext = this.getChangeRequestPretext(changeRequest);
+
+    // // Prepend the CR with any useful text specific to this change Request
+    // if (pretext) {
+    //   changeRequestMarkup.push(pretext);
+    // }
+
+    // changeRequestMarkup.push(changeRequestFields);
+
+    // return changeRequestMarkup;
     // const changedFields = [];
     // const existingRecord = this.state.existingRecord;
     // const changeRequestFields = this.state.changeRequestFields;
@@ -156,7 +276,8 @@ class ChangeRequest extends React.Component {
           approveAction={ChangeRequestTypes.APPROVE}
           rejectAction={ChangeRequestTypes.DELETE}
         />
-        {this.renderChangeRequest(this.props.changeRequest)}
+        { this.renderChangeRequestPretext(this.props.changeRequest) }
+        { this.renderChangeRequest(this.props.changeRequest) }
       </div>
     );
   }

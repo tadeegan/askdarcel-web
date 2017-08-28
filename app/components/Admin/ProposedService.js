@@ -93,6 +93,11 @@ class ProposedService extends React.Component {
         </div>
       )
     }
+    // scheduleOutput.push(
+    //   <div key={"sched-key-" + this.props.service.id}>
+    //     { this.renderLineItem(serviceFields, this.props.service) }
+    //   </div>
+    // );
     return scheduleOutput;
   }
 
@@ -117,6 +122,7 @@ class ProposedService extends React.Component {
             onChange={(e) => this.changeNoteValue(note, e.target.value)}
             className="request-cell value"
           />
+          { /* this.renderLineItem(notes, this.props.service) */ }
         </div>
       );
     }
@@ -135,6 +141,7 @@ class ProposedService extends React.Component {
             onChange={(e) => this.changeServiceValue(field, e.target.value)}
             className="request-cell value"
           />
+          { /*this.renderLineItem(serviceFields, this.props.service, 'additional')*/ }
         </div>
       );
     }
