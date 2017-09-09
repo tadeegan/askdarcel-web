@@ -185,6 +185,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 // EDIT HOURS
 
+.hour-label {
+  text-align: right;
+}
+
 .edit-hours-list {
   li {
     @extend %flex-row;
@@ -197,12 +201,25 @@
       flex: 0 0 auto;
       width: calc-em(36px);
     }
+    .open24 {
+      flex: 1 1 auto;
+    }
+    div {
+      align-items: center;
+      display: flex;
+      width: 100%;
+    }
     input {
       flex: 1 1 auto;
       margin: 0;
       cursor: text;
       &:first-of-type {
         margin-right: calc-em(10px);
+      }
+      &[type=checkbox] {
+        width: 35px;
+        margin-left: 30px;
+        flex: none;
       }
     }
   }

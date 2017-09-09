@@ -28,6 +28,7 @@ constructor(props) {
   this.getDayHours = this.getDayHours.bind(this);
   this.handleScheduleChange = this.handleScheduleChange.bind(this);
   this.set24Hours = this.set24Hours.bind(this);
+  this.buildTimeInput = this.buildTimeInput.bind(this);
 }
 
   handleScheduleChange(e) {
@@ -53,28 +54,49 @@ constructor(props) {
   }
 
   set24Hours(e) {
-    let currScheduleMap = this.state.scheduleMap;
-    let openTime = 0;
-    let closeTime = 2359;
     let day = e.target.dataset.key;
     let open24Hours = Object.assign({}, this.state.open24Hours);
-    open24Hours[day] = true;
-    this.setState({ open24Hours });
-    let value = e.target.value;
-    let serverDay = currScheduleMap[day];
-    let formattedTime = stringToTime(value);
-    let newUUID = this.state.uuid - 1;
+    if (this.state.open24Hours[day] === true) {
+      this.handleScheduleChange(e);
+    } else {
+      let currScheduleMap = this.state.scheduleMap;
+      let openTime = 0;
+      let closeTime = 2359;
+      let value = e.target.value;
+      let serverDay = currScheduleMap[day];
+      let formattedTime = stringToTime(value);
+      let newUUID = this.state.uuid - 1;
 
-    let schedule_days = this.state.schedule_days;
-    let newDay = schedule_days[serverDay.id] ? schedule_days[serverDay.id] : {};
-    newDay["opens_at"] = openTime;
-    newDay["closes_at"] = closeTime;
-    newDay.day = day;
-    let key = serverDay.id ? serverDay.id : newUUID;
-    schedule_days[key] = newDay;
-    this.setState({ schedule_days: schedule_days, uuid: newUUID }, function() {
-      this.props.handleScheduleChange(schedule_days);
-    });
+  
+      let schedule_days = this.state.schedule_days;
+      let newDay = schedule_days[serverDay.id] ? schedule_days[serverDay.id] : {};
+      newDay["opens_at"] = openTime;
+      newDay["closes_at"] = closeTime;
+      newDay.day = day;
+      let key = serverDay.id ? serverDay.id : newUUID;
+      schedule_days[key] = newDay;
+      this.setState({ schedule_days: schedule_days, uuid: newUUID }, function() {
+        this.props.handleScheduleChange(schedule_days);
+      });
+    }
+
+    open24Hours[day] = !open24Hours[day];
+    this.setState({ open24Hours });
+  }
+
+  buildTimeInput(day) {
+    return (
+      this.state.open24Hours[day] ?
+        <div>
+          <p className="open24">Open 24 Hours</p> <input type="checkbox" data-key={day} data-field="opens_at" onChange={this.set24Hours} />
+        </div>
+        :
+        <div>
+          <input type="time" defaultValue={this.getDayHours(day, "opens_at")} data-key={day} data-field="opens_at" onChange={this.handleScheduleChange}/>
+          <input type="time" defaultValue={this.getDayHours(day, "closes_at")} data-key={day} data-field="closes_at" onChange={this.handleScheduleChange}/>
+          <input type="checkbox" data-key={day} data-field="opens_at" onChange={this.set24Hours} />
+        </div>
+      )
   }
 
   formatTime(time) {
@@ -93,50 +115,53 @@ constructor(props) {
   }
 
   render() {
+    // TODO: Need to make it so that when 24 hours is untoggled, the time will revert back to the default/old time
     return (
       <li key="hours" className="edit--section--list--item hours">
         <label>Hours</label>
+        <label className="hour-label">24 Hours?</label>
           <ul className="edit-hours-list">
             <li>
               <p>M</p>
               {
-                this.state.open24Hours["Monday"] ? <p>Open 24 Hours</p> :
-                  <div>
-                    <input type="time" defaultValue={this.getDayHours("Monday", "opens_at")} data-key="Monday" data-field="opens_at" onChange={this.handleScheduleChange}/>
-                    <input type="time" defaultValue={this.getDayHours("Monday", "closes_at")} data-key="Monday" data-field="closes_at" onChange={this.handleScheduleChange}/>
-                    <input type="checkbox" data-key="Monday" data-field="opens_at" onChange={this.set24Hours} />
-                  </div>
+                this.buildTimeInput("Monday")
               }
             </li>
             <li>
               <p>T</p>
-              <input type="time" defaultValue={this.getDayHours("Tuesday", "opens_at")} data-key="Tuesday" data-field="opens_at" onChange={this.handleScheduleChange}/>
-              <input type="time" defaultValue={this.getDayHours("Tuesday", "closes_at")} data-key="Tuesday" data-field="closes_at" onChange={this.handleScheduleChange}/>
+              {
+                this.buildTimeInput("Tuesday")
+              }
             </li>
             <li>
               <p>W</p>
-              <input type="time" defaultValue={this.getDayHours("Wednesday", "opens_at")} data-key="Wednesday" data-field="opens_at" onChange={this.handleScheduleChange}/>
-              <input type="time" defaultValue={this.getDayHours("Wednesday", "closes_at")} data-key="Wednesday" data-field="closes_at" onChange={this.handleScheduleChange}/>
+              {
+                this.buildTimeInput("Wednesday")
+              }
             </li>
             <li>
               <p>Th</p>
-              <input type="time" defaultValue={this.getDayHours("Thursday", "opens_at")} data-key="Thursday" data-field="opens_at" onChange={this.handleScheduleChange}/>
-              <input type="time" defaultValue={this.getDayHours("Thursday", "closes_at")} data-key="Thursday" data-field="closes_at" onChange={this.handleScheduleChange}/>
+              {
+                this.buildTimeInput("Thursday")
+              }
             </li>
             <li>
               <p>F</p>
-              <input type="time" defaultValue={this.getDayHours("Friday", "opens_at")} data-key="Friday" data-field="opens_at" onChange={this.handleScheduleChange}/>
-              <input type="time" defaultValue={this.getDayHours("Friday", "closes_at")} data-key="Friday" data-field="closes_at" onChange={this.handleScheduleChange}/>
+              {
+                this.buildTimeInput("Friday")
+              }
             </li>
             <li>
               <p>S</p>
-              <input type="time" defaultValue={this.getDayHours("Saturday", "opens_at")} data-key="Saturday" data-field="opens_at" onChange={this.handleScheduleChange}/>
-              <input type="time" defaultValue={this.getDayHours("Saturday", "closes_at")} data-key="Saturday" data-field="closes_at" onChange={this.handleScheduleChange}/>
+              {
+                this.buildTimeInput("Saturday")
+              }
             </li>
             <li>
               <p>Su</p>
-              <input type="time" defaultValue={this.getDayHours("Sunday", "opens_at")} data-key="Sunday" data-field="opens_at" onChange={this.handleScheduleChange}/>
-              <input type="time" defaultValue={this.getDayHours("Sunday", "closes_at")} data-key="Sunday" data-field="closes_at" onChange={this.handleScheduleChange}/>
+              {
+                this.buildTimeInput("Sunday")
+              }
             </li>
           </ul>
      </li>
