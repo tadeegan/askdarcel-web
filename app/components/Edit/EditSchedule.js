@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { timeToTimeInputValue, stringToTime, daysOfTheWeek } from '../../utils/index';
+import EditScheduleDay from './EditScheduleDay';
 
 class EditSchedule extends Component {
 constructor(props) {
@@ -28,7 +29,6 @@ constructor(props) {
   this.getDayHours = this.getDayHours.bind(this);
   this.handleScheduleChange = this.handleScheduleChange.bind(this);
   this.set24Hours = this.set24Hours.bind(this);
-  this.buildTimeInput = this.buildTimeInput.bind(this);
 }
 
   handleScheduleChange(e) {
@@ -84,21 +84,6 @@ constructor(props) {
     this.setState({ open24Hours });
   }
 
-  buildTimeInput(day) {
-    return (
-      this.state.open24Hours[day] ?
-        <div>
-          <p className="open24">Open 24 Hours</p> <input type="checkbox" data-key={day} data-field="opens_at" onChange={this.set24Hours} />
-        </div>
-        :
-        <div>
-          <input type="time" defaultValue={this.getDayHours(day, "opens_at")} data-key={day} data-field="opens_at" onChange={this.handleScheduleChange}/>
-          <input type="time" defaultValue={this.getDayHours(day, "closes_at")} data-key={day} data-field="closes_at" onChange={this.handleScheduleChange}/>
-          <input type="checkbox" data-key={day} data-field="opens_at" onChange={this.set24Hours} />
-        </div>
-      )
-  }
-
   formatTime(time) {
     //FIXME: Use full times once db holds such values.
     return time.substring(0, 2);
@@ -115,54 +100,34 @@ constructor(props) {
   }
 
   render() {
+    let daysOfWeek = [ 
+      {day: "Monday", abbrev: "M"}, 
+      {day: "Tuesday", abbrev: "T"}, 
+      {day: "Wednesday", abbrev: "W"}, 
+      {day: "Thursday", abbrev: "Th"}, 
+      {day: "Friday", abbrev: "F"}, 
+      {day: "Saturday", abbrev: "S"}, 
+      {day: "Sunday", abbrev: "Su"}
+    ] 
     // TODO: Need to make it so that when 24 hours is untoggled, the time will revert back to the default/old time
     return (
       <li key="hours" className="edit--section--list--item hours">
         <label>Hours</label>
         <label className="hour-label">24 Hours?</label>
           <ul className="edit-hours-list">
-            <li>
-              <p>M</p>
-              {
-                this.buildTimeInput("Monday")
-              }
-            </li>
-            <li>
-              <p>T</p>
-              {
-                this.buildTimeInput("Tuesday")
-              }
-            </li>
-            <li>
-              <p>W</p>
-              {
-                this.buildTimeInput("Wednesday")
-              }
-            </li>
-            <li>
-              <p>Th</p>
-              {
-                this.buildTimeInput("Thursday")
-              }
-            </li>
-            <li>
-              <p>F</p>
-              {
-                this.buildTimeInput("Friday")
-              }
-            </li>
-            <li>
-              <p>S</p>
-              {
-                this.buildTimeInput("Saturday")
-              }
-            </li>
-            <li>
-              <p>Su</p>
-              {
-                this.buildTimeInput("Sunday")
-              }
-            </li>
+            {
+              daysOfWeek.map( ( dayObj,i ) => {
+              return (
+                <EditScheduleDay open24Hours={this.state.open24Hours} 
+                  day={dayObj.day} 
+                  dayAbbrev={dayObj.abbrev} 
+                  key={i}
+                  handleScheduleChange={this.handleScheduleChange} 
+                  set24Hours={this.set24Hours} 
+                  getDayHours={this.getDayHours} />
+                )
+              })
+            }
           </ul>
      </li>
     );
