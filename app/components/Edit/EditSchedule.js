@@ -2,6 +2,32 @@ import React, { Component } from 'react';
 import { timeToTimeInputValue, stringToTime, daysOfTheWeek } from '../../utils/index';
 import EditScheduleDay from './EditScheduleDay';
 
+function buildSchedule(schedule) {
+  let tempSchedule = {
+    Monday: [{ opens_at: null, closes_at: null }],
+    Tuesday: [{ opens_at: null, closes_at: null }],
+    Wednesday: [{ opens_at: null, closes_at: null }],
+    Thursday: [{ opens_at: null, closes_at: null }],
+    Friday: [{ opens_at: null, closes_at: null }],
+    Saturday: [{ opens_at: null, closes_at: null }],
+    Sunday: [{ opens_at: null, closes_at: null }],
+  };
+  if (schedule) {
+    schedule.schedule_days.forEach((curr) => {
+      tempSchedule[curr.day].unshift(curr);
+    });
+
+    let tempDaySched = [];
+    Object.keys(tempSchedule).forEach((day) => {
+      tempDaySched = tempSchedule[day];
+      if (tempDaySched.length > 1) {
+        tempDaySched.pop();
+      }
+    });
+  }
+  return tempSchedule;
+}
+
 class EditSchedule extends Component {
 constructor(props) {
   super(props);
@@ -14,6 +40,7 @@ constructor(props) {
   this.state = {
     scheduleMap: scheduleMap,
     schedule_days: {},
+    scheduleDays: buildSchedule(props.schedule),
     uuid: -1,
     open24Hours: {
       "Monday": false,
@@ -39,6 +66,10 @@ constructor(props) {
     let serverDay = currScheduleMap[day];
     let formattedTime = stringToTime(value);
     let newUUID = this.state.uuid - 1;
+
+
+    // Modify so that we support times that don't yet exist on BE
+    // Need to pass data in the following format: {field_name: "schedule_id", field_value: "id_of_the_schedule"}
 
     if (formattedTime !== serverDay[field]) {
       let schedule_days = this.state.schedule_days;
@@ -133,5 +164,4 @@ constructor(props) {
     );
   }
 }
-
 export default EditSchedule;

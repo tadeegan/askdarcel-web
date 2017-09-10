@@ -96,7 +96,8 @@ function createFullSchedule(scheduleObj) {
       closes_at: null,
     };
   }
-
+  debugger;
+  // TODO: Make this work with new data model
   if (scheduleObj) {
     Object.values(scheduleObj).forEach((scheduleDay) => {
       Object.entries(scheduleDay).forEach(([dayKey, schedule]) => {
@@ -195,6 +196,7 @@ class EditSections extends React.Component {
     postCollection(this.state.phones, this.state.resource.phones, 'phones', promises, resource.id);
 
     // schedule
+    // TODO: Write new function to handle schedule changes
     postObject(this.state.scheduleObj, 'schedule_days', promises);
 
     // address
