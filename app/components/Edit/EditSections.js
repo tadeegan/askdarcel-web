@@ -69,6 +69,7 @@ function postSchedule(scheduleObj, promises) {
   if (scheduleObj) {
     postObject(scheduleObj, 'schedule_days', promises);
   }
+
 }
 
 function postNotes(notesObj, promises, uriObj) {
@@ -197,6 +198,7 @@ class EditSections extends React.Component {
 
     // schedule
     // TODO: Write new function to handle schedule changes
+    // postSchedule(this.state.scheduleObj, 'schedule_days', promises);
     postObject(this.state.scheduleObj, 'schedule_days', promises);
 
     // address

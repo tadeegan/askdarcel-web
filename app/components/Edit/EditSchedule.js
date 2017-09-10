@@ -14,6 +14,8 @@ function buildSchedule(schedule) {
   };
   if (schedule) {
     schedule.schedule_days.forEach((curr) => {
+      curr.openChanged=false;
+      curr.closeChanged=false;
       tempSchedule[curr.day].unshift(curr);
     });
 
@@ -56,32 +58,32 @@ constructor(props) {
   this.getDayHours = this.getDayHours.bind(this);
   this.handleScheduleChange = this.handleScheduleChange.bind(this);
   this.set24Hours = this.set24Hours.bind(this);
+  this.addTime = this.addTime.bind(this);
 }
 
-  handleScheduleChange(e) {
-    let currScheduleMap = this.state.scheduleMap;
-    let field = e.target.dataset.field;
-    let day = e.target.dataset.key;
-    let value = e.target.value;
-    let serverDay = currScheduleMap[day];
-    let formattedTime = stringToTime(value);
-    let newUUID = this.state.uuid - 1;
+  handleScheduleChange(day, index, field, value) {
+    let tempDaySchedule = this.state.scheduleDays[day].map(curr => Object.assign({}, curr));
+    tempDaySchedule[index][field] = stringToTime(value);
+    tempDaySchedule[index][field === 'opens_at' ? 'openChanged' : 'closeChanged'] = true;
+    if (!tempDaySchedule[index].id && tempDaySchedule[index].id !== null) {
+      tempDaySchedule.id = null;
+    }
 
-
+    let tempScheduleDays = Object.assign({}, this.state.scheduleDays, {[day]: tempDaySchedule })
+    this.setState({ scheduleDays: tempScheduleDays}, function() {
+        this.props.handleScheduleChange(tempScheduleDays);
+      });
     // Modify so that we support times that don't yet exist on BE
     // Need to pass data in the following format: {field_name: "schedule_id", field_value: "id_of_the_schedule"}
+  }
 
-    if (formattedTime !== serverDay[field]) {
-      let schedule_days = this.state.schedule_days;
-      let newDay = schedule_days[serverDay.id] ? schedule_days[serverDay.id] : {};
-      newDay[field] = formattedTime;
-      newDay.day = day;
-      let key = serverDay.id ? serverDay.id : newUUID;
-      schedule_days[key] = newDay;
-      this.setState({ schedule_days: schedule_days, uuid: newUUID }, function() {
-        this.props.handleScheduleChange(schedule_days);
+  addTime(day) {
+    let tempDaySchedule = this.state.scheduleDays[day].map(curr => Object.assign({}, curr));
+    tempDaySchedule.push({ opens_at: null, closes_at: null });
+    let tempScheduleDays = Object.assign({}, this.state.scheduleDays, { [day]: tempDaySchedule });
+    this.setState({ scheduleDays: tempScheduleDays}, function() {
+        this.props.handleScheduleChange(tempScheduleDays);
       });
-    }
   }
 
   set24Hours(e) {
@@ -120,8 +122,8 @@ constructor(props) {
     return time.substring(0, 2);
   }
 
-  getDayHours(day, field) {
-    let dayRecord = this.state.scheduleMap[day];
+  getDayHours(day, field, index) {
+    let dayRecord = this.state.scheduleDays[day] && this.state.scheduleDays[day][index];
     if (!dayRecord) {
       return null;
     }
@@ -131,15 +133,17 @@ constructor(props) {
   }
 
   render() {
-    let daysOfWeek = [ 
-      {day: "Monday", abbrev: "M"}, 
-      {day: "Tuesday", abbrev: "T"}, 
-      {day: "Wednesday", abbrev: "W"}, 
-      {day: "Thursday", abbrev: "Th"}, 
-      {day: "Friday", abbrev: "F"}, 
-      {day: "Saturday", abbrev: "S"}, 
-      {day: "Sunday", abbrev: "Su"}
-    ] 
+    let daysOfWeek = {
+      Monday: 'M',
+      Tuesday: 'T',
+      Wednesday: 'W',
+      Thursday: 'Th',
+      Friday: 'F',
+      Saturday: 'S',
+      Sunday: 'Su',
+    } 
+
+    let schedule = this.state.scheduleDays;
     // TODO: Need to make it so that when 24 hours is untoggled, the time will revert back to the default/old time
     return (
       <li key="hours" className="edit--section--list--item hours">
@@ -147,16 +151,20 @@ constructor(props) {
         <label className="hour-label">24 Hours?</label>
           <ul className="edit-hours-list">
             {
-              daysOfWeek.map( ( dayObj,i ) => {
-              return (
-                <EditScheduleDay open24Hours={this.state.open24Hours} 
-                  day={dayObj.day} 
-                  dayAbbrev={dayObj.abbrev} 
-                  key={i}
-                  handleScheduleChange={this.handleScheduleChange} 
-                  set24Hours={this.set24Hours} 
-                  getDayHours={this.getDayHours} />
-                )
+              Object.keys(schedule).map((day, i) => {
+                return (
+                  <EditScheduleDay
+                    open24Hours={this.state.open24Hours}
+                    day={day}
+                    dayAbbrev={daysOfWeek[day]}
+                    dayHours={schedule[day]}
+                    key={i}
+                    handleScheduleChange={this.handleScheduleChange}
+                    set24Hours={this.set24Hours}
+                    getDayHours={this.getDayHours}
+                    addTime={this.addTime}
+                  />
+                );
               })
             }
           </ul>
