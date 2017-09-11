@@ -3,14 +3,15 @@ import { timeToTimeInputValue, stringToTime, daysOfTheWeek } from '../../utils/i
 import EditScheduleDay from './EditScheduleDay';
 
 function buildSchedule(schedule) {
+  let scheduleId = schedule.id;
   let tempSchedule = {
-    Monday: [{ opens_at: null, closes_at: null }],
-    Tuesday: [{ opens_at: null, closes_at: null }],
-    Wednesday: [{ opens_at: null, closes_at: null }],
-    Thursday: [{ opens_at: null, closes_at: null }],
-    Friday: [{ opens_at: null, closes_at: null }],
-    Saturday: [{ opens_at: null, closes_at: null }],
-    Sunday: [{ opens_at: null, closes_at: null }],
+    Monday: [{ opens_at: null, closes_at: null, scheduleId }],
+    Tuesday: [{ opens_at: null, closes_at: null, scheduleId }],
+    Wednesday: [{ opens_at: null, closes_at: null, scheduleId }],
+    Thursday: [{ opens_at: null, closes_at: null, scheduleId }],
+    Friday: [{ opens_at: null, closes_at: null, scheduleId }],
+    Saturday: [{ opens_at: null, closes_at: null, scheduleId }],
+    Sunday: [{ opens_at: null, closes_at: null, scheduleId }],
   };
   if (schedule) {
     schedule.schedule_days.forEach((curr) => {
@@ -42,8 +43,10 @@ constructor(props) {
   this.state = {
     scheduleMap: scheduleMap,
     schedule_days: {},
+    scheduleId: props.schedule ? props.schedule.id : null,
     scheduleDays: buildSchedule(props.schedule),
     uuid: -1,
+    scheduleId: this.props.schedule ? this.props.schedule.id : null,
     open24Hours: {
       "Monday": false,
       "Tuesday": false,
@@ -79,7 +82,7 @@ constructor(props) {
 
   addTime(day) {
     let tempDaySchedule = this.state.scheduleDays[day].map(curr => Object.assign({}, curr));
-    tempDaySchedule.push({ opens_at: null, closes_at: null });
+    tempDaySchedule.push({ opens_at: null, closes_at: null, scheduleId: this.state.scheduleId });
     let tempScheduleDays = Object.assign({}, this.state.scheduleDays, { [day]: tempDaySchedule });
     this.setState({ scheduleDays: tempScheduleDays}, function() {
         this.props.handleScheduleChange(tempScheduleDays);

@@ -74,38 +74,37 @@ function postSchedule(scheduleObj, promises) {
   Object.keys(scheduleObj).forEach((day) => {
     currDay = scheduleObj[day];
     currDay.forEach((curr) => {
+      value = {};
       if (curr.id) {
+        if (!curr.openChanged && !curr.closeChanged) {
+          return;
+        }
         if (curr.openChanged) {
-          value = { day, opens_at: curr.opens_at };
-          promises.push(dataService.post(`/api/schedule_days/${curr.id}/change_requests`, { change_request: value }));
+          value.opens_at = curr.opens_at;
         }
         if (curr.closeChanged) {
-          value = { day, closes_at: curr.closes_at };
-          promises.push(dataService.post(`/api/schedule_days/${curr.id}/change_requests`, { change_request: value }));
+          value.closes_at = curr.closes_at;
         }
+
+        promises.push(dataService.post(`/api/schedule_days/${curr.id}/change_requests`, { change_request: value }));
       } else {
+        value = {
+          change_request: {
+            day,
+          },
+          type: 'schedule_days',
+          schedule_id: curr.scheduleId,
+        };
         if (curr.openChanged) {
-          value = {
-            change_request: {
-              day,
-              opens_at: curr.opens_at,
-            },
-            type: 'schedule_days',
-            schedule_id: 1,
-          };
-          promises.push(dataService.post(`/api/change_requests`, { value }));
+          value.change_request.opens_at = curr.opens_at;
         }
         if (curr.closeChanged) {
-          value = {
-            change_request: {
-              day,
-              closes_at: curr.closes_at,
-            },
-            type: 'schedule_days',
-            schedule_id: 1
-          };
-          promises.push(dataService.post(`/api/change_requests`, { value }));
+          value.change_request.closes_at = curr.closes_at;
         }
+        if (!curr.openChanged && !curr.closeChanged) {
+          return;
+        }
+        promises.push(dataService.post(`/api/change_requests`, { ...value }));
       }
     });
   });
