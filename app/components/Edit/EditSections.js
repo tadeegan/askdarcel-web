@@ -135,7 +135,6 @@ function createFullSchedule(scheduleObj) {
       closes_at: null,
     };
   }
-  debugger;
   // TODO: Make this work with new data model
   if (scheduleObj) {
     Object.values(scheduleObj).forEach((scheduleDay) => {
