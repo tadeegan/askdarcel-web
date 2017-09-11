@@ -72,7 +72,6 @@ constructor(props) {
       tempDaySchedule.id = null;
 
     }
-  }
     let tempScheduleDays = Object.assign({}, this.state.scheduleDays, {[day]: tempDaySchedule })
     this.setState({ scheduleDays: tempScheduleDays}, function() {
         this.props.handleScheduleChange(tempScheduleDays);
