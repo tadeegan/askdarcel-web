@@ -66,10 +66,49 @@ function postObject(object, path, promises) {
 }
 
 function postSchedule(scheduleObj, promises) {
-  if (scheduleObj) {
-    postObject(scheduleObj, 'schedule_days', promises);
+  if (!scheduleObj) {
+    return;
   }
-
+  let currDay = [];
+  let value = {};
+  Object.keys(scheduleObj).forEach((day) => {
+    currDay = scheduleObj[day];
+    currDay.forEach((curr) => {
+      if (curr.id) {
+        if (curr.openChanged) {
+          value = { day, opens_at: curr.opens_at };
+          promises.push(dataService.post(`/api/schedule_days/${curr.id}/change_requests`, { change_request: value }));
+        }
+        if (curr.closeChanged) {
+          value = { day, closes_at: curr.closes_at };
+          promises.push(dataService.post(`/api/schedule_days/${curr.id}/change_requests`, { change_request: value }));
+        }
+      } else {
+        if (curr.openChanged) {
+          value = {
+            change_request: {
+              day,
+              opens_at: curr.opens_at,
+            },
+            type: 'schedule_days',
+            schedule_id: 1,
+          };
+          promises.push(dataService.post(`/api/change_requests`, { value }));
+        }
+        if (curr.closeChanged) {
+          value = {
+            change_request: {
+              day,
+              closes_at: curr.closes_at,
+            },
+            type: 'schedule_days',
+            schedule_id: 1
+          };
+          promises.push(dataService.post(`/api/change_requests`, { value }));
+        }
+      }
+    });
+  });
 }
 
 function postNotes(notesObj, promises, uriObj) {
@@ -199,7 +238,7 @@ class EditSections extends React.Component {
     // schedule
     // TODO: Write new function to handle schedule changes
     // postSchedule(this.state.scheduleObj, 'schedule_days', promises);
-    postObject(this.state.scheduleObj, 'schedule_days', promises);
+    postSchedule(this.state.scheduleObj, promises);
 
     // address
     if (!_.isEmpty(this.state.address) && this.state.resource.address) {
