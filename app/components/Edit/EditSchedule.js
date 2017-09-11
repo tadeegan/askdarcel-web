@@ -70,8 +70,9 @@ constructor(props) {
     tempDaySchedule[index][field === 'opens_at' ? 'openChanged' : 'closeChanged'] = true;
     if (!tempDaySchedule[index].id && tempDaySchedule[index].id !== null) {
       tempDaySchedule.id = null;
-    }
 
+    }
+  }
     let tempScheduleDays = Object.assign({}, this.state.scheduleDays, {[day]: tempDaySchedule })
     this.setState({ scheduleDays: tempScheduleDays}, function() {
         this.props.handleScheduleChange(tempScheduleDays);
@@ -130,7 +131,6 @@ constructor(props) {
     if (!dayRecord) {
       return null;
     }
-
     let time = dayRecord[field];
     return timeToTimeInputValue(time, true);
   }
@@ -147,7 +147,6 @@ constructor(props) {
     } 
 
     let schedule = this.state.scheduleDays;
-    // TODO: Need to make it so that when 24 hours is untoggled, the time will revert back to the default/old time
     return (
       <li key="hours" className="edit--section--list--item hours">
         <label>Hours</label>
@@ -169,7 +168,7 @@ constructor(props) {
                 );
               })
             }
-          </ul>
+         </ul>
      </li>
     );
   }
