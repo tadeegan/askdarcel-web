@@ -24,23 +24,27 @@ class EditScheduleDay extends Component {
       )
   }
 
-  render(){
+  render() {
     let day = this.props.day;
     return (
-  	 <div>
-        {
-          this.props.dayHours.map((curr, i) => {
-            return (
-              <li>
-                <p>{this.props.dayAbbrev}</p>
-                {
-                  this.buildTimeInput(day, i)
-                }
-              </li>
-            )
-          })
-        }
-        <div><button onClick={() => this.props.addTime(day)}>+</button></div>
+      <div className="day-group">
+        <div className="hours">
+          {
+            this.props.dayHours.map((curr, i) => {
+              return (
+                <li key={i}>
+                  <p>{ i === 0 ? this.props.dayAbbrev : '' }</p>
+                  {
+                    this.buildTimeInput(day, i)
+                  }
+                </li>
+              );
+            })
+          }
+        </div>
+        <div className="add-time">
+        <button onClick={() => this.props.addTime(day)}>+</button>
+        </div>
       </div>
     );
   }

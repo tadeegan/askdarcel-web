@@ -189,6 +189,26 @@
   text-align: right;
 }
 
+.day-group {
+  display: flex;
+  margin-bottom: 20px;
+
+  .hours {
+    width: 95%;
+  }
+
+  .add-time {
+    width: 5%;
+    align-self: flex-end;
+    padding-left: 10px;
+    margin-bottom: 8.5px;
+
+    button {
+      height: 40px;
+    }
+  }
+}
+
 .edit-hours-list {
   li {
     @extend %flex-row;

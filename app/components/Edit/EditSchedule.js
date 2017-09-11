@@ -151,7 +151,6 @@ constructor(props) {
     return (
       <li key="hours" className="edit--section--list--item hours">
         <label>Hours</label>
-        <label className="hour-label">24 Hours?</label>
           <ul className="edit-hours-list">
             {
               Object.keys(schedule).map((day, i) => {
