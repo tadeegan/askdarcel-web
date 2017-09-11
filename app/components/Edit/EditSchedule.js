@@ -121,7 +121,7 @@ constructor(props) {
   }
 
   formatTime(time) {
-    //FIXME: Use full times once db holds such values.
+    // FIXME: Use full times once db holds such values.
     return time.substring(0, 2);
   }
 
