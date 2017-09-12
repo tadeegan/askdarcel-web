@@ -11,6 +11,7 @@ class EditScheduleDay extends Component {
   }
 
   buildTimeInput(day, index, curr) {
+    // This checks if a time for a day was deleted, and skips rendering if it was
     if (index > 0 && curr.opens_at === null && curr.closes_at === null && curr.openChanged === true && curr.closeChanged === true) {
       return null;
     }
