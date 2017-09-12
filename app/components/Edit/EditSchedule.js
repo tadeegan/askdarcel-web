@@ -62,6 +62,7 @@ constructor(props) {
   this.handleScheduleChange = this.handleScheduleChange.bind(this);
   this.set24Hours = this.set24Hours.bind(this);
   this.addTime = this.addTime.bind(this);
+  this.removeTime = this.removeTime.bind(this);
 }
 
   handleScheduleChange(day, index, field, value) {
@@ -76,8 +77,23 @@ constructor(props) {
     this.setState({ scheduleDays: tempScheduleDays}, function() {
         this.props.handleScheduleChange(tempScheduleDays);
       });
-    // Modify so that we support times that don't yet exist on BE
-    // Need to pass data in the following format: {field_name: "schedule_id", field_value: "id_of_the_schedule"}
+  }
+
+  removeTime(day, index) {
+    let tempDaySchedule = this.state.scheduleDays[day].map(curr => Object.assign({}, curr));
+    tempDaySchedule[index].opens_at = null;
+    tempDaySchedule[index].closes_at = null;
+    tempDaySchedule[index].openChanged = true;
+    tempDaySchedule[index].closeChanged = true;
+
+    if (!tempDaySchedule[index].id && tempDaySchedule[index].id !== null) {
+      tempDaySchedule.id = null;
+    }
+
+    let tempScheduleDays = Object.assign({}, this.state.scheduleDays, {[day]: tempDaySchedule })
+    this.setState({ scheduleDays: tempScheduleDays}, function() {
+        this.props.handleScheduleChange(tempScheduleDays);
+      });
   }
 
   addTime(day) {
@@ -163,6 +179,7 @@ constructor(props) {
                     set24Hours={this.set24Hours}
                     getDayHours={this.getDayHours}
                     addTime={this.addTime}
+                    removeTime={this.removeTime}
                   />
                 );
               })

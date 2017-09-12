@@ -10,7 +10,10 @@ class EditScheduleDay extends Component {
   	}
   }
 
-  buildTimeInput(day, index) {
+  buildTimeInput(day, index, curr) {
+    if (index > 0 && curr.opens_at === null && curr.closes_at === null && curr.openChanged === true && curr.closeChanged === true) {
+      return null;
+    }
     return (
       this.props.open24Hours[day] ?
         <div>
@@ -20,6 +23,7 @@ class EditScheduleDay extends Component {
         <div>
           <input type="time" defaultValue={this.props.getDayHours(day, "opens_at", index)} data-key={day} data-field="opens_at" onChange={(e) => this.props.handleScheduleChange(day, index, "opens_at", e.target.value)}/>
           <input type="time" defaultValue={this.props.getDayHours(day, "closes_at", index)} data-key={day} data-field="closes_at" onChange={(e) => this.props.handleScheduleChange(day, index, "closes_at", e.target.value)}/>
+          {index > 0 ? <button onClick={() => this.props.removeTime(day, index)}className="remove-time">x</button> : ''}
         </div>
       )
   }
@@ -35,7 +39,7 @@ class EditScheduleDay extends Component {
                 <li key={i}>
                   <p>{ i === 0 ? this.props.dayAbbrev : '' }</p>
                   {
-                    this.buildTimeInput(day, i)
+                    this.buildTimeInput(day, i, curr)
                   }
                 </li>
               );

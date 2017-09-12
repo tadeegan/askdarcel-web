@@ -197,11 +197,19 @@
     width: 95%;
   }
 
+  .remove-time {
+    position: absolute;
+    right: 13px;
+    height: 40px;
+    background-color: white;
+    color: black;
+  }
+
   .add-time {
     width: 5%;
-    align-self: flex-end;
+    align-self: flex-start;
     padding-left: 10px;
-    margin-bottom: 8.5px;
+    margin-top: 8.5px;
 
     button {
       height: 40px;
