@@ -4,6 +4,9 @@ import EditScheduleDay from './EditScheduleDay';
 
 function buildSchedule(schedule) {
   let scheduleId = schedule ? schedule.id : null;
+  let currSchedule = {};
+  let finalSchedule = {};
+
   let tempSchedule = {
     Monday: [{ opens_at: null, closes_at: null, scheduleId }],
     Tuesday: [{ opens_at: null, closes_at: null, scheduleId }],
@@ -17,43 +20,30 @@ function buildSchedule(schedule) {
     schedule.schedule_days.forEach((curr) => {
       curr.openChanged=false;
       curr.closeChanged=false;
-      tempSchedule[curr.day].unshift(curr);
+      currSchedule[curr.day] ? currSchedule[curr.day].unshift(curr) : currSchedule[curr.day] = [curr];
     });
 
-    let tempDaySched = [];
-    Object.keys(tempSchedule).forEach((day) => {
-      tempDaySched = tempSchedule[day];
-      if (tempDaySched.length > 1) {
-        tempDaySched.pop();
-      }
-    });
+    finalSchedule = Object.assign({}, tempSchedule, currSchedule);
   }
-  return tempSchedule;
+  return finalSchedule;
 }
 
 class EditSchedule extends Component {
-constructor(props) {
-  super(props);
+  constructor(props) {
+    super(props);
 
-  let scheduleMap = {};
-  props.schedule && props.schedule.schedule_days.forEach(function(day) {
-    scheduleMap[day.day] = day;
-  });
+    this.state = {
+      schedule_days: {},
+      scheduleId: props.schedule ? props.schedule.id : null,
+      scheduleDays: buildSchedule(props.schedule),
+      uuid: -1,
+    };
 
-  this.state = {
-    scheduleMap: scheduleMap,
-    schedule_days: {},
-    scheduleId: props.schedule ? props.schedule.id : null,
-    scheduleDays: buildSchedule(props.schedule),
-    uuid: -1,
-    scheduleId: this.props.schedule ? this.props.schedule.id : null,
-  };
-
-  this.getDayHours = this.getDayHours.bind(this);
-  this.handleScheduleChange = this.handleScheduleChange.bind(this);
-  this.addTime = this.addTime.bind(this);
-  this.removeTime = this.removeTime.bind(this);
-}
+    this.getDayHours = this.getDayHours.bind(this);
+    this.handleScheduleChange = this.handleScheduleChange.bind(this);
+    this.addTime = this.addTime.bind(this);
+    this.removeTime = this.removeTime.bind(this);
+  }
 
   handleScheduleChange(day, index, field, value) {
     let tempDaySchedule = this.state.scheduleDays[day].map(curr => Object.assign({}, curr));
