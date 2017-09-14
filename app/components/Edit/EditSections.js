@@ -169,7 +169,6 @@ class EditSections extends React.Component {
     this.handleNotesChange = this.handleNotesChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.postServices = this.postServices.bind(this);
-    this.postObject = this.postObject.bind(this);
     this.postNotes = this.postNotes.bind(this);
     this.postSchedule = this.postSchedule.bind(this);
     this.createResource = this.createResource.bind(this);
@@ -298,7 +297,7 @@ class EditSections extends React.Component {
     }
 
     //Fire off phone requests
-    this.postCollection(this.state.phones, this.state.resource.phones, 'phones', promises);
+    postCollection(this.state.phones, this.state.resource.phones, 'phones', promises);
 
     // schedule
     postSchedule(this.state.scheduleObj, promises);
@@ -323,54 +322,6 @@ class EditSections extends React.Component {
       console.log(err);
     });
 
-  }
-
-  postCollection(collection, originalCollection, path, promises) {
-    for (let i = 0; i < collection.length; i++) {
-      let item = collection[i];
-
-      if (i < originalCollection.length && item.dirty) {
-        let diffObj = this.getDiffObject(item, originalCollection[i]);
-        if (diffObj.numKeys > 0) {
-          delete diffObj.obj.dirty;
-          this.updateCollectionObject(diffObj.obj, item.id, path, promises);
-        }
-      } else if (item.dirty) {
-        //post a new object
-      }
-    }
-  }
-
-  getDiffObject(curr, orig) {
-    let diffObj = {
-      obj: {},
-      numKeys: 0
-    };
-
-    for (let key in curr) {
-      if (!_.isEqual(curr[key], orig[key])) {
-        diffObj.obj[key] = curr[key];
-        diffObj.numKeys++;
-      }
-    }
-
-    return diffObj;
-  }
-
-  updateCollectionObject(object, id, path, promises) {
-    promises.push(
-      dataService.post(
-        '/api/' + path + '/' + id + '/change_requests', { change_request: object }
-      )
-    );
-  }
-
-  postObject(object, path, promises) {
-    for (let key in object) {
-      if (object.hasOwnProperty(key)) {
-        promises.push(dataService.post('/api/' + path + '/' + key + '/change_requests', { change_request: object[key] }));
-      }
-    }
   }
 
   postServices(servicesObj, promises) {
@@ -491,7 +442,7 @@ class EditSections extends React.Component {
 
   postSchedule(scheduleObj, promises, uriObj) {
     if (scheduleObj) {
-      this.postObject(scheduleObj, 'schedule_days', promises);
+      postObject(scheduleObj, 'schedule_days', promises);
     }
   }
 
@@ -683,15 +634,6 @@ function isEmpty(map) {
     return !map.hasOwnProperty(key);
   }
   return true;
-}
-
-function getDiffObject(curr, orig) {
-  return Object.entries(curr).reduce((acc, [key, value]) => {
-    if (!_.isEqual(orig[key], value)) {
-      acc[key] = value;
-    }
-    return acc;
-  }, {});
 }
 
 EditSections.propTypes = {
