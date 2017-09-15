@@ -57,8 +57,12 @@ CategoriesDropdown.propTypes = {
       id: PropTypes.number.isRequired,
       name: PropTypes.string.isRequired,
     }).isRequired,
-  ).isRequired,
+  ),
   handleCategoryChange: PropTypes.func.isRequired,
+};
+
+CategoriesDropdown.defaultProps = {
+  categories: [],
 };
 
 export default CategoriesDropdown;
