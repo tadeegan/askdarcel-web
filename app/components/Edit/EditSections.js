@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router';
+import { withRouter, browserHistory } from 'react-router';
 import _ from 'lodash';
 
 import Loader from '../Loader';
@@ -58,12 +58,6 @@ function postCollection(collection, originalCollection, path, promises, resource
       createCollectionObject(item, path, promises, resourceID);
     }
   }
-}
-
-function postObject(object, path, promises) {
-  Object.entries(object).forEach(([key, value]) => {
-    promises.push(dataService.post(`/api/${path}/${key}/change_requests`, { change_request: value }));
-  });
 }
 
 function postSchedule(scheduleObj, promises) {
@@ -251,11 +245,18 @@ class EditSections extends React.Component {
       return false;
     }
   }
-  prepSchedule(schedule) {
+  prepSchedule(scheduleObj) {
     let newSchedule = [];
-    for (var day in schedule) {
-      newSchedule.push(schedule[day]);
-    }
+    let tempDay = {};
+    Object.keys(scheduleObj).forEach(day => {
+      scheduleObj[day].forEach(curr => {
+        tempDay = {};
+        tempDay.day = day;
+        tempDay.opens_at = curr.opens_at;
+        tempDay.closes_at = curr.closes_at;
+        newSchedule.push(tempDay);
+      });
+    });
     return newSchedule;
   }
 
@@ -325,40 +326,37 @@ class EditSections extends React.Component {
   }
 
   postServices(servicesObj, promises) {
-    let newServices = [];
-    for (let key in servicesObj) {
-      if (servicesObj.hasOwnProperty(key)) {
-        let currentService = servicesObj[key];
-
-        if (key < 0) {
-          if (currentService.notesObj) {
-            let notes = this.objToArray(currentService.notesObj.notes);
-            delete currentService.notesObj;
-            currentService.notes = notes;
-          }
-
-          currentService.schedule = this.createFullSchedule(currentService.scheduleObj);
-          delete currentService.scheduleObj;
-
-          if (!isEmpty(currentService)) {
-            newServices.push(currentService);
-          }
-        } else {
-          let uri = '/api/services/' + key + '/change_requests';
-          this.postNotes(currentService.notesObj, promises, { path: "services", id: key });
+    if (!servicesObj) return;
+    const newServices = [];
+    Object.entries(servicesObj).forEach(([key, value]) => {
+      const currentService = value;
+      if (key < 0) {
+        if (currentService.notesObj) {
+          const notes = Object.values(currentService.notesObj.notes);
           delete currentService.notesObj;
-          this.postSchedule(currentService.scheduleObj, promises);
-          delete currentService.scheduleObj;
-          if (!isEmpty(currentService)) {
-            promises.push(dataService.post(uri, { change_request: currentService }));
-          }
+          currentService.notes = notes;
+        }
 
+        currentService.schedule = createFullSchedule(currentService.scheduleObj);
+        delete currentService.scheduleObj;
+
+        if (!_.isEmpty(currentService)) {
+          newServices.push(currentService);
+        }
+      } else {
+        const uri = `/api/services/${key}/change_requests`;
+        postNotes(currentService.notesObj, promises, { path: 'services', id: key });
+        delete currentService.notesObj;
+        postSchedule(currentService.scheduleObj, promises);
+        delete currentService.scheduleObj;
+        if (!_.isEmpty(currentService)) {
+          promises.push(dataService.post(uri, { change_request: currentService }));
         }
       }
-    }
+    });
 
     if (newServices.length > 0) {
-      let uri = '/api/resources/' + this.state.resource.id + '/services';
+      const uri = `/api/resources/${this.state.resource.id}/services`;
       promises.push(dataService.post(uri, { services: newServices }));
     }
   }
@@ -375,7 +373,7 @@ class EditSections extends React.Component {
             delete currentService.notesObj;
             currentService.notes = notes;
           }
-          currentService.schedule = this.createFullSchedule(currentService.scheduleObj);
+          currentService.schedule = createFullSchedule(currentService.scheduleObj);
           delete currentService.scheduleObj;
 
           if (!isEmpty(currentService)) {
@@ -395,38 +393,6 @@ class EditSections extends React.Component {
       }
     }
     return newNotes;
-  }
-
-  createFullSchedule(scheduleObj) {
-    let daysTemplate = {};
-    for (let i = 0; i < daysOfTheWeek().length; i++) {
-      let day = daysOfTheWeek()[i];
-      daysTemplate[day] = {
-        day: day,
-        opens_at: null,
-        closes_at: null
-      }
-    }
-
-    if (scheduleObj) {
-      for (let key in scheduleObj) {
-        if (scheduleObj.hasOwnProperty(key)) {
-          let scheduleDay = scheduleObj[key];
-          for (let dayKey in scheduleDay) {
-            daysTemplate[scheduleDay.day][dayKey] = scheduleDay[dayKey];
-          }
-        }
-      }
-    }
-
-    let scheduleDays = [];
-    for (let day in daysTemplate) {
-      if (daysTemplate.hasOwnProperty(day)) {
-        scheduleDays.push(daysTemplate[day]);
-      }
-    }
-
-    return { schedule_days: scheduleDays };
   }
 
   objToArray(obj) {
