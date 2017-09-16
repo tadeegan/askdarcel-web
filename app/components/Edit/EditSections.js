@@ -121,20 +121,23 @@ function postNotes(notesObj, promises, uriObj) {
 }
 
 function createFullSchedule(scheduleObj) {
-
-  let newSchedule = [];
-  let tempDay = {};
-  Object.keys(scheduleObj).forEach(day => {
-    scheduleObj[day].forEach(curr => {
-      tempDay = {};
-      tempDay.day = day;
-      tempDay.opens_at = curr.opens_at;
-      tempDay.closes_at = curr.closes_at;
-      newSchedule.push(tempDay);
+  if (scheduleObj) {
+    let newSchedule = [];
+    let tempDay = {};
+    Object.keys(scheduleObj).forEach(day => {
+      scheduleObj[day].forEach(curr => {
+        tempDay = {};
+        tempDay.day = day;
+        tempDay.opens_at = curr.opens_at;
+        tempDay.closes_at = curr.closes_at;
+        newSchedule.push(tempDay);
+      });
     });
-  });
 
-  return { schedule_days: newSchedule };
+    return { schedule_days: newSchedule };
+  } else {
+    return { schedule_days: [] };
+  }
 }
 
 class EditSections extends React.Component {
