@@ -6,6 +6,17 @@ function buildSchedule(schedule) {
   let scheduleId = schedule ? schedule.id : null;
   let currSchedule = {};
   let finalSchedule = {};
+  let currDay = '';
+
+  let is24Hours = {
+    Monday: false,
+    Tuesday: false,
+    Wednesday: false,
+    Thursday: false,
+    Friday: false,
+    Saturday: false,
+    Sunday: false,
+  };
 
   let tempSchedule = {
     Monday: [{ opens_at: null, closes_at: null, scheduleId }],
@@ -16,11 +27,23 @@ function buildSchedule(schedule) {
     Saturday: [{ opens_at: null, closes_at: null, scheduleId }],
     Sunday: [{ opens_at: null, closes_at: null, scheduleId }],
   };
+
   if (schedule) {
     schedule.schedule_days.forEach((curr) => {
-      curr.openChanged=false;
-      curr.closeChanged=false;
-      currSchedule[curr.day] ? currSchedule[curr.day].unshift(curr) : currSchedule[curr.day] = [curr];
+      currDay = curr.day;
+      if (!is24Hours[currDay]) {
+        // Check to see if any of the hour pairs for the day
+        // indicate the resource/service is open 24 hours
+        // if there is a pair only have that in the schedule obj
+        if (curr.opens_at === 0 || curr.closes_at === 2359) {
+          is24Hours[currDay] = true;
+          currSchedule[currDay] = [{ opens_at: 0, closes_at: 2359, id: curr.id }];
+        } else {
+          curr.openChanged=false;
+          curr.closeChanged=false;
+          currSchedule[curr.day] ? currSchedule[curr.day].unshift(curr) : currSchedule[curr.day] = [curr];
+        }
+      }
     });
   }
   finalSchedule = Object.assign({}, tempSchedule, currSchedule);
