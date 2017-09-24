@@ -65,6 +65,7 @@ class EditSchedule extends Component {
     this.handleScheduleChange = this.handleScheduleChange.bind(this);
     this.addTime = this.addTime.bind(this);
     this.removeTime = this.removeTime.bind(this);
+    this.toggle24Hours = this.toggle24Hours.bind(this);
   }
 
   handleScheduleChange(day, index, field, value) {
@@ -73,7 +74,6 @@ class EditSchedule extends Component {
     tempDaySchedule[index][field === 'opens_at' ? 'openChanged' : 'closeChanged'] = true;
     if (!tempDaySchedule[index].id && tempDaySchedule[index].id !== null) {
       tempDaySchedule.id = null;
-
     }
     let tempScheduleDays = Object.assign({}, this.state.scheduleDays, {[day]: tempDaySchedule })
     this.setState({ scheduleDays: tempScheduleDays}, function() {
@@ -121,6 +121,17 @@ class EditSchedule extends Component {
     return timeToTimeInputValue(time, true);
   }
 
+  toggle24Hours(day, is24Hours) {
+
+    if (is24Hours) {
+      this.handleScheduleChange(day, 0, "opens_at", "00:00");
+      this.handleScheduleChange(day, 0, "closes_at", "00:00");
+    } else {
+      this.handleScheduleChange(day, 0, "opens_at", "0");
+      this.handleScheduleChange(day, 0, "closes_at", "23:59");
+    }
+  }
+
   render() {
     let daysOfWeek = {
       Monday: 'M',
@@ -136,6 +147,7 @@ class EditSchedule extends Component {
     return (
       <li key="hours" className="edit--section--list--item hours">
         <label>Hours</label>
+        <label className='open-24-label'>24 hrs?</label>
           <ul className="edit-hours-list">
             {
               Object.keys(schedule).map((day, i) => {
@@ -146,6 +158,7 @@ class EditSchedule extends Component {
                     dayHours={schedule[day]}
                     key={i}
                     handleScheduleChange={this.handleScheduleChange}
+                    toggle24Hours={this.toggle24Hours}
                     getDayHours={this.getDayHours}
                     addTime={this.addTime}
                     removeTime={this.removeTime}

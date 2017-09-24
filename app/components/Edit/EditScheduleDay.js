@@ -15,7 +15,7 @@ class EditScheduleDay extends Component {
         <p>{ index === 0 ? abbrev : '' }</p>
         {is24Hours ?
           <div>
-            <p>Open 24 hours</p>
+            <p className="open-24-hours">Open 24 hours</p>
           </div>
           :
           <div>
@@ -32,10 +32,14 @@ class EditScheduleDay extends Component {
     let { dayHours } = this.props;
     let day = this.props.day;
     let is24Hours = false;
+    let is24Toggle = null;
 
     if (dayHours[0].opens_at === 0 && dayHours[0].closes_at === 2359) {
       is24Hours = true;
     }
+
+    
+
     return (
       <div className="day-group">
         <div className="hours">
@@ -47,13 +51,16 @@ class EditScheduleDay extends Component {
             })
           }
         </div>
-        {is24Hours ?
-          null
-          :
           <div className="add-time">
-            <button onClick={() => this.props.addTime(day)}>+</button>
+            {is24Hours ?
+              null
+              :
+              <button onClick={() => this.props.addTime(day)}>+</button>
+            }
           </div>
-        }
+          <div className="is-24-hours">
+            <input type="checkbox" checked={is24Hours} onChange={() => this.props.toggle24Hours(day, is24Hours)} />
+          </div>
       </div>
     );
   }

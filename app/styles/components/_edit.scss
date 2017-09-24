@@ -194,7 +194,7 @@
   margin-bottom: 20px;
 
   .hours {
-    width: 95%;
+    width: 85%;
   }
 
   .remove-time {
@@ -208,13 +208,30 @@
   .add-time {
     width: 5%;
     align-self: flex-start;
-    padding-left: 10px;
+    padding-left: 20px;
     margin-top: 8.5px;
 
     button {
       height: 40px;
     }
   }
+
+  .is-24-hours {
+    height: 40px;
+    padding-left: 40px;
+    input:not(:checked) {
+      margin-top: 20px;
+    }
+  }
+  .open-24-hours {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.open-24-label {
+  text-align: right;
+  width: 103%;
 }
 
 .edit-hours-list {
