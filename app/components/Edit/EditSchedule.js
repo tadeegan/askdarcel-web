@@ -92,7 +92,7 @@ class EditSchedule extends Component {
       tempDaySchedule.id = null;
     }
 
-    let tempScheduleDays = Object.assign({}, this.state.scheduleDays, {[day]: tempDaySchedule })
+    let tempScheduleDays = Object.assign({}, this.state.scheduleDays, {[day]: tempDaySchedule });
     this.setState({ scheduleDays: tempScheduleDays}, function() {
         this.props.handleScheduleChange(tempScheduleDays);
       });
@@ -122,14 +122,28 @@ class EditSchedule extends Component {
   }
 
   toggle24Hours(day, is24Hours) {
+    let tempDaySchedule = this.state.scheduleDays[day][0];
 
     if (is24Hours) {
-      this.handleScheduleChange(day, 0, "opens_at", "00:00");
-      this.handleScheduleChange(day, 0, "closes_at", "00:00");
+      tempDaySchedule.opens_at = "0";
+      tempDaySchedule.closes_at = "2359";
     } else {
-      this.handleScheduleChange(day, 0, "opens_at", "0");
-      this.handleScheduleChange(day, 0, "closes_at", "23:59");
+      tempDaySchedule.opens_at = "0";
+      tempDaySchedule.closes_at = "0";
     }
+
+    tempDaySchedule.openChanged = true;
+    tempDaySchedule.closeChanged = true;
+    tempDaySchedule.scheduleId = this.state.scheduleId;
+
+    if (!tempDaySchedule.id && tempDaySchedule.id !== null) {
+      tempDaySchedule.id = null;
+    }
+
+    let tempScheduleDays = Object.assign({}, this.state.scheduleDays, {[day]: tempDaySchedule })
+    this.setState({ scheduleDays: tempScheduleDays}, function() {
+        this.props.handleScheduleChange(tempScheduleDays);
+      });
   }
 
   render() {
