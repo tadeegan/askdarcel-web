@@ -206,7 +206,7 @@
   }
 
   .add-time {
-    width: 5%;
+    width: 10%;
     align-self: flex-start;
     padding-left: 20px;
     margin-top: 8.5px;
@@ -218,7 +218,7 @@
 
   .is-24-hours {
     height: 40px;
-    padding-left: 40px;
+    padding-left: 20px;
     input:not(:checked) {
       margin-top: 20px;
     }
