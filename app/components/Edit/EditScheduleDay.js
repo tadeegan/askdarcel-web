@@ -37,9 +37,7 @@ class EditScheduleDay extends Component {
     if (dayHours[0].opens_at === 0 && dayHours[0].closes_at === 2359) {
       is24Hours = true;
     }
-
     
-
     return (
       <div className="day-group">
         <div className="hours">
