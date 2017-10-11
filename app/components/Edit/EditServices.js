@@ -167,7 +167,7 @@ class EditService extends Component {
 
 					<EditNotes notes={this.props.service.notes} handleNotesChange={this.handleNotesChange} />
 
-          {this.renderCategories()}
+					<CategoriesDropdown categories={this.props.service.categories} handleCategoryChange={this.handleCategoryChange} />
 				</ul>
 			</li>
     );

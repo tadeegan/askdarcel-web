@@ -3,13 +3,16 @@ module.exports = {
   "plugins": [
     "react",
     "jsx-a11y",
-    "import"
+    "import",
   ],
   "env": {
-    "browser": true
+    "browser": true,
   },
   "rules": {
     "react/jsx-filename-extension": 0,
     "react/forbid-prop-types": 0,
-  }
+  },
+  "settings": {
+    "import/resolver": "webpack",
+  },
 };

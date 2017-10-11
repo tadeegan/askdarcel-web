@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router';
+import { withRouter, browserHistory } from 'react-router';
 import _ from 'lodash';
 
 import Loader from '../Loader';
@@ -12,6 +12,133 @@ import EditPhones from './EditPhones';
 import * as dataService from '../../utils/DataService';
 import { getAuthRequestHeaders } from '../../utils/index';
 import { daysOfTheWeek } from '../../utils/index';
+
+function getDiffObject(curr, orig) {
+  return Object.entries(curr).reduce((acc, [key, value]) => {
+    if (!_.isEqual(orig[key], value)) {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+}
+
+function updateCollectionObject(object, id, path, promises) {
+  promises.push(
+    dataService.post(
+      `/api/${path}/${id}/change_requests`,
+      { change_request: object },
+    ),
+  );
+}
+
+/**
+ * Create a change request for a new object.
+ */
+function createCollectionObject(object, path, promises, resourceID) {
+  promises.push(
+    dataService.post(
+      '/api/change_requests',
+      { change_request: object, type: path, parent_resource_id: resourceID },
+    ),
+  );
+}
+
+function postCollection(collection, originalCollection, path, promises, resourceID) {
+  for (let i = 0; i < collection.length; i += 1) {
+    const item = collection[i];
+
+    if (i < originalCollection.length && item.dirty) {
+      const diffObj = getDiffObject(item, originalCollection[i]);
+      if (!_.isEmpty(diffObj)) {
+        delete diffObj.dirty;
+        updateCollectionObject(diffObj, item.id, path, promises);
+      }
+    } else if (item.dirty) {
+      delete item.dirty;
+      createCollectionObject(item, path, promises, resourceID);
+    }
+  }
+}
+
+function postSchedule(scheduleObj, promises) {
+  if (!scheduleObj) {
+    return;
+  }
+  let currDay = [];
+  let value = {};
+  Object.keys(scheduleObj).forEach((day) => {
+    currDay = scheduleObj[day];
+    currDay.forEach((curr) => {
+      value = {};
+      if (curr.id) {
+        if (!curr.openChanged && !curr.closeChanged) {
+          return;
+        }
+        if (curr.openChanged) {
+          value.opens_at = curr.opens_at;
+        }
+        if (curr.closeChanged) {
+          value.closes_at = curr.closes_at;
+        }
+
+        promises.push(dataService.post(`/api/schedule_days/${curr.id}/change_requests`, { change_request: value }));
+      } else {
+        value = {
+          change_request: {
+            day,
+          },
+          type: 'schedule_days',
+          schedule_id: curr.scheduleId,
+        };
+        if (curr.openChanged) {
+          value.change_request.opens_at = curr.opens_at;
+        }
+        if (curr.closeChanged) {
+          value.change_request.closes_at = curr.closes_at;
+        }
+        if (!curr.openChanged && !curr.closeChanged) {
+          return;
+        }
+        promises.push(dataService.post(`/api/change_requests`, { ...value }));
+      }
+    });
+  });
+}
+
+function postNotes(notesObj, promises, uriObj) {
+  if (notesObj && notesObj.notes) {
+    const notes = notesObj.notes;
+    Object.entries(notes).forEach(([key, currentNote]) => {
+      if (key < 0) {
+        const uri = `/api/${uriObj.path}/${uriObj.id}/notes`;
+        promises.push(dataService.post(uri, { note: currentNote }));
+      } else {
+        const uri = `/api/notes/${key}/change_requests`;
+        promises.push(dataService.post(uri, { change_request: currentNote }));
+      }
+    });
+  }
+}
+
+function createFullSchedule(scheduleObj) {
+  if (scheduleObj) {
+    let newSchedule = [];
+    let tempDay = {};
+    Object.keys(scheduleObj).forEach(day => {
+      scheduleObj[day].forEach(curr => {
+        tempDay = {};
+        tempDay.day = day;
+        tempDay.opens_at = curr.opens_at;
+        tempDay.closes_at = curr.closes_at;
+        newSchedule.push(tempDay);
+      });
+    });
+
+    return { schedule_days: newSchedule };
+  } else {
+    return { schedule_days: [] };
+  }
+}
 
 class EditSections extends React.Component {
 
@@ -39,7 +166,6 @@ class EditSections extends React.Component {
     this.handleNotesChange = this.handleNotesChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.postServices = this.postServices.bind(this);
-    this.postObject = this.postObject.bind(this);
     this.postNotes = this.postNotes.bind(this);
     this.postSchedule = this.postSchedule.bind(this);
     this.createResource = this.createResource.bind(this);
@@ -122,11 +248,18 @@ class EditSections extends React.Component {
       return false;
     }
   }
-  prepSchedule(schedule) {
+  prepSchedule(scheduleObj) {
     let newSchedule = [];
-    for (var day in schedule) {
-      newSchedule.push(schedule[day]);
-    }
+    let tempDay = {};
+    Object.keys(scheduleObj).forEach(day => {
+      scheduleObj[day].forEach(curr => {
+        tempDay = {};
+        tempDay.day = day;
+        tempDay.opens_at = curr.opens_at;
+        tempDay.closes_at = curr.closes_at;
+        newSchedule.push(tempDay);
+      });
+    });
     return newSchedule;
   }
 
@@ -168,10 +301,10 @@ class EditSections extends React.Component {
     }
 
     //Fire off phone requests
-    this.postCollection(this.state.phones, this.state.resource.phones, 'phones', promises);
+    postCollection(this.state.phones, this.state.resource.phones, 'phones', promises);
 
-    //schedule
-    this.postObject(this.state.scheduleObj, 'schedule_days', promises);
+    // schedule
+    postSchedule(this.state.scheduleObj, promises);
 
     //address
     if (this.hasKeys(this.state.address) && this.state.resource.address) {
@@ -195,89 +328,38 @@ class EditSections extends React.Component {
 
   }
 
-  postCollection(collection, originalCollection, path, promises) {
-    for (let i = 0; i < collection.length; i++) {
-      let item = collection[i];
-
-      if (i < originalCollection.length && item.dirty) {
-        let diffObj = this.getDiffObject(item, originalCollection[i]);
-        if (diffObj.numKeys > 0) {
-          delete diffObj.obj.dirty;
-          this.updateCollectionObject(diffObj.obj, item.id, path, promises);
-        }
-      } else if (item.dirty) {
-        //post a new object
-      }
-    }
-  }
-
-  getDiffObject(curr, orig) {
-    let diffObj = {
-      obj: {},
-      numKeys: 0
-    };
-
-    for (let key in curr) {
-      if (!_.isEqual(curr[key], orig[key])) {
-        diffObj.obj[key] = curr[key];
-        diffObj.numKeys++;
-      }
-    }
-
-    return diffObj;
-  }
-
-  updateCollectionObject(object, id, path, promises) {
-    promises.push(
-      dataService.post(
-        '/api/' + path + '/' + id + '/change_requests', { change_request: object }
-      )
-    );
-  }
-
-  postObject(object, path, promises) {
-    for (let key in object) {
-      if (object.hasOwnProperty(key)) {
-        promises.push(dataService.post('/api/' + path + '/' + key + '/change_requests', { change_request: object[key] }));
-      }
-    }
-  }
-
   postServices(servicesObj, promises) {
-    let newServices = [];
-    for (let key in servicesObj) {
-      if (servicesObj.hasOwnProperty(key)) {
-        let currentService = servicesObj[key];
-
-        if (key < 0) {
-          if (currentService.notesObj) {
-            let notes = this.objToArray(currentService.notesObj.notes);
-            delete currentService.notesObj;
-            currentService.notes = notes;
-          }
-
-          currentService.schedule = this.createFullSchedule(currentService.scheduleObj);
-          delete currentService.scheduleObj;
-
-          if (!isEmpty(currentService)) {
-            newServices.push(currentService);
-          }
-        } else {
-          let uri = '/api/services/' + key + '/change_requests';
-          this.postNotes(currentService.notesObj, promises, { path: "services", id: key });
+    if (!servicesObj) return;
+    const newServices = [];
+    Object.entries(servicesObj).forEach(([key, value]) => {
+      const currentService = value;
+      if (key < 0) {
+        if (currentService.notesObj) {
+          const notes = Object.values(currentService.notesObj.notes);
           delete currentService.notesObj;
-          this.postSchedule(currentService.scheduleObj, promises);
-          delete currentService.scheduleObj;
-          if (!isEmpty(currentService)) {
-            promises.push(dataService.post(uri, { change_request: currentService }));
-          }
+          currentService.notes = notes;
+        }
 
+        currentService.schedule = createFullSchedule(currentService.scheduleObj);
+        delete currentService.scheduleObj;
+
+        if (!_.isEmpty(currentService)) {
+          newServices.push(currentService);
+        }
+      } else {
+        const uri = `/api/services/${key}/change_requests`;
+        postNotes(currentService.notesObj, promises, { path: 'services', id: key });
+        delete currentService.notesObj;
+        postSchedule(currentService.scheduleObj, promises);
+        delete currentService.scheduleObj;
+        if (!_.isEmpty(currentService)) {
+          promises.push(dataService.post(uri, { change_request: currentService }));
         }
       }
-    }
+    });
 
     if (newServices.length > 0) {
-      let uri = '/api/resources/' + this.state.resource.id + '/services';
+      const uri = `/api/resources/${this.state.resource.id}/services`;
       promises.push(dataService.post(uri, { services: newServices }));
     }
   }
@@ -294,7 +376,7 @@ class EditSections extends React.Component {
             delete currentService.notesObj;
             currentService.notes = notes;
           }
-          currentService.schedule = this.createFullSchedule(currentService.scheduleObj);
+          currentService.schedule = createFullSchedule(currentService.scheduleObj);
           delete currentService.scheduleObj;
 
           if (!isEmpty(currentService)) {
@@ -316,38 +398,6 @@ class EditSections extends React.Component {
     return newNotes;
   }
 
-  createFullSchedule(scheduleObj) {
-    let daysTemplate = {};
-    for (let i = 0; i < daysOfTheWeek().length; i++) {
-      let day = daysOfTheWeek()[i];
-      daysTemplate[day] = {
-        day: day,
-        opens_at: null,
-        closes_at: null
-      }
-    }
-
-    if (scheduleObj) {
-      for (let key in scheduleObj) {
-        if (scheduleObj.hasOwnProperty(key)) {
-          let scheduleDay = scheduleObj[key];
-          for (let dayKey in scheduleDay) {
-            daysTemplate[scheduleDay.day][dayKey] = scheduleDay[dayKey];
-          }
-        }
-      }
-    }
-
-    let scheduleDays = [];
-    for (let day in daysTemplate) {
-      if (daysTemplate.hasOwnProperty(day)) {
-        scheduleDays.push(daysTemplate[day]);
-      }
-    }
-
-    return { schedule_days: scheduleDays };
-  }
-
   objToArray(obj) {
     let arr = [];
     for (let key in obj) {
@@ -361,7 +411,7 @@ class EditSections extends React.Component {
 
   postSchedule(scheduleObj, promises, uriObj) {
     if (scheduleObj) {
-      this.postObject(scheduleObj, 'schedule_days', promises);
+      postObject(scheduleObj, 'schedule_days', promises);
     }
   }
 
@@ -553,15 +603,6 @@ function isEmpty(map) {
     return !map.hasOwnProperty(key);
   }
   return true;
-}
-
-function getDiffObject(curr, orig) {
-  return Object.entries(curr).reduce((acc, [key, value]) => {
-    if (!_.isEqual(orig[key], value)) {
-      acc[key] = value;
-    }
-    return acc;
-  }, {});
 }
 
 EditSections.propTypes = {
