@@ -65,6 +65,8 @@
     "react-icons": "^2.0.1",
     "sass-loader": "^3.2.0",
     "style-loader": "^0.13.1",
+    "testcafe": "^0.18.2",
+    "testcafe-react-selectors": "^1.0.2",
     "webpack": "^1.13.0",
     "webpack-dev-server": "1.14.1"
   },
