@@ -2,210 +2,94 @@
 // import Actions from './Actions';
 import React from 'react';
 import PropTypes from 'prop-types';
+import * as DataService from '../../utils/DataService';
 // import * as _ from 'lodash/fp/object';
 import ChangeRequest from './ChangeRequest';
 // import * as ChangeRequestTypes from './ChangeRequestTypes';
 import ProposedService from './ProposedService';
+import { getAuthRequestHeaders } from '../../utils/index';
 
-class ChangeRequests extends React.Component {
-
-  // static renderIndividualRequests(changeRequests, actionHandler) {
-  //   if (!changeRequests) { return; }
-  //   const resourceInfoToRender = [];
-  //   const requestsToRender = [];
-
-  //   changeRequests.forEach((changeRequest) => {
-  //     switch (changeRequest.type) {
-  //       case 'ResourceChangeRequest':
-  //       case 'PhoneChangeRequest':
-  //         resourceInfoToRender.push(
-  //           <div key={`cr${changeRequest.id}`}>
-  //             <span>{ ChangeRequests.renderIndividualChangeRequest(changeRequest, actionHandler) }</span>
-  //           </div>,
-  //         );
-  //         break;
-  //       case 'ServiceChangeRequest':
-  //         // console.log(changeRequest)
-  //         requestsToRender.push(
-  //           <div key={`cr${changeRequest.id}`} className="service-wrapper">
-  //             { ChangeRequests.renderIndividualChangeRequest(changeRequest, actionHandler) }
-  //           </div>,
-  //         );
-  //         break;
-  //       default:
-  //         console.log('rendering unknown', changeRequest);
-  //         // TODO: Pretty sure there are no other types for now
-  //     }
-  //   });
-
-  //   if (requestsToRender.length) {
-  //     requestsToRender.unshift(
-  //       <span key="title">
-  //         <h3>Service Changes Requests</h3>
-  //         <hr />
-  //       </span>
-  //     );
-  //   }
-
-  //   return resourceInfoToRender.concat(requestsToRender);
-  // }
-
-  // static renderIndividualChangeRequest(changeRequest, actionHandler) {
-  //   return (
-  //     <div className="request-container">
-  //       <ChangeRequest changeRequest={changeRequest} actionHandler={actionHandler} />
-  //     </div>
-  //   );
-  // }
-
-  // static renderProposedServices(services, actionHandler) {
-  //   if (!services) { return; }
-  //   // console.log('services', services);
-  //   return services.map((service, i) => (
-  //     <div key={`svc${service.id}`}>
-  //       <h3>New Service {i+1}:</h3>
-  //       <hr />
-  //       <div className="request-container">
-  //         <ProposedService service={service} actionHandler={actionHandler} />
-  //       </div>
-  //     </div>
-  //   ));
-  // }
-
-  // renderChangeRequests(changeRequests, services, actionHandler) {
-  //   // const resourceToChangeRequests = {};
-  //   // const resourceObjects = {};
-  //   // const changeRequestWrappers = [];
-  //   // const resourceToServices = {};
-
-  //   let changeRequestWrappers = Object.keys(this.state.resourceObjects).map((resourceID) => {
-  //     return (
-  //       <div key={`resource-${resourceID}`}>
-  //         { this.renderIndividualResourceListing(this.state.resourceObjects[resourceID]) }
-  //       </div>
-  //     );
-  //   });
-
-  //   // Render each change request
-  //   // Object.keys(this.state.resourceObjects).forEach((resourceID) => {
-  //   //   changeRequestWrappers.push(
-  //   //     <div key={`resource-${resourceID}`}>
-  //   //       { this.renderIndividualResourceListing(this.state.resourceObjects[resourceID]) }
-  //   //     </div>
-  //   //   );
-
-  //   //   // const collapsed = this.state.resourceToCollapsed[resourceID] ? '' : 'collapsed';
-  //   //   // // TODO Switch back to closed by default
-  //   //   // changeRequestWrappers.push(
-  //   //   //   <div key={resourceID} className={`group-container ${collapsed}`}>
-  //   //   //     <h2 onClick={() => this.toggleCollapsed(resourceID)}>
-  //   //   //       {resourceObjects[resourceID].name}
-  //   //   //       <span className={'sub'}>#{resourceID}</span>
-  //   //   //       <span className={`material-icons expander ${collapsed} right`}>expand_less</span>
-  //   //   //     </h2>
-  //   //   //     <div className={`group-content ${collapsed}`}>
-  //   //   //       {
-  //   //   //         ChangeRequests
-  //   //   //           .renderIndividualRequests(resourceToChangeRequests[resourceID], actionHandler)
-  //   //   //       }
-  //   //   //       {
-  //   //   //         ChangeRequests
-  //   //   //           .renderProposedServices(resourceToServices[resourceID], actionHandler)
-  //   //   //       }
-  //   //   //       <div className="btn-group right">
-  //   //   //         <button
-  //   //   //           className="btn"
-  //   //   //           onClick={() => this.props.bulkActionHandler(
-  //   //   //               ChangeRequestTypes.APPROVE,
-  //   //   //               resourceToChangeRequests[resourceID])}
-  //   //   //         >
-  //   //   //           Accept All
-  //   //   //         </button>
-  //   //   //       </div>
-  //   //   //     </div>
-  //   //   //   </div>
-  //   //   // );
-  //   // });
-
-  //   // If there are no requests, render a happy message
-  //   // if (!changeRequestWrappers.length) {
-  //   //   changeRequestWrappers.push(
-  //   //     <p className="message">
-  //   //       Hurrah, it looks like you&#39;ve handled all the outstanding change requests!
-  //   //     </p>
-  //   //   );
-  //   // }
-
-  //   return changeRequestWrappers;
-  // }
-
+class ChangeRequestsPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      resourceObjects: {},
-      resourceToCollapsed: {},
+      activeResource: undefined,
+      parsedChanges: {},
     };
-
-    const ensureResourceExists = resource => {
-      if (this.state.resourceObjects[resource.id] === undefined) {
-        console.log('attaching resource', resource);
-        resource._changeRequests = [];
-        resource._suggestedServices = [];
-        resource._collapsed = true;
-        this.state.resourceObjects[resource.id] = resource;
-      }
-    };
-
-    // Arrange change requests by resource ID
-    this.props.changeRequests.forEach((changeRequest) => {
-      ensureResourceExists(changeRequest.resource);
-      this.state.resourceObjects[changeRequest.resource.id]._changeRequests.push(changeRequest);
-    });
-
-    // Arrange services by resource ID
-    this.props.services.forEach((service) => {
-      ensureResourceExists(service.resource);
-      this.state.resourceObjects[service.resource.id]._suggestedServices.push(service);
-    });
+    this.loadAllChanges();
   }
 
   /**
-   * Turn Toggle the collapsed state of an individual resource
-   * @param  {Object} resource   A resource object
+   * Loads and parses all the change requests and pending services
+   * @return {[type]} [description]
    */
-  toggleCollapsedState(resource) {
-    const { resourceObjects } = this.state;
-    resourceObjects[resource.id]._collapsed = !resource._collapsed;
-    this.setState({
-      resourceObjects,
-    });
-  }
-
-  /**
-   * If there are no serviceChanges or proposedServices, return an empty wrapper
-   * otherwise wrap them up in a title and beautification div
-   * @param  {JSX} serviceChanges      An array of serviceChanges for a given resource
-   * @param  {JSX} proposedServices    An array of proposedServices for a given resource
-   * @param  {Number} resourceID       An integer object_id for the resource
-   * @return {JSX}                     The serviceChanges and proposedServices wrapped
-   *                                   in beautification
-   */
-  renderResourceServiceWrapper(serviceChanges, proposedServices, resourceID) {
-    if (serviceChanges.length === 0 && proposedServices.length === 0) {
-      return (
-        <div key={`resource-${resourceID}-services`} className="service-wrapper"></div>
+  loadAllChanges() {
+    Promise.all([
+      DataService.get('/api/change_requests', getAuthRequestHeaders()),
+      DataService.get('/api/services/pending', getAuthRequestHeaders()),
+    ]).then((d) => {
+      const parsedChanges = Object.assign(
+        { loaded: true, resources: {} },
+        { changeRequests: d[0].change_requests },
+        { count: d[0].change_requests.length },
+        d[1],
       );
-    }
 
+      // Track invidivual Resources
+      const ensureResourceExists = (resource) => {
+        if (parsedChanges.resources[resource.id] === undefined) {
+          // console.log('attaching resource', resource);
+          resource._changeRequests = [];
+          resource._proposedServices = [];
+          resource._collapsed = true;
+          parsedChanges.resources[resource.id] = resource;
+        }
+      };
+
+      // Attach change requests to this resource
+      parsedChanges.changeRequests.forEach((cr) => {
+        ensureResourceExists(cr.resource);
+        parsedChanges.resources[cr.resource.id]._changeRequests.push(cr);
+      });
+
+      // Attach proposed services
+      parsedChanges.services.forEach((s) => {
+        ensureResourceExists(s.resource);
+        parsedChanges.resources[s.resource.id]._proposedServices.push(s);
+      });
+
+      this.setState(parsedChanges);
+      console.log(parsedChanges);
+    });
+  }
+
+  setActiveResource(resource) {
+    console.log('setting active resource', resource);
+    this.setState({
+      activeResource: resource,
+    });
+  }
+
+  /**
+   * Renders the wrapper for an individual resource
+   * with associated changeRequests
+   * @param  {Object} resource    A passed in resource
+   * @return {JSX}                A full accordian with all the relevant changes
+   */
+  renderIndividualResourceListing(resource) {
     return (
-      <div key={`resource-${resourceID}-services`} className="service-wrapper">
-        <h3>Services</h3>
-        <hr />
-        { serviceChanges }
-        { proposedServices }
+      <div
+        key={resource.id}
+        className="results-table-entry resource-title"
+        onClick={() => this.setActiveResource(resource)}
+        role="link"
+        tabIndex="-1"
+      >
+        <header>
+          <h4>{ resource.name }</h4>
+        </header>
       </div>
     );
-    // const hasServices = sections.serviceChanges.length || sections.proposedServices.length
   }
 
   /**
@@ -218,94 +102,76 @@ class ChangeRequests extends React.Component {
    */
   renderResourceChangeRequests(resource) {
     const services = {};
-    const sections = {
-      resourceChanges: [],
-      serviceChanges: [],
-      proposedServices: [],
-    };
+    const resourceChanges = [];
+    const serviceChanges = [];
+    const proposedServices = [];
 
     resource._changeRequests.forEach((changeRequest) => {
       switch (changeRequest.type) {
-        case 'AddressChangeRequest':
-        case 'NoteChangeRequest':
-        case 'PhoneChangeRequest':
-        case 'ResourceChangeRequest':
-        case 'ScheduleDayChangeRequest':
-          sections.resourceChanges.push(
-            <div key={`change-request-${changeRequest.id}`} className="request-container resource-change-wrapper">
-              <ChangeRequest changeRequest={changeRequest} actionHandler={this.props.actionHandler} />
-            </div>
-          );
-          break;
-
         case 'ServiceChangeRequest':
-          if (services[changeRequest.object_id] === undefined) {
-            services[changeRequest.object_id] = [];
-          }
-          services[changeRequest.object_id].push(changeRequest);
+          serviceChanges.push(
+            <ChangeRequest
+              key={changeRequest.id}
+              changeRequest={changeRequest}
+            />,
+          );
+
+          // if (services[changeRequest.object_id] === undefined) {
+          //   services[changeRequest.object_id] = [];
+          // }
+          // services[changeRequest.object_id].push(changeRequest);
           // console.log(changeRequest)
           break;
 
+        // case 'AddressChangeRequest':
+        // case 'NoteChangeRequest':
+        // case 'PhoneChangeRequest':
+        // case 'ResourceChangeRequest':
+        // case 'ScheduleDayChangeRequest':
+        //   sections.resourceChanges.push(
+        //     <div key={`change-request-${changeRequest.id}`} className="request-container resource-change-wrapper">
+        //       <ChangeRequest changeRequest={changeRequest} actionHandler={this.props.actionHandler} />
+        //     </div>
+        //   );
+        //   break;
+
         default:
-          console.log('unknown change request type', changeRequest.type, changeRequest);
+          resourceChanges.push(
+            <ChangeRequest
+              key={changeRequest.id}
+              changeRequest={changeRequest}
+            />,
+          );
       }
     });
 
-    Object.keys(services).forEach(serviceID => {
-      const serviceChanges = services[serviceID].map(changeRequest => {
-        return (
-          <ChangeRequest key={`change-request-${changeRequest.id}`} changeRequest={changeRequest} actionHandler={this.props.actionHandler} />
-        );
-      });
-      sections.serviceChanges.push(
-        <div key={`service-${serviceID}-changes`} className="request-container service-change-wrapper">
-          <h4>Service { serviceID }</h4>
-          { serviceChanges }
-        </div>
+    resource._proposedServices.forEach(service => {
+      proposedServices.push(
+        <ProposedService
+          key={service.id}
+          service={service}
+          actionHandler={this.props.actionHandler}
+        />,
       );
     });
 
-    resource._suggestedServices.forEach(service => {
-      sections.proposedServices.push(
-        <div key={`service-${service.id}`} className="request-container proposed-service-wrapper">
-          <h4>New Service {service.id}:</h4>
-          <ProposedService service={service} actionHandler={this.props.actionHandler} />
-        </div>
-      );
-    });
-
-    return ([
-      ...sections.resourceChanges,
-      this.renderResourceServiceWrapper(sections.serviceChanges, sections.proposedServices, resource.id),
-    ]);
-  }
-
-/**
- * Renders the wrapper for an individual resource
- * with associated changeRequests
- * @param  {Object} resource    A passed in resource
- * @return {JSX}                A full accordian with all the relevant changes
- */
-  renderIndividualResourceListing(resource) {
     return (
-      <div key={resource.id} className={`group-container ${ resource._collapsed ? 'collapsed' : '' }`}>
-        <h2 onClick={() => this.toggleCollapsedState(resource)}>
-          { resource.name }
-          <span className={'sub'}>#{resource.id}</span>
-          <span className={`material-icons expander ${resource._collapsed ? 'collapsed' : ''} right`}>expand_less</span>
-        </h2>
-        <div className={`group-content ${resource._collapsed ? 'collapsed' : ''}`}>
-          { this.renderResourceChangeRequests(resource) }
-          <div className="btn-group right">
-            <button
-              className="btn"
-              onClick={() => this.props.bulkActionHandler(
-                  ChangeRequestTypes.APPROVE,
-                  resourceToChangeRequests[resourceID])}
-            >
-              Accept All
-            </button>
-          </div>
+      <div>
+        <div className="titlebox">
+          <h2>{resource.name}</h2>
+          <ul>
+            <li>Changes: ({ resourceChanges.length })</li>
+            <li>Service Changes: ({ serviceChanges.length })</li>
+            <li>Proposed Changes: ({ proposedServices.length })</li>
+          </ul>
+        </div>
+        <div>
+          { resourceChanges}
+        </div>
+        <div>
+          <h3>Services</h3>
+          { serviceChanges }
+          { proposedServices }
         </div>
       </div>
     );
@@ -317,38 +183,48 @@ class ChangeRequests extends React.Component {
    */
   render() {
     return (
-      <div className="change-requests">
-        <h1 className="page-title">
-          {`Change Requests (${this.props.changeRequests.length})`}
-        </h1>
-        {
-          this.state.resourceObjects
-            ? (
-              Object.keys(this.state.resourceObjects).map((resourceID) => {
-                return (
-                  <div key={`resource-${resourceID}`}>
-                    { this.renderIndividualResourceListing(this.state.resourceObjects[resourceID]) }
-                  </div>
-                );
-              })
-            )
+      <div className="admin change-requests results">
+        <div className="results-table">
+          <h1 className="page-title">
+            Change Requests ({ this.state.parsedChanges.count })
+          </h1>
+          {
+            this.state.resources
+              ? (
+                Object.keys(this.state.resources).map((resourceID) => {
+                  return (
+                    <div key={`resource-${resourceID}`}>
+                      { this.renderIndividualResourceListing(this.state.resources[resourceID]) }
+                    </div>
+                  );
+                })
+              )
 
-            : (
-              <p className="message">
-                Hurrah, it looks like you&#39;ve handled all the outstanding change requests!
-              </p>
-            )
-        }
+              : (
+                <p className="message">
+                  Hurrah, it looks like you&#39;ve handled all the outstanding change requests!
+                </p>
+              )
+          }
+        </div>
+
+        <div className={`results-table details ${this.state.activeResource ? '' : 'inactive'}`}>
+          {
+            !this.state.activeResource
+              ? (<div>Choose a resource</div>)
+              : (<div>{ this.renderResourceChangeRequests(this.state.activeResource) }</div>)
+          }
+        </div>
       </div>
     );
   }
 }
 
-ChangeRequests.propTypes = {
-  changeRequests: PropTypes.array.isRequired,
-  services: PropTypes.array.isRequired,
-  actionHandler: PropTypes.func.isRequired,
-  bulkActionHandler: PropTypes.func.isRequired,
+ChangeRequestsPage.propTypes = {
+  // changeRequests: PropTypes.array.isRequired,
+  // services: PropTypes.array.isRequired,
+  // actionHandler: PropTypes.func.isRequired,
+  // bulkActionHandler: PropTypes.func.isRequired,
 };
 
-export default ChangeRequests;
+export default ChangeRequestsPage;

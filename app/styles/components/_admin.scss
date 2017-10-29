@@ -2,6 +2,44 @@
   background: $color-grey2;
   height: calc(100%);
 
+  .results-table {
+    &.details {
+      max-width: 5000px;
+      // padding: $padding-default;
+      height: calc(100%);
+
+      .titlebox {
+        border-bottom: 1px solid #CCC;
+        margin-bottom: $padding-default;
+        padding-bottom: $padding-default;
+      }
+
+      .change-request-wrapper {
+        background: #EFEFEF;
+        padding: $padding-default;
+        margin: $padding-default;
+        border-right: 0.4375rem solid #116EEA;
+
+        .actions {
+
+        }
+
+        .changes {
+          clear: both;
+        }
+      }
+    }
+
+    .resource-title {
+      padding: $padding-default;
+      cursor: pointer;
+
+      header {
+        margin: 0;
+      }
+    }
+  }
+
   .change-requests {
     margin: 12px auto;
     width: 70%;

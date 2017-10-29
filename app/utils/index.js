@@ -1,4 +1,5 @@
 export function getAuthRequestHeaders() {
+  console.log(localStorage);
   const authHeaders = JSON.parse(localStorage.authHeaders);
   return {
     Accept: 'application/json',

@@ -16,8 +16,8 @@ class Admin extends React.Component {
   }
 
   componentDidMount() {
-    this.getChangeRequests();
-    this.getPendingServices();
+    // this.getChangeRequests();
+    // this.getPendingServices();
   }
 
   getPendingServices() {

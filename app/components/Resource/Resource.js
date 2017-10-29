@@ -1,19 +1,12 @@
 import React, { Component } from 'react';
-<<<<<<< HEAD
 import { Link } from 'react-router';
 import { AddressInfo, TodaysHours, PhoneNumber, WeeklyHours, ResourceCategories, Website, StreetView } from './ResourceInfos';
-=======
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
-import { AddressInfo, TodaysHours, PhoneNumber, ResourceCategories, Website, StreetView } from './ResourceInfos';
->>>>>>> d9635ed027b183045519e163c8ee101651c09f3f
 import DetailedHours from './DetailedHours';
 import Services from './Services';
 import Notes from './Notes';
 import Loader from '../Loader';
 import ResourceMap from './ResourceMap';
-<<<<<<< HEAD
-=======
 import * as dataService from '../../utils/DataService';
 
 function scrollToElement(selector) {
@@ -22,7 +15,6 @@ function scrollToElement(selector) {
     elem.scrollIntoView({ block: 'start', behaviour: 'smooth' });
   }
 }
->>>>>>> d9635ed027b183045519e163c8ee101651c09f3f
 
 class Resource extends Component {
   constructor(props) {
