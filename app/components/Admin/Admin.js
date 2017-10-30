@@ -1,133 +1,82 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { Link } from 'react-router';
 import Loader from '../Loader';
 import ChangeRequests from './ChangeRequests';
 import * as dataService from '../../utils/DataService';
 import * as changeRequestConstants from './ChangeRequestTypes';
 import { getAuthRequestHeaders } from '../../utils/index';
 
-class Admin extends React.Component {
+class Admin extends Component {
   constructor() {
     super();
-    this.state = {
-      change_requests: [],
-      changeRequestsLoaded: false,
-      pendingServicesLoaded: false,
-    };
+    this.state = { pendingStats: null };
   }
 
   componentDidMount() {
     // this.getChangeRequests();
     // this.getPendingServices();
+    this.getPendingStats();
   }
 
-  getPendingServices() {
-    dataService.get('/api/services/pending', getAuthRequestHeaders()).then((json) => {
+
+  getPendingStats() {
+    dataService.get('/api//change_requests/activity_by_timeframe?start_date=2015-06-11T11:34+01:00&end_date=2019-06-11T11:34+01:00', 
+      getAuthRequestHeaders()).then((json) => {
       this.setState({
-        services: json.services,
-        pendingServicesLoaded: true,
+        pendingStats: json
       });
+    })
+    .catch((err) => {
+      // console.log('wrong', err)
     });
-  }
-
-  getChangeRequests() {
-    dataService.get('/api/change_requests', getAuthRequestHeaders())
-      .then((json) => {
-        this.setState({
-          change_requests: json.change_requests,
-          changeRequestsLoaded: true,
-        });
-      })
-      .catch((err) => {
-        // console.log('wrong', err)
-      });
-  }
-
-  bulkActionHandler(action, changeRequests) {
-    return Promise.all(
-      changeRequests.map((changeRequest) => { // Create an action handler for each CR
-        const changeRequestFields = changeRequest.field_changes.reduce((a, c) => {
-          if (a[c.field_name] !== undefined) {
-            console.warn('Discarding duplicate field name in action handler: ', { current: a[c.field_name], duplicate: c });
-            return a;
-          }
-
-          a[c.field_name] = c.field_value;
-          return a;
-        }, {});
-
-        return this.actionHandler(changeRequest.id, action, changeRequestFields);
-      }),
-    );
-  }
-
-  actionHandler(id, action, changeRequestFields) {
-    const requestString = action.replace(/{(.*?)}/, id);
-    let removalFunc;
-    let logMessage;
-    let body = {};
-
-    switch (action) {
-      case changeRequestConstants.APPROVE:
-        logMessage = 'Error while trying to approve change request.';
-        removalFunc = this.removeChangeRequest;
-        body = { change_request: changeRequestFields };
-        break;
-      case changeRequestConstants.DELETE:
-        logMessage = 'Error while trying to reject change request.';
-        removalFunc = this.removeChangeRequest;
-        body = { change_request: changeRequestFields };
-        break;
-      case changeRequestConstants.APPROVE_SERVICE:
-        removalFunc = this.removeService;
-        logMessage = 'Error while trying to approve service';
-        body = { service: changeRequestFields };
-        break;
-      case changeRequestConstants.REJECT_SERVICE:
-        removalFunc = this.removeService;
-        logMessage = 'Error while trying to reject service';
-        break;
-      default:
-        throw Error(`Unknown action type: ${action}`);
-    }
-
-    return dataService.post(requestString, body, getAuthRequestHeaders())
-
-      .then((response) => {
-        if (response.ok) { return removalFunc(id); }
-        throw Error(logMessage);
-      })
-
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  removeChangeRequest(changeRequestID) {
-    this.setState({
-      change_requests: this.state.changeRequests
-        .filter(changeRequest => changeRequest.id !== changeRequestID),
-    });
-  }
-
-  removeService(serviceID) {
-    this.setState({
-      services: this.state.services.filter(service => service.id !== serviceID),
-    });
+    ;
   }
 
   render() {
-    // console.log(this.state.change_requests)
-    return (!(this.state.pendingServicesLoaded && this.state.changeRequestsLoaded)
-      ? <Loader />
-      : <div className="admin">
-        <ChangeRequests
-          changeRequests={this.state.change_requests}
-          services={this.state.services}
-          bulkActionHandler={this.bulkActionHandler}
-          actionHandler={this.actionHandler} />
+    console.log(this.state.pendingStats);
+
+    const { pendingStats } = this.state;
+
+    return (!pendingStats ? <Loader /> :
+      <div>
+        <AdminStat name="Resource CRs" 
+          total={pendingStats.new.resource_cr} 
+          approved={pendingStats.approved.resource_cr} /> 
+
+        <AdminStat name="New Resources" 
+          total={pendingStats.new.new_resources} 
+          approved={pendingStats.approved.new_resources} />
+
+        <AdminStat name="Service CRs" 
+          total={pendingStats.new.service_cr} 
+          approved={pendingStats.approved.service_cr} />
+
+        <AdminStat name="New Services" 
+          total={pendingStats.new.new_services} 
+          approved={pendingStats.approved.new_services} />
       </div>
     );
   }
 }
+
+class AdminStat extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div className="admin-stat-pane">
+        <header>{this.props.name}</header>
+        {this.props.approved} approved out of {this.props.total}
+
+        <Link to={{ pathname: '/admin/changes' }} className="org--aside--content--button edit-button">
+         Review Changes
+        </Link>
+      </div>
+    );
+  }
+}
+
 
 export default Admin;
