@@ -12,7 +12,6 @@ import Google from './utils/google';
 import CreateAccount from './components/User/CreateAccount';
 import TestAuth from './components/User/TestAuth';
 import Admin from './components/Admin/Admin';
-import Analytics from './components/Admin/Analytics';
 
 import { RequireAuth } from './components/Auth/RequireAuth';
 
@@ -43,7 +42,6 @@ export default (
     <Route name="newResource" path="/resource/new" component={ EditSections } />
     <Route name="resource" path="/resource" component={ Resource }  />
     <Route name="admin" path="/admin" component={ RequireAuth(Admin) } />
-    <Route name="admin" path="/admin/analytics" component={ RequireAuth(Analytics) } />
     <Route name="login" path="/login" component={ Login } />
     <Route path="*" onEnter={ redirectToRoot } />
   </Route>
