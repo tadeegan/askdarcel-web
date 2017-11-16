@@ -1,129 +1,163 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import TextareaAutosize from 'react-autosize-textarea';
-import * as ChangeRequestTypes from './ChangeRequestTypes';
-import Actions from './Actions';
+
+import * as DataService from '../../utils/DataService';
+import { getAuthRequestHeaders } from '../../utils/index';
 
 class ChangeRequest extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { existingRecord: {}, changeRequestFields: {} };
-    this.renderChangeRequest = this.renderChangeRequest.bind(this);
-    this.changeFieldValue = this.changeFieldValue.bind(this);
+    this.state = {
+      existingRecord: {},
+      changeRequestFields: {},
+    };
   }
 
-  componentDidMount() {
-    this.retrieveModifiedObject();
-    const fields = this.props.changeRequest.field_changes;
-    const tempChangeRequestFields = {};
-    fields.forEach((field) => {
-      tempChangeRequestFields[field.field_name] = field.field_value;
-    });
-
-    this.setState({ changeRequestFields: tempChangeRequestFields });
-  }
-
-  retrieveModifiedObject() {
-    const changeRequest = this.props.changeRequest;
-    const resource = changeRequest.resource;
-    // "ChangeRequest" is 13 characters, so this will give us the first part of the string
-    const objectType = changeRequest.type;
-    let object = {};
-
-    switch (objectType) {
+  getExistingValueFromChangeRequest(changeRequest, fieldName, fieldValue) {
+    let { resource } = changeRequest;
+    switch (changeRequest.type) {
       case 'ResourceChangeRequest':
-        object = resource;
-        break;
-      case 'ServiceChangeRequest':
-        object = resource.services.filter(service => service.id === changeRequest.object_id)[0];
-        break;
-      case 'ScheduleDayChangeRequest':
-        object = resource.schedule.schedule_days
-          .filter(day => day.id === changeRequest.object_id)[0];
-        break;
       case 'AddressChangeRequest':
-        object = resource.address;
-        break;
       case 'PhoneChangeRequest':
-        object = resource.phones.filter(phone => phone.id === changeRequest.object_id)[0];
-        break;
       case 'NoteChangeRequest':
-        const resourceNotes = resource.notes.filter(note => note.id === changeRequest.object_id);
-        if (resourceNotes.length > 0) {
-          object = resourceNotes[0];
-        } else {
-          object = this.findNoteFromServices(resource.services, changeRequest.object_id);
-        }
-        break;
+        return resource[fieldName] ? resource[fieldName] : false;
+      case 'ScheduleDayChangeRequest':
+        return 'date change';
+      case 'ServiceChangeRequest':
+        return resource.services.find(service => service.id === changeRequest.object_id)[fieldName];
       default:
-        // console.log('Unknown Change Request Type', objectType);
-    }
-    this.setState({ existingRecord: object });
-  }
-
-  findNoteFromServices(services, noteID) {
-    for (let i = 0; i < services.length; i++) {
-      let notes = services[i].notes;
-      for (let j = 0; j < notes.length; j++) {
-        let note = notes[j];
-        if (note.id === noteID) {
-          return note;
-        }
-      }
+        console.log('unknown type', changeRequest, fieldName, fieldValue);
+        return '<Some Change>';
     }
   }
 
   changeFieldValue(key, value) {
     const tempChangeRequestFields = this.state.changeRequestFields;
     tempChangeRequestFields[key] = value;
-    // tempChangeRequestFields.edited = true;
-    this.setState({ changeRequestFields: tempChangeRequestFields });
+    this.setState({ changeRequestFields: Object.assign({}, tempChangeRequestFields) });
   }
 
-  renderChangeRequest() {
-    const changedFields = [];
-    const existingRecord = this.state.existingRecord;
-    const changeRequestFields = this.state.changeRequestFields;
+  approve() {
+    const details = {};
+    this.props.changeRequest.field_changes.forEach((change) => {
+      details[change.field_name] = change.field_value;
+    });
+    const body = Object.assign({}, details, this.state.changeRequestFields);
 
-    // TODO: existingRecord && existingRecord[field], need to fix this still
-    for (let field in changeRequestFields) {
-      changedFields.push(
-        <div key={field} className="change-wrapper">
-          <label htmlFor={field}>{field.replace(/_/g, ' ')}</label>
-          <div key={field} className="request-fields">
-            <div className="request-entry">
-              <TextareaAutosize
-                value={changeRequestFields[field]}
-                onChange={e => this.changeFieldValue(field, e.target.value)}
-                className="request-cell value">
-              </TextareaAutosize>
-            </div>
-            <div className="request-entry">
-              <p className="request-cell value existing">{existingRecord[field] || '{ NEW }'}</p>
+    return DataService.post(
+      `/api/change_requests/${this.props.changeRequest.id}/approve`,
+      { change_request: body },
+      getAuthRequestHeaders(),
+    )
+    .then(response =>
+      this.props.updateFunction(response, this.props.changeRequest)
+    )
+    .catch((err) => {
+      console.log(err);
+    });
+  }
+
+  reject() {
+    return DataService.post(
+      `/api/change_requests/${this.props.changeRequest.id}/reject`,
+      {},
+      getAuthRequestHeaders(),
+    )
+    .then(response =>
+      this.props.updateFunction(response, this.props.changeRequest, {})
+    )
+    .catch((err) => {
+      console.log(err);
+    });
+  }
+
+  renderFieldChange(change) {
+    const fieldName = change.field_name;
+    const fieldValue = change.field_value;
+    const existingValue = this.getExistingValueFromChangeRequest(
+      this.props.changeRequest,
+      fieldName,
+      fieldValue,
+    );
+
+    switch (this.props.changeRequest.type) {
+      default:
+        return (
+          <div key={fieldName} className="change-wrapper">
+            <label htmlFor={fieldName}>
+              { fieldName.replace(/_/g, ' ') }
+              { existingValue ? '' : (<sub>NEW</sub>) }
+            </label>
+            <div className="request-fields">
+              <div className="request-entry">
+                <TextareaAutosize
+                  value={fieldValue}
+                  onChange={e => this.changeFieldValue(fieldName, e.target.value)}
+                  className="request-cell value"
+                />
+              </div>
+              {
+                existingValue
+                ? (
+                  <p className="change-existing">
+                    {
+                      this.getExistingValueFromChangeRequest(
+                        this.props.changeRequest,
+                        fieldName,
+                        fieldValue,
+                      )
+                    }
+                  </p>
+                )
+                : ''
+              }
             </div>
           </div>
-        </div>
-      );
+        );
     }
-
-    return changedFields;
   }
 
   render() {
-    // console.log(this.props.changeRequest, this.changeRequestFields)
     return (
-      <div className="change-log">
-        <Actions
-          id={this.props.changeRequest.id}
-          changeRequestFields={this.state.changeRequestFields}
-          actionHandler={this.props.actionHandler}
-          approveAction={ChangeRequestTypes.APPROVE}
-          rejectAction={ChangeRequestTypes.DELETE}
-        />
-        {this.renderChangeRequest(this.props.changeRequest)}
+      <div className="change-request">
+
+        <h4>{ this.props.title || '' }</h4>
+
+        <div className="changes">
+          {
+            this.props.changeRequest.field_changes.map(f => (
+              <div key={f.field_name}>
+                {this.renderFieldChange(f)}
+              </div>
+            ))
+          }
+        </div>
+
+        <div className="actions request-cell btn-group">
+          <button onClick={() => this.approve()}>
+            <i className="material-icons">done</i>
+            Approve
+          </button>
+
+          <button onClick={() => this.reject()} className="danger">
+            <i className="material-icons">delete</i>
+            Reject
+          </button>
+        </div>
       </div>
     );
   }
 }
 
+ChangeRequest.propTypes = {
+  title: PropTypes.string,
+  changeRequest: PropTypes.object.isRequired,
+  updateFunction: PropTypes.func.isRequired,
+};
+
+ChangeRequest.defaultProps = {
+  title: '',
+};
 
 export default ChangeRequest;

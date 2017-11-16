@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router';
+import PropTypes from 'prop-types';
 import { AddressInfo, TodaysHours, PhoneNumber, ResourceCategories, Website, StreetView } from './ResourceInfos';
 import DetailedHours from './DetailedHours';
 import Services from './Services';
