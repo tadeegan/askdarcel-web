@@ -41,6 +41,8 @@
 		margin: 0 auto;
 		padding: 0 calc-em(20px);
 		transform: translateY(-96px);
+		// Prevent empty space to the right of image from covering other elements on page
+		pointer-events: none;
 		&--img {
 			@include aspect-ratio(1, 1);
 		  width: calc-em(130px);
