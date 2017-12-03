@@ -40,10 +40,12 @@ It's essentially an alternative to writing Selenium tests, and I've found it nic
 #### How to run
 
 If you are not using Docker and all the services are bound to localhost, then you should just be able to run:
-
 ```
 $ npm run testcafe -- --skip-js-errors chrome testcafe/*.js
 ```
+
+Note: Make sure you have the dev server running (`npm run dev`) before you try running the above
+
 If you are using Docker, then you'll need to run it somewhat like this:
 
 ```
