@@ -46,11 +46,11 @@
 	max-height: 100vh;
 	padding: calc-em(30px) 0 0 calc-em(30px);
 	width: 100%;
-	max-width: calc-em(240px);
+	max-width: 10em;
 	&--content {
 		position: fixed;
 		width: 100%;
-		max-width: calc-em(240px);
+		max-width: 10em;
 		&--submit {
 			color: #FFFFFF;
 			font-size: 17px;
@@ -58,7 +58,18 @@
 			padding: calc-em(9px) calc-em(25px);
 			background: #1C72E6;
 			border-radius: 8px;
+      width: 100%;
 		}
+    &--deactivate{
+      color: #FFFFFF;
+      font-size: 17px;
+      font-weight: bold;
+      padding: calc-em(9px) calc-em(25px);
+      background: #e6092c;
+      border-radius: 8px;
+      width: 100%;
+      margin-top: 10px;
+    }
 		&--nav {
 			margin: calc-em(30px) 0;
 			ul {
@@ -139,6 +150,11 @@
 				}
 			}
 		}
+
+    &#service--deactivation {
+      background: #e6092c;
+      width: 100%;
+    }
 
 		.input {
 			padding: calc-em(15px);

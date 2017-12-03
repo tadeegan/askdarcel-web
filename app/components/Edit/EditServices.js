@@ -53,7 +53,7 @@ class EditServices extends Component {
     for (let i = 0; i < this.state.existingServices.length; i++) {
       let service = this.state.existingServices[i];
       servicesArray.push(
-        <EditService key={service.key} index={i} service={service} handleChange={this.handleServiceChange} />
+        <EditService key={service.key} index={i} service={service} handleChange={this.handleServiceChange} handleDeactivation={this.props.handleDeactivation}/>
       );
     }
 
@@ -128,6 +128,8 @@ class EditService extends Component {
 	}
 
 	render() {
+    let serviceId = this.props.service.id;
+
 		return (
 			<li className="edit--service edit--section">
 				<header className="edit--section--header">
@@ -186,6 +188,15 @@ class EditService extends Component {
             label={"Categories"}
             optionsRoute={"categories"}
           />
+          <li className="edit--section--list--item">
+            <button
+              className="edit--section--list--item"
+              id="service--deactivation"
+              disabled={this.state.submitting}
+              onClick={() => this.props.handleDeactivation('service', serviceId)}>
+              Deactivate
+            </button>
+          </li>
 				</ul>
 			</li>
     );
