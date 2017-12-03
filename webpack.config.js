@@ -9,13 +9,16 @@ var config = require(path.resolve(__dirname, 'app/utils/config.example.js'));
 var appRoot = path.resolve(__dirname, 'app/');
 var buildDir = path.resolve(__dirname, 'build');
 
+var bundleJSPath = ("production" === process.env.NODE_ENV) ? "bundle-[hash:6].js" : "bundle.js";
+
+
 module.exports = {
   context: __dirname,
   entry: ['whatwg-fetch', path.resolve(appRoot, 'init.js')],
   output: {
     path: buildDir,
     publicPath: '/dist/',
-    filename: 'bundle-[hash:6].js'
+    filename: bundleJSPath
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
