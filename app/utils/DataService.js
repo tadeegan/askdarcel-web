@@ -66,6 +66,5 @@ export function APIDelete(url, headers) {
   }).then((resp) => {
     if (!resp.ok) { throw resp; }
     setAuthHeaders(resp);
-    return resp.json();
   });
 }
