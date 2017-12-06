@@ -165,6 +165,7 @@ class EditSections extends React.Component {
     this.handleServiceChange = this.handleServiceChange.bind(this);
     this.handleNotesChange = this.handleNotesChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDeactivation = this.handleDeactivation.bind(this);
     this.postServices = this.postServices.bind(this);
     this.postNotes = this.postNotes.bind(this);
     this.postSchedule = this.postSchedule.bind(this);
@@ -326,6 +327,24 @@ class EditSections extends React.Component {
       console.log(err);
     });
 
+  }
+
+  handleDeactivation(type, id) {
+    let path = null;
+    if (type === 'resource') {
+      path = `/api/resources/${id}`;
+    } else if (type === 'service') {
+      path = `/api/services/${id}`;
+    }
+    dataService.APIDelete(path, { change_request: { status: "2" } })
+    .then(() => {
+      alert('Successfully deactivated! \n \nIf this was a mistake, please let someone from the ShelterTech team know.')
+      if(type === 'resource') {
+        this.props.router.push({ pathname: "/" });  
+      } else {
+        window.location.reload();
+      }
+    });
   }
 
   postServices(servicesObj, promises) {
@@ -560,22 +579,24 @@ class EditSections extends React.Component {
                     <h4>Services</h4>
                 </header>
                 <ul className="edit--section--list">
-                    <EditServices services={this.state.resource.services} handleServiceChange={this.handleServiceChange} />
+                    <EditServices services={this.state.resource.services} handleServiceChange={this.handleServiceChange} handleDeactivation={this.handleDeactivation} />
                 </ul>
             </section>
     )
   }
 
   render() {
-    let actionButton = <button className="edit--aside--content--submit" disabled={this.state.submitting} onClick={this.handleSubmit}>Save changes</button>;
+    let resource = this.state.resource;
+    let actionButtons = [<button className="edit--aside--content--submit" disabled={this.state.submitting} onClick={this.handleSubmit}>Save changes</button>,
+    <button className="edit--aside--content--deactivate" disabled={this.state.submitting} onClick={() => this.handleDeactivation('resource', resource.id)}>Deactivate</button>];
     if (this.state.newResource) {
-      actionButton = <button className="edit--aside--content--submit" disabled={this.state.submitting} onClick={this.createResource}>Submit Resource</button>;
+      actionButtons = [<button className="edit--aside--content--submit" disabled={this.state.submitting} onClick={this.createResource}>Submit Resource</button>];
     }
-    return (!this.state.resource && !this.state.newResource ? <Loader /> :
+    return (!resource && !this.state.newResource ? <Loader /> :
       <div className="edit">
             <div className="edit--main">
             <header className="edit--main--header">
-              <h1 className="edit--main--header--title">{this.state.resource.name}</h1>
+              <h1 className="edit--main--header--title">{resource.name}</h1>
             </header>
             <div className="edit--sections">
                 {this.renderSectionFields()}
@@ -584,7 +605,7 @@ class EditSections extends React.Component {
           </div>
           <div className="edit--aside">
             <div className="edit--aside--content">
-                {actionButton}
+                {actionButtons.map(button => button)}
                 <nav className="edit--aside--content--nav">
                     <ul>
                         <li><a href="#info">Info</a></li>
