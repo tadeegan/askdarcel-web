@@ -227,7 +227,7 @@ class EditSections extends React.Component {
     };
 
     let requestString = '/api/resources';
-    dataService.post(requestString, { resources: [newResource] }, getAuthRequestHeaders())
+    dataService.post(requestString, { resources: [newResource] })
       .then((response) => {
         if (response.ok) {
           alert('Resource successfuly created. Thanks!');
@@ -590,7 +590,7 @@ class EditSections extends React.Component {
     let actionButtons = [<button className="edit--aside--content--submit" disabled={this.state.submitting} onClick={this.handleSubmit}>Save changes</button>,
     <button className="edit--aside--content--deactivate" disabled={this.state.submitting} onClick={() => this.handleDeactivation('resource', resource.id)}>Deactivate</button>];
     if (this.state.newResource) {
-      actionButtons = [<button className="edit--aside--content--submit" disabled={this.state.submitting} onClick={this.createResource}>Submit Resource</button>];
+      actionButtons = [<button className="edit--aside--content--submit" disabled={this.state.submitting} onClick={this.createResource}>Submit</button>];
     }
     return (!resource && !this.state.newResource ? <Loader /> :
       <div className="edit">
