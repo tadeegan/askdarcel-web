@@ -223,7 +223,7 @@ class EditSections extends React.Component {
   }
 
   routerWillLeave() {
-    if (this.state.inputsDirty) {
+    if (this.state.inputsDirty && this.state.submitting !== true) {
       return 'Are you sure you want to leave? Any changes you have made will be lost.';
     }
   }
