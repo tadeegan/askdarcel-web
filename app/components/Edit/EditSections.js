@@ -175,6 +175,7 @@ class EditSections extends React.Component {
       newResource: false,
     };
 
+    this.handleCancel = this.handleCancel.bind(this);
     this.handleResourceFieldChange = this.handleResourceFieldChange.bind(this);
     this.handleScheduleChange = this.handleScheduleChange.bind(this);
     this.handlePhoneChange = this.handlePhoneChange.bind(this);
@@ -282,6 +283,12 @@ class EditSections extends React.Component {
     return newSchedule;
   }
 
+  handleCancel() {
+    if (confirm("Are you sure you want to leave without saving your changes?") === true) {
+      browserHistory.goBack();
+    }
+  }
+
   handleSubmit() {
     this.setState({ submitting: true });
     let resource = this.state.resource;
@@ -348,21 +355,23 @@ class EditSections extends React.Component {
   }
 
   handleDeactivation(type, id) {
-    let path = null;
-    if (type === 'resource') {
-      path = `/api/resources/${id}`;
-    } else if (type === 'service') {
-      path = `/api/services/${id}`;
-    }
-    dataService.APIDelete(path, { change_request: { status: "2" } })
-    .then(() => {
-      alert('Successfully deactivated! \n \nIf this was a mistake, please let someone from the ShelterTech team know.')
-      if(type === 'resource') {
-        this.props.router.push({ pathname: "/" });
-      } else {
-        window.location.reload();
+    if (confirm('Are you sure you want to deactive this resource?') === true) {
+      let path = null;
+      if (type === 'resource') {
+        path = `/api/resources/${id}`;
+      } else if (type === 'service') {
+        path = `/api/services/${id}`;
       }
-    });
+      dataService.APIDelete(path, { change_request: { status: "2" } })
+      .then(() => {
+        alert('Successfully deactivated! \n \nIf this was a mistake, please let someone from the ShelterTech team know.')
+        if(type === 'resource') {
+          this.props.router.push({ pathname: "/" });
+        } else {
+          window.location.reload();
+        }
+      });
+    }
   }
 
   postServices(servicesObj, promises) {
@@ -614,14 +623,17 @@ class EditSections extends React.Component {
   }
 
   render() {
-    const resource = this.state.resource;
+    let resource = this.state.resource;
     let actionButtons = [
-      <button className="edit--aside--content--submit" disabled={this.state.submitting} onClick={this.handleSubmit}>Save changes</button>,
+      <button className="edit--aside--content--button" disabled={this.state.submitting} onClick={this.handleSubmit}>Save Changes</button>,
+      <button className="edit--aside--content--button cancel--button" onClick={this.handleCancel}>Discard Changes</button>,
       <button className="edit--aside--content--deactivate" disabled={this.state.submitting} onClick={() => this.handleDeactivation('resource', resource.id)}>Deactivate</button>
     ];
-
     if (this.state.newResource) {
-      actionButtons = [<button className="edit--aside--content--submit" disabled={this.state.submitting} onClick={this.createResource}>Submit</button>];
+      actionButtons = [
+        <button className="edit--aside--content--button" disabled={this.state.submitting} onClick={this.createResource}>Submit</button>,
+        <button className="edit--aside--content--button cancel--button" onClick={this.handleCancel}>Cancel</button>,
+      ];
     }
 
     return (!resource && !this.state.newResource ? <Loader /> :
