@@ -173,8 +173,11 @@ class EditSections extends React.Component {
       phones: [],
       submitting: false,
       newResource: false,
+      inputsDirty: false,
     };
 
+    this.routerWillLeave = this.routerWillLeave.bind(this);
+    this.keepOnPage = this.keepOnPage.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleResourceFieldChange = this.handleResourceFieldChange.bind(this);
     this.handleScheduleChange = this.handleScheduleChange.bind(this);
@@ -195,6 +198,7 @@ class EditSections extends React.Component {
   componentDidMount() {
     let { query, pathname } = this.props.location;
     let splitPath = pathname.split('/');
+    window.addEventListener('beforeunload', this.keepOnPage);
     if (splitPath[splitPath.length - 1] === 'new') {
       this.setState({ newResource: true, resource: {}, originalResource: {}, scheduleMap: {} });
     }
@@ -217,6 +221,30 @@ class EditSections extends React.Component {
     }
   }
 
+  componentWillMount() {
+    this.props.router.setRouteLeaveHook(
+      this.props.route,
+      this.routerWillLeave,
+    )
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.keepOnPage);
+  } 
+
+  keepOnPage(e) {
+    if(this.state.inputsDirty) {
+      let message = 'Are you sure you want to leave? Any changes you have made will be lost.';
+      e.returnValue = message;
+      return message;
+    }
+  }
+
+  routerWillLeave() {
+    if (this.state.inputsDirty && this.state.submitting !== true) {
+      return 'Are you sure you want to leave? Any changes you have made will be lost.';
+    }
+  }
   createResource() {
     let {
       scheduleObj,
@@ -480,7 +508,7 @@ class EditSections extends React.Component {
     }
   }
   handlePhoneChange(phoneCollection) {
-    this.setState({ phones: phoneCollection });
+    this.setState({ phones: phoneCollection, inputsDirty: true });
   }
 
   handleResourceFieldChange(e) {
@@ -488,27 +516,28 @@ class EditSections extends React.Component {
     const value = e.target.value;
     const object = {};
     object[field] = value;
+    object.inputsDirty = true;
     this.setState(object);
   }
 
   handleScheduleChange(scheduleObj) {
-    this.setState({ scheduleObj });
+    this.setState({ scheduleObj, inputsDirty: true });
   }
 
   handleAddressChange(addressObj) {
-    this.setState({ address: addressObj });
+    this.setState({ address: addressObj, inputsDirty: true });
   }
 
   handleServiceChange(servicesObj) {
-    this.setState({ services: servicesObj });
+    this.setState({ services: servicesObj, inputsDirty: true });
   }
 
   handleNotesChange(notesObj) {
-    this.setState({ notes: notesObj });
+    this.setState({ notes: notesObj, inputsDirty: true });
   }
 
   handleServiceNotesChange(notesObj) {
-    this.setState({ serviceNotes: notesObj });
+    this.setState({ serviceNotes: notesObj, inputsDirty: true });
   }
 
   certifyHAP() {
