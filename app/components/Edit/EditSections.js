@@ -43,6 +43,19 @@ function createCollectionObject(object, path, promises, resourceID) {
   );
 }
 
+function createNewPhoneNumber(item, resourceID, promises) {
+  promises.push(
+    dataService.post(
+      '/api/change_requests',
+      {
+        change_request: item,
+        type: 'phones',
+        parent_resource_id: resourceID,
+      },
+    ),
+  );
+}
+
 function postCollection(collection, originalCollection, path, promises, resourceID) {
   for (let i = 0; i < collection.length; i += 1) {
     const item = collection[i];
@@ -55,7 +68,11 @@ function postCollection(collection, originalCollection, path, promises, resource
       }
     } else if (item.dirty) {
       delete item.dirty;
-      createCollectionObject(item, path, promises, resourceID);
+      if(path === 'phones') {
+        createNewPhoneNumber(item, resourceID, promises)
+      } else {
+        createCollectionObject(item, path, promises, resourceID);
+      }
     }
   }
 }
@@ -161,6 +178,7 @@ class EditSections extends React.Component {
 
     this.routerWillLeave = this.routerWillLeave.bind(this);
     this.keepOnPage = this.keepOnPage.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
     this.handleResourceFieldChange = this.handleResourceFieldChange.bind(this);
     this.handleScheduleChange = this.handleScheduleChange.bind(this);
     this.handlePhoneChange = this.handlePhoneChange.bind(this);
@@ -293,6 +311,12 @@ class EditSections extends React.Component {
     return newSchedule;
   }
 
+  handleCancel() {
+    if (confirm("Are you sure you want to leave without saving your changes?") === true) {
+      browserHistory.goBack();
+    }
+  }
+
   handleSubmit() {
     this.setState({ submitting: true });
     let resource = this.state.resource;
@@ -331,7 +355,7 @@ class EditSections extends React.Component {
     }
 
     //Fire off phone requests
-    postCollection(this.state.phones, this.state.resource.phones, 'phones', promises);
+    postCollection(this.state.phones, this.state.resource.phones, 'phones', promises, this.state.resource.id);
 
     // schedule
     postSchedule(this.state.scheduleObj, promises);
@@ -359,21 +383,23 @@ class EditSections extends React.Component {
   }
 
   handleDeactivation(type, id) {
-    let path = null;
-    if (type === 'resource') {
-      path = `/api/resources/${id}`;
-    } else if (type === 'service') {
-      path = `/api/services/${id}`;
-    }
-    dataService.APIDelete(path, { change_request: { status: "2" } })
-    .then(() => {
-      alert('Successfully deactivated! \n \nIf this was a mistake, please let someone from the ShelterTech team know.')
-      if(type === 'resource') {
-        this.props.router.push({ pathname: "/" });
-      } else {
-        window.location.reload();
+    if (confirm('Are you sure you want to deactive this resource?') === true) {
+      let path = null;
+      if (type === 'resource') {
+        path = `/api/resources/${id}`;
+      } else if (type === 'service') {
+        path = `/api/services/${id}`;
       }
-    });
+      dataService.APIDelete(path, { change_request: { status: "2" } })
+      .then(() => {
+        alert('Successfully deactivated! \n \nIf this was a mistake, please let someone from the ShelterTech team know.')
+        if(type === 'resource') {
+          this.props.router.push({ pathname: "/" });
+        } else {
+          window.location.reload();
+        }
+      });
+    }
   }
 
   postServices(servicesObj, promises) {
@@ -626,20 +652,19 @@ class EditSections extends React.Component {
   }
 
   render() {
-    const resource = this.state.resource;
+    let resource = this.state.resource;
     let actionButtons = [
-      <button className="edit--aside--content--submit" disabled={this.state.submitting} onClick={this.handleSubmit}>Save changes</button>,
+      <button className="edit--aside--content--button" disabled={this.state.submitting} onClick={this.handleSubmit}>Save Changes</button>,
+      <button className="edit--aside--content--button cancel--button" onClick={this.handleCancel}>Discard Changes</button>,
       <button className="edit--aside--content--deactivate" disabled={this.state.submitting} onClick={() => this.handleDeactivation('resource', resource.id)}>Deactivate</button>
     ];
-
     if (this.state.newResource) {
-      actionButtons = [<button className="edit--aside--content--submit" disabled={this.state.submitting} onClick={this.createResource}>Submit</button>];
+      actionButtons = [
+        <button className="edit--aside--content--button" disabled={this.state.submitting} onClick={this.createResource}>Submit</button>,
+        <button className="edit--aside--content--button cancel--button" onClick={this.handleCancel}>Cancel</button>,
+      ];
     }
-    if (resource && !resource.certified) {
-      actionButtons.push(
-        <button className="edit--aside--content--submit" onClick={this.certifyHAP}>HAP Certify</button>
-      );
-    }
+
     return (!resource && !this.state.newResource ? <Loader /> :
       <div className="edit">
             <div className="edit--main">
