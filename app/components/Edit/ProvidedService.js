@@ -19,21 +19,21 @@ class ProvidedService extends Component {
         placeholder: 'Description',
         field: 'long_description',
         defaultValue: this.props.service.long_description,
-        onChange: this.handleFieldChange,
+        onChange: this.handleFieldChange.bind(this),
       },
       {
         label: 'How do you apply for this service',
         placeholder: 'Application Process',
         field: 'application_process',
         defaultValue: this.props.service.application_process,
-        onChange: this.handleFieldChange,
+        onChange: this.handleFieldChange.bind(this),
       },
       {
         label: 'What documents do you need to bring to apply',
         placeholder: 'Required Documents',
         field: 'required_documents',
         defaultValue: this.props.service.required_documents,
-        onChange: this.handleFieldChange,
+        onChange: this.handleFieldChange.bind(this),
       },
     ];
 
@@ -43,7 +43,6 @@ class ProvidedService extends Component {
     this.handleCategoryChange = this.handleCategoryChange.bind(this);
     this.handleElgibilityChange = this.handleElgibilityChange.bind(this);
   }
-
 
   handleChange(service) {
     this.setState({ service }, () => {
@@ -114,7 +113,7 @@ class ProvidedService extends Component {
             <FormTextArea
               label={textArea.label}
               placeholder={textArea.placeholder}
-              data-field={textArea.field}
+              field={textArea.field}
               defaultValue={textArea.defaultValue}
               onChange={textArea.onChange}
             />
