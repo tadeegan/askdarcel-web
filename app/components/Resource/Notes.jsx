@@ -17,7 +17,7 @@ function renderNotes(notes) {
     return notes.map((noteObj) => {
         return (
             <li className="service">
-                <p className="service--description">{noteObj.note}</p>
+                <p className="service--description">{noteObj.note }</p>
             </li>    
         );
     });
