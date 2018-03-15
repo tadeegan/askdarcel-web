@@ -7,14 +7,8 @@ docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 if [[ -n "$TRAVIS_TAG" ]]; then
     TAG="$TRAVIS_TAG"
 else
-    if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-        TAG="pull-request-$TRAVIS_PULL_REQUEST"
-    else
-        if [ "$SANITIZED_BRANCH" == "master" ]; then
-            TAG="latest"
-        else
-            TAG="branch-$SANITIZED_BRANCH"
-        fi
+    if [ "$SANITIZED_BRANCH" == "master" ]; then
+        TAG="latest"
     fi
 fi
 
@@ -24,8 +18,8 @@ echo "{
   \"build\": \"$TRAVIS_BUILD_NUMBER\"
 }" > version.json
 
-docker build -f Dockerfile -t $REPO:$COMMIT .
-echo "Pushing tags for '$COMMIT', '$TAG', and 'travis-$TRAVIS_BUILD_NUMBER'"
-docker tag $REPO:$COMMIT $REPO:$TAG
-docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-docker push $REPO
+if [[ -n "$TAG" ]]; then
+   docker build -f Dockerfile -t $REPO:$TAG .
+   echo "Pushing tag for '$TAG'"
+   docker push $REPO
+fi
