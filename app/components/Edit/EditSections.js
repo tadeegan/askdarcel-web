@@ -67,9 +67,9 @@ function deletCollectionObject(item, path, promises) {
 function postCollection(collection, originalCollection, path, promises, resourceID) {
   for (let i = 0; i < collection.length; i += 1) {
     const item = collection[i];
-    if(item.isRemoved) {
+    if (item.isRemoved) {
       deletCollectionObject(item, path, promises);
-    }else if (i < originalCollection.length && item.dirty) {
+    } else if (i < originalCollection.length && item.dirty) {
       const diffObj = getDiffObject(item, originalCollection[i]);
       if (!_.isEmpty(diffObj)) {
         delete diffObj.dirty;
@@ -77,8 +77,8 @@ function postCollection(collection, originalCollection, path, promises, resource
       }
     } else if (item.dirty) {
       delete item.dirty;
-      if(path === 'phones') {
-        createNewPhoneNumber(item, resourceID, promises);
+      if (path === 'phones') {
+        createNewPhoneNumber(item, resourceID, promises)
       } else {
         createCollectionObject(item, path, promises, resourceID);
       }
@@ -227,7 +227,7 @@ class EditSections extends React.Component {
           });
 
           let scheduleMap = {};
-          data.resource && data.resource.schedule && data.resource.schedule.schedule_days.forEach(function(day) {
+          data.resource && data.resource.schedule && data.resource.schedule.schedule_days.forEach(function (day) {
             scheduleMap[day.day] = day;
           });
           this.setState({ scheduleMap: scheduleMap });
@@ -244,10 +244,10 @@ class EditSections extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('beforeunload', this.keepOnPage);
-  } 
+  }
 
   keepOnPage(e) {
-    if(this.state.inputsDirty) {
+    if (this.state.inputsDirty) {
       let message = 'Are you sure you want to leave? Any changes you have made will be lost.';
       e.returnValue = message;
       return message;
@@ -260,7 +260,7 @@ class EditSections extends React.Component {
     }
   }
   createResource() {
-    let {
+    const {
       scheduleObj,
       notes,
       phones,
@@ -272,32 +272,34 @@ class EditSections extends React.Component {
       website,
       email,
       address,
-    } = this.state;
-
-    let schedule = this.prepSchedule(scheduleObj);
-
+    } = this.state,
+      newResource = {
+        name,
+        address,
+        long_description,
+        email,
+        website,
+        notes: notes.notes ? this.prepNotesData(notes.notes) : [],
+        schedule: { schedule_days: schedule },
+        phones,
+      },
+      requestString = '/api/resources',
+      schedule = this.prepSchedule(scheduleObj);
     // let newServices = this.prepServicesData(services.services);
-    let newResource = {
-      name,
-      address,
-      long_description,
-      email,
-      website,
-      notes: notes.notes ? this.prepNotesData(notes.notes) : [],
-      schedule: { schedule_days: schedule },
-      phones,
-    };
 
-    let requestString = '/api/resources';
+    this.setState({ submitting: true });
     dataService.post(requestString, { resources: [newResource] })
       .then((response) => {
         if (response.ok) {
           alert('Resource successfuly created. Thanks!');
           browserHistory.push('/');
         } else {
-          alert('Issue creating resource, please try again.');
-          console.log(logMessage);
+          Promise.reject(response);
         }
+      })
+      .catch((error) => {
+        alert('Issue creating resource, please try again.');
+        console.log(error);
       })
   }
 
@@ -327,9 +329,7 @@ class EditSections extends React.Component {
   }
 
   handleCancel() {
-    if (confirm("Are you sure you want to leave without saving your changes?") === true) {
-      browserHistory.goBack();
-    }
+    browserHistory.goBack();
   }
 
   handleSubmit() {
@@ -389,9 +389,9 @@ class EditSections extends React.Component {
     this.postNotes(this.state.notes, promises, { path: "resources", id: this.state.resource.id });
 
     var that = this;
-    Promise.all(promises).then(function(resp) {
+    Promise.all(promises).then(function (resp) {
       that.props.router.push({ pathname: "/resource", query: { id: that.state.resource.id } });
-    }).catch(function(err) {
+    }).catch(function (err) {
       console.log(err);
     });
 
@@ -406,14 +406,14 @@ class EditSections extends React.Component {
         path = `/api/services/${id}`;
       }
       dataService.APIDelete(path, { change_request: { status: "2" } })
-      .then(() => {
-        alert('Successfully deactivated! \n \nIf this was a mistake, please let someone from the ShelterTech team know.')
-        if(type === 'resource') {
-          this.props.router.push({ pathname: "/" });
-        } else {
-          window.location.reload();
-        }
-      });
+        .then(() => {
+          alert('Successfully deactivated! \n \nIf this was a mistake, please let someone from the ShelterTech team know.')
+          if (type === 'resource') {
+            this.props.router.push({ pathname: "/" });
+          } else {
+            window.location.reload();
+          }
+        });
     }
   }
 
@@ -661,13 +661,13 @@ class EditSections extends React.Component {
     let resource = this.state.resource;
     return (
       <section id="services" className="edit--section">
-                <header className="edit--section--header">
-                    <h4>Services</h4>
-                </header>
-                <ul className="edit--section--list">
-                    <EditServices services={this.state.resource.services} handleServiceChange={this.handleServiceChange} handleDeactivation={this.handleDeactivation} />
-                </ul>
-            </section>
+        <header className="edit--section--header">
+          <h4>Services</h4>
+        </header>
+        <ul className="edit--section--list">
+          <EditServices services={this.state.resource.services} handleServiceChange={this.handleServiceChange} handleDeactivation={this.handleDeactivation} />
+        </ul>
+      </section>
     )
   }
 
@@ -687,27 +687,27 @@ class EditSections extends React.Component {
 
     return (!resource && !this.state.newResource ? <Loader /> :
       <div className="edit">
-            <div className="edit--main">
-            <header className="edit--main--header">
-              <h1 className="edit--main--header--title">{resource.name}</h1>
-            </header>
-            <div className="edit--sections">
-                {this.renderSectionFields()}
-                {this.state.newResource ? null : this.renderServices()}
-            </div>
-          </div>
-          <div className="edit--aside">
-            <div className="edit--aside--content">
-                {actionButtons.map(button => button)}
-                <nav className="edit--aside--content--nav">
-                    <ul>
-                        <li><a href="#info">Info</a></li>
-                        {this.state.newResource ? null : <li><a href="#services">Services</a></li>}
-                    </ul>
-                </nav>
-              </div>
+        <div className="edit--main">
+          <header className="edit--main--header">
+            <h1 className="edit--main--header--title">{resource.name}</h1>
+          </header>
+          <div className="edit--sections">
+            {this.renderSectionFields()}
+            {this.state.newResource ? null : this.renderServices()}
           </div>
         </div>
+        <div className="edit--aside">
+          <div className="edit--aside--content">
+            {actionButtons.map(button => button)}
+            <nav className="edit--aside--content--nav">
+              <ul>
+                <li><a href="#info">Info</a></li>
+                {this.state.newResource ? null : <li><a href="#services">Services</a></li>}
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
     )
   }
 }
