@@ -3,15 +3,17 @@ import { combineForms } from 'react-redux-form';
 import { routerReducer } from 'react-router-redux';
 import resource from './resourceReducer';
 import auth from './authReducer';
-import changeRequest from './changeRequestReducer';
+import changeRequestReducer from './changeRequestReducer';
+import userReducer from './userReducer'
 import forms from '../reducers/formConfig';
 
 const rootReducer = combineReducers({
   resource,
   auth,
   forms: combineForms(forms, 'forms'),
-  changeRequest,
+  changeRequestReducer,
   routing: routerReducer,
+  user: userReducer
 });
 
 export default rootReducer;

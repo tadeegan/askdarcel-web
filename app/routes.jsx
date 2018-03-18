@@ -13,6 +13,7 @@ import CreateAccount from './components/User/CreateAccount';
 import TestAuth from './components/User/TestAuth';
 import Admin from './components/Admin/Admin';
 import ChangeRequests from './components/Admin/ChangeRequests';
+import Search from './pages/Search';
 
 import { RequireAuth } from './components/Auth/RequireAuth';
 
@@ -38,6 +39,7 @@ export default (
     <Route name="resources" path="/resources" component={ ResourcesTable } />
     <Route name="editResource" path="/resource/edit" component={ EditSections } />
     <Route name="newResource" path="/resource/new" component={ EditSections } />
+    <Route name="search" path="/search" component={ Search } />
     <Route name="resource" path="/resource" component={ Resource }  />
     <Route name="admin" path="/admin" component={ RequireAuth(Admin) } />
     <Route name="changeRequests" path="/admin/changes" component={ RequireAuth(ChangeRequests) } />
