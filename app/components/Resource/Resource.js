@@ -22,7 +22,6 @@ class Resource extends Component {
     super(props);
     this.state = { resource: null };
     this.verifyResource = this.verifyResource.bind(this);
-    this.hapCertify = this.hapCertify.bind(this);
   }
 
   componentDidMount() {
@@ -46,21 +45,6 @@ class Resource extends Component {
         // TODO: Do not use alert() for user notifications.
         if (response.ok) {
           alert('Resource verified. Thanks!');  // eslint-disable-line no-alert
-        } else {
-          alert('Issue verifying resource. Please try again.');  // eslint-disable-line no-alert
-        }
-      });
-  }
-
-  hapCertify() {
-    dataService.post(`/api/resources/${this.state.resource.id}/certify`)
-      .then((response) => {
-        // TODO: Do not use alert() for user notifications.
-        if (response.ok) {
-          alert('HAP Certified. Thanks!');  // eslint-disable-line no-alert
-          const resource = this.state.resource;
-          resource.certified = response.ok;
-          this.setState({ resource });
         } else {
           alert('Issue verifying resource. Please try again.');  // eslint-disable-line no-alert
         }
@@ -166,15 +150,6 @@ class Resource extends Component {
               >
                 Mark Info as Correct
               </button>
-              {
-                !resource.certified &&
-                <button
-                  className="org--aside--content--button"
-                  onClick={this.hapCertify}
-                >
-                  HAP Approve
-                </button>
-              }
               <nav className="org--aside--content--nav">
                 <ul>
                   <li><a href="#resource">{resource.name}</a></li>
