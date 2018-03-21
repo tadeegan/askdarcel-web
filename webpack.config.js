@@ -11,14 +11,18 @@ var buildDir = path.resolve(__dirname, 'build');
 
 module.exports = {
   context: __dirname,
-  entry: ['whatwg-fetch', path.resolve(appRoot, 'init.js')],
+  entry: ['whatwg-fetch', 'babel-polyfill', path.resolve(appRoot, 'init.js')],
   output: {
     path: buildDir,
     publicPath: '/dist/',
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
+    alias: {
+      components: path.resolve(appRoot, 'components'),
+      utils: path.resolve(appRoot, 'utils'),
+    },
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -39,7 +43,7 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
-              presets: ['es2015', 'react', 'stage-2']
+              presets: ['es2015', 'react', 'stage-0'],
             }
           }
         ],
@@ -47,7 +51,7 @@ module.exports = {
       },
       {
         test: /\.s?css$/,
-        use: ['style-loader', 'css-loader', 'sass-loader']
+        use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,

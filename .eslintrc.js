@@ -23,6 +23,7 @@ module.exports = {
     "no-underscore-dangle": 0,
     "react/jsx-filename-extension": 0,
     "react/forbid-prop-types": 0,
+    "react/jsx-filename-extension": 2,
     "import/no-extraneous-dependencies": [
       "error",
       {
