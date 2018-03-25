@@ -28,6 +28,7 @@
     "react": "^15.1.0",
     "react-autosize-textarea": "^0.4.3",
     "react-dom": "^15.1.0",
+    "react-ga": "^2.4.1",
     "react-link": "^1.0.3",
     "react-redux": "^5.0.1",
     "react-redux-form": "^1.12.1",
