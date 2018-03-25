@@ -20,6 +20,7 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
     alias: {
+      assets: path.resolve(appRoot, 'assets'),
       actions: path.resolve(appRoot, 'actions'),
       components: path.resolve(appRoot, 'components'),
       reducers: path.resolve(appRoot, 'reducers'),

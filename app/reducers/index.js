@@ -9,13 +9,13 @@ import userReducer from './userReducer';
 import forms from '../reducers/formConfig';
 
 const rootReducer = combineReducers({
-  resource,
-  services,
   auth,
-  forms: combineForms(forms, 'forms'),
   changeRequestReducer,
+  forms: combineForms(forms, 'forms'),
+  resource,
   routing: routerReducer,
-  user: userReducer
+  services,
+  user: userReducer,
 });
 
 export default rootReducer;

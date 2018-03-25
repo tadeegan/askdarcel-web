@@ -1,9 +1,9 @@
-import * as types from '../actions/actionTypes';
+// import * as types from '../actions/actionTypes';
 
 const initialState = {
   location: {
     lat: 37.7749,
-    lng: -122.4194
+    lng: -122.4194,
   },
 };
 
