@@ -6,6 +6,9 @@ import { getService } from 'actions/serviceActions';
 import Loader from 'components/ui/Loader';
 import OrganizationCard from 'components/layout/OrganizationCard';
 import ServiceCard from 'components/layout/ServiceCard';
+import ListPageSidebar from 'components/listing/ListPageSidebar';
+import ContactInfoTable from 'components/listing/ContactInfoTable';
+import MapOfLocations from 'components/maps/MapOfLocations';
 import { Link } from 'react-router';
 import { Popover, OverlayTrigger, Button } from 'react-bootstrap';
 import { get } from 'utils/DataService';
@@ -46,45 +49,98 @@ class ServicePage extends React.Component {
 
   render() {
     const { activeService: service } = this.props
+    if (!service) { return (<Loader />); }
+
+    const { resource, program, schedule } = service;
+
     return (
-      !service
-        ? <Loader />
-        : <div>
-          <h1>{ service.name }</h1>
-          <p>Also known as: </p>
-          <div>
-            Part of [Program Name] program, offered by { service.resource.name }
+      <div className="listing-container">
+        <article className="listing" id="service">
+          <div className="listing--main">
+            <div className="listing--main--left">
+              <header>
+                <h1>{ service.name }</h1>
+                { service.alsoNamed ? <p>Also Known As</p> : null}
+                <p>
+                  A service
+                  {/* TODO Implement rendering/popover when programs exist */}
+                  { program ? <span>in the {program.name} program,</span> : null }
+                  <span> offered by <Link to={`/resource?id=${resource.id}`}>{ resource.name }</Link></span>
+                </p>
+              </header>
+
+              <section>
+                <h2>About This Service</h2>
+                <p>{ service.long_description }</p>
+              </section>
+
+              <section>
+                <h2>Service Details</h2>
+              </section>
+
+              <section>
+                <h2>Contact Info</h2>
+                <ContactInfoTable item={service} />
+              </section>
+
+              <section>
+                <h2>Locations and Hours</h2>
+                <MapOfLocations />
+              </section>
+
+              <section>
+                <h2>Other Services at this Location</h2>
+              </section>
+
+              <section>
+                <h2>Similar Services Near You</h2>
+              </section>
+
+            </div>
+            <div className="listing--aside">
+              <ListPageSidebar />
+            </div>
           </div>
-          <OrganizationCard org={service.resource} />
-          <ServiceCard service={service} />
-          <h2>About this Service</h2>
-          <p>{service.long_description}</p>
-          <h2>Service Details</h2>
-          {/* <DataTable>
-            <TableBody>
-              {this.state.aboutRows.map(row => (
-                <TableRow key={row.key}>
-                  <TableColumn>{row.key}</TableColumn>
-                  {<TableColumn>{service[row.key]}</TableColumn>}
-                </TableRow>
-              ))}
-            </TableBody>
-          </DataTable>
-          <h2>Contact Info</h2>
-          <DataTable>
-            <TableBody>
-              <TableRow>
-                <TableColumn>Website</TableColumn>
+        </article>
+        <h1>{ service.name }</h1>
+        <p>Also known as: </p>
+        <div>
+          Part of [Program Name] program, offered by { service.resource.name }
+        </div>
+        <OrganizationCard org={service.resource} />
+        <ServiceCard service={service} />
+        <h2>About this Service</h2>
+        <p>{service.long_description}</p>
+        <h2>Service Details</h2>
+        {/* <DataTable>
+          <TableBody>
+            {this.state.aboutRows.map(row => (
+              <TableRow key={row.key}>
+                <TableColumn>{row.key}</TableColumn>
                 {<TableColumn>{service[row.key]}</TableColumn>}
               </TableRow>
-            </TableBody>
-          </DataTable> */}
-          <h2>Location and Hours</h2>
-          <pre>{ JSON.stringify(this.props.activeService, null, 2)}</pre>
-        </div>
+            ))}
+          </TableBody>
+        </DataTable>
+        <h2>Contact Info</h2>
+        <DataTable>
+          <TableBody>
+            <TableRow>
+              <TableColumn>Website</TableColumn>
+              {<TableColumn>{service[row.key]}</TableColumn>}
+            </TableRow>
+          </TableBody>
+        </DataTable> */}
+        <h2>Location and Hours</h2>
+        <pre>{ JSON.stringify(this.props.activeService, null, 2)}</pre>
+      </div>
     );
   }
 }
+
+// ServicePage.propTypes = {
+//   activeService: PropTypes.object.isRequired,
+// };
 
 export default connect(
   state => ({ ...state.services }),
