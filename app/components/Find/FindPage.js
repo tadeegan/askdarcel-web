@@ -1,8 +1,8 @@
 import React from 'react';
-import Footer from '../Footer.js'
-import Navigation from '../Navigation.js'
-import FindHeader from './FindHeader.js'
-import CategoryItem from './CategoryItem.js'
+import Footer from '../ui/Footer';
+import Navigation from '../ui/Navigation';
+import FindHeader from './FindHeader';
+import CategoryItem from './CategoryItem';
 
 var categories = [];
 

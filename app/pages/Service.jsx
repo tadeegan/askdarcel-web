@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getService } from 'actions/serviceActions';
 
-import Loader from 'components/Loader';
+import Loader from 'components/ui/Loader';
 import OrganizationCard from 'components/layout/OrganizationCard';
 import ServiceCard from 'components/layout/ServiceCard';
 import { Link } from 'react-router';

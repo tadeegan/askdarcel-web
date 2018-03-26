@@ -11,7 +11,7 @@ var buildDir = path.resolve(__dirname, 'build');
 
 module.exports = {
   context: __dirname,
-  entry: ['whatwg-fetch', 'babel-polyfill', path.resolve(appRoot, 'init.js')],
+  entry: ['whatwg-fetch', 'babel-polyfill', path.resolve(appRoot, 'init.jsx')],
   output: {
     path: buildDir,
     publicPath: '/dist/',
