@@ -11,6 +11,7 @@ import {
   RefinementList,
   } from 'react-instantsearch/dom';
 import SearchMap from '../components/Search/SearchMap';
+import MapTest from '../components/Search/MapTest';
 import { connectStateResults } from 'react-instantsearch/connectors';
 import ServiceEntry from '../components/Search/ServiceEntry';
 import ResourceEntry from '../components/Search/ResourceEntry';
@@ -90,14 +91,20 @@ class Search extends Component {
           createURL={this.createURL}
         >
           {configuration}
+          <div className="search-box">
+            <SearchBox />
+          </div>
           <div className="results">
             <SearchTable />
+            <div className="results-map">
+              <SearchMap />
           </div>
-          <Pagination />
+          </div>
+          <div className="results-pagination">
+            <Pagination />
+          </div>
           <RefinementList attribute="categories" />
           <RefinementList attribute="status" />
-          <div className="map">
-          </div>
         </InstantSearch>
       </div>
     );

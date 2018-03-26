@@ -1,40 +1,23 @@
+import React from 'react';
 import { connectHits } from 'react-instantsearch/connectors';
 import { fitBounds } from 'google-map-react/utils';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import GoogleMap from 'google-map-react';
 
+const AnyReactComponent = ({ text }) => <div>{text}</div>;
 
 function HitsMap({ hits }) {
   if (!hits.length) {
     return null;
   }
 
-  const availableSpace = {
-    width: document.body.getBoundingClientRect().width * 5 / 12,
-    height: 400,
-  };
-
-  const boundingPoints = hits.reduce(
-    (bounds, hit) => {
-      const pos = hit;
-      if (pos.lat > bounds.nw.lat) bounds.nw.lat = pos.lat;
-      if (pos.lat < bounds.se.lat) bounds.se.lat = pos.lat;
-
-      if (pos.lng < bounds.nw.lng) bounds.nw.lng = pos.lng;
-      if (pos.lng > bounds.se.lng) bounds.se.lng = pos.lng;
-      return bounds;
-    },
-    {
-      nw: { lat: -85, lng: 180 },
-      se: { lat: 85, lng: -180 },
-    }
-  );
-
-  const boundsConfig = fitBounds(boundingPoints, availableSpace);
-
   const markers = hits.map(hit => (
-    <CustomMarker lat={hit.lat} lng={hit.lng} key={hit.objectID} />
+      <CustomMarker lat={hit._geoloc.lat} lng={hit._geoloc.lng} key={hit.objectID} />
   ));
+
+  console.log('markers:', markers)
+  console.log('hits:', hits)
 
   const options = {
     minZoomOverride: true,
@@ -42,16 +25,17 @@ function HitsMap({ hits }) {
   };
 
   return (
-    <GoogleMap
-      options={() => options}
-      bootstrapURLKeys={{
-        key: 'AIzaSyAl60n7p07HYQK6lVilAe_ggwbBJFktNw8',
-      }}
-      center={boundsConfig.center}
-      zoom={boundsConfig.zoom}
-    >
+    <div className="map-wrapper">
+      <GoogleMap
+        bootstrapURLKeys={{
+          key: CONFIG.GOOGLE_API_KEY,
+        }}
+        center={{lat: 37.7749, lng: -122.4194}}
+        defaultZoom={11}
+      >
       {markers}
-    </GoogleMap>
+      </GoogleMap>
+    </div>
   );
 }
 
@@ -59,7 +43,7 @@ function HitsMap({ hits }) {
 function CustomMarker() {
   /*  eslint-disable max-len */
   return (
-    <svg width="60" height="102" viewBox="0 0 102 60" className="marker">
+    <svg width="30" height="50" viewBox="0 0 102 60" className="marker">
       <g fill="none" fillRule="evenodd">
         <g
           transform="translate(-60, 0)"
@@ -84,8 +68,7 @@ function CustomMarker() {
   /*  eslint-enable max-len */
 }
 
-
-
 const SearchMap = connectHits(HitsMap);
+
 
 export default SearchMap;
