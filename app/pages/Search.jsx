@@ -1,23 +1,104 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
-import SearchBox from '../components/Search/SearchBox';
+import { 
+  InstantSearch, 
+  Configure,
+  Index,
+  SearchBox,
+  Hits,
+  Pagination,
+  RefinementList,
+  } from 'react-instantsearch/dom';
+import SearchMap from '../components/Search/SearchMap';
+import { connectStateResults } from 'react-instantsearch/connectors';
+import ServiceEntry from '../components/Search/ServiceEntry';
+import ResourceEntry from '../components/Search/ResourceEntry';
+import SearchTable from '../components/Search/SearchTable';
+import qs from 'qs';
+import { isEqual } from 'lodash';
 
+// const SearchRow = ({hit}) => {
+//   return (
+//     <div>
+//       {hit.name}
+//       <p>Category: {hit.categories}</p>
+//     </div>
+//     );
+// }
+
+// const SearchTable = connectStateResults(
+//   ({ searchState, searchResults }) =>
+//    searchResults && searchResults.nbHits !== 0
+//      ? <Hits hitComponent={SearchRow}/>
+//      : <div>
+//          No results have been found for {searchState.query}
+//        </div>
+// );
 
 class Search extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      searchQuery: '',
-      searchResults: '',
-    };
+    this.state = { searchState: { ...qs.parse(props.router.location.query) } };
+    this.onSearchStateChange = this.onSearchStateChange.bind(this);
+    this.createURL = this.createURL.bind(this);
+  }
+  componentWillReceiveProps() {
+    this.setState({ searchState: qs.parse(this.props.router.location.query) });
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return !isEqual(this.state.searchState, nextState.searchState);
+  }
+
+  onSearchStateChange(nextSearchState) {
+    const THRESHOLD = 700;
+    const newPush = Date.now();
+    this.setState({ lastPush: newPush, searchState: nextSearchState });
+    if (this.state.lastPush && newPush - this.state.lastPush <= THRESHOLD) {
+      this.props.router.replace(
+        nextSearchState ? `search?${qs.stringify(nextSearchState)}` : ''
+      );
+    } else {
+      this.props.router.push(
+        nextSearchState ? `search?${qs.stringify(nextSearchState)}` : ''
+      );
+    }
+  }
+
+  createURL(state) {
+    return `search?${qs.stringify(state)}`;
   }
 
   render() {
+    const { userLocation } = this.props;
+    const configuration = this.state.aroundLatLng ? (
+      <Configure aroundLatLng={`${userLocation.lat}, ${userLocation.lng}`} />
+    ) : (
+      <Configure aroundLatLngViaIP={true} aroundRadius="all" />
+    );
+
     return (
-      <div className="search-container">
-        <SearchBox />
+      <div className="search-page-container">
+        <InstantSearch
+          appId="J8TVT53HPZ"
+          apiKey="fdf77b152ff7ce0ea4e4221ff3d17d85"
+          indexName="development_service_Resource"
+          searchState={this.state.searchState}
+          onSearchStateChange={this.onSearchStateChange}
+          createURL={this.createURL}
+        >
+          {configuration}
+          <div className="results">
+            <SearchTable />
+          </div>
+          <Pagination />
+          <RefinementList attribute="categories" />
+          <RefinementList attribute="status" />
+          <div className="map">
+          </div>
+        </InstantSearch>
       </div>
     );
   }
