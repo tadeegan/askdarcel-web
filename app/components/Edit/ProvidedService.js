@@ -82,7 +82,7 @@ class ProvidedService extends Component {
 
   render() {
     return (
-      <li className="edit--service edit--section">
+      <li id={`${this.props.service.id}`} className="edit--service edit--section">
         <header className="edit--section--header">
           <h4>Service {this.props.index + 1}: {this.props.service.name}</h4>
         </header>

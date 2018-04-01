@@ -11,14 +11,13 @@ class EditServices extends Component {
     const existingServices = services ?
       services.map((service) => {
         service.key = service.id;
-        console.log(service);
         return service;
       }) : [];
 
     this.state = {
       services: {},
       existingServices,
-      uuid: -1
+      uuid: -1,
     };
 
     this.handleServiceChange = this.handleServiceChange.bind(this);
@@ -35,7 +34,7 @@ class EditServices extends Component {
     const services = this.state.services;
     services[key] = service;
     this.setState({
-      services
+      services,
     }, () => {
       this.props.handleServiceChange(this.state);
     });
@@ -49,15 +48,16 @@ class EditServices extends Component {
       newUUID = this.state.uuid - 1;
 
     existingServices.unshift({
+      id: newUUID,
       key: newUUID,
       notes: [],
       schedule: {
-        schedule_days: createTemplateSchedule()
-      }
+        schedule_days: createTemplateSchedule(),
+      },
     });
     this.setState({
       existingServices,
-      uuid: newUUID
+      uuid: newUUID,
     });
   }
 
@@ -90,8 +90,8 @@ class EditServices extends Component {
 }
 
 EditServices.propTypes = {
-    handleDeactivation: PropTypes.func,
-    handleServiceChange: PropTypes.func,
-}
+  handleDeactivation: PropTypes.func,
+  handleServiceChange: PropTypes.func,
+};
 
 export default EditServices;
