@@ -19,7 +19,14 @@ const ServiceEntry = ({hit}) => {
       <div className="entry-action-buttons">
         <ul className="action-buttons">
           <li className="action-button">Details</li>
-          <li className="action-button">Directions</li>
+          <li className="action-button">
+            <a href={`https://maps.google.com?saddr=Current+Location&daddr=${hit._geoloc.lat},${hit._geoloc.lng}&dirflg=w`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="org--aside--content--button directions-button">
+                Directions
+            </a>
+          </li>
         </ul>
       </div>
 

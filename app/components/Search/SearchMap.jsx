@@ -25,16 +25,19 @@ function HitsMap({ hits }) {
   };
 
   return (
-    <div className="map-wrapper">
-      <GoogleMap
-        bootstrapURLKeys={{
-          key: CONFIG.GOOGLE_API_KEY,
-        }}
-        center={{lat: 37.7749, lng: -122.4194}}
-        defaultZoom={11}
-      >
-      {markers}
-      </GoogleMap>
+    <div className="results-map">
+      <div className="map-wrapper">
+        <GoogleMap
+          bootstrapURLKeys={{
+            key: CONFIG.GOOGLE_API_KEY,
+          }}
+          center={{lat: 37.7749, lng: -122.4194}}
+          defaultZoom={14}
+          options={createMapOptions}
+        >
+        {markers}
+        </GoogleMap>
+      </div>
     </div>
   );
 }
@@ -66,6 +69,20 @@ function CustomMarker() {
     </svg>
   );
   /*  eslint-enable max-len */
+}
+
+function createMapOptions(maps) {
+
+  return {
+    zoomControlOptions: {
+      position: maps.ControlPosition.LEFT_TOP,
+      style: maps.ZoomControlStyle.SMALL
+    },
+    mapTypeControlOptions: {
+      position: maps.ControlPosition.TOP_RIGHT
+    },
+    mapTypeControl: true
+  };
 }
 
 const SearchMap = connectHits(HitsMap);

@@ -19,6 +19,7 @@ import SearchTable from '../components/Search/SearchTable';
 import qs from 'qs';
 import { isEqual } from 'lodash';
 
+
 // const SearchRow = ({hit}) => {
 //   return (
 //     <div>
@@ -96,15 +97,8 @@ class Search extends Component {
           </div>
           <div className="results">
             <SearchTable />
-            <div className="results-map">
-              <SearchMap />
+            <SearchMap />
           </div>
-          </div>
-          <div className="results-pagination">
-            <Pagination />
-          </div>
-          <RefinementList attribute="categories" />
-          <RefinementList attribute="status" />
         </InstantSearch>
       </div>
     );

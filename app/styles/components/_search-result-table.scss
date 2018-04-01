@@ -4,10 +4,27 @@
 }
 
 .map-wrapper {
-  width: 100%;
+  width: 50vw;
   height: 100%;
   position: fixed;
 }
+
+// TODO: Make the map responsive and sticky
+// .results-map {
+//   flex: 1 1 auto;
+//   overflow: hidden;
+//   padding-bottom: 56.25%;
+//   position: relative;
+// }
+
+// .map-wrapper {
+//     left: 0;
+//     top: 0;
+//     height: 100%;
+//     width: 100%;
+//     position: absolute;
+// }
+
 
 // search result table styles
 .search-box {
@@ -66,7 +83,7 @@
   flex: 1 1 auto;
   padding: 20px 30px 20px 30px;
   background-color: #F3F5F7;
-  max-width: calc-em(792px);
+  max-width: calc-em(840px);
 }
 
 .results-table-entry {
