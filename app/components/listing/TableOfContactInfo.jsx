@@ -10,10 +10,13 @@ class ContactInfoTable extends React.Component {
         <span>
           {/* TODO Style this better with some generic warning icon? */}
           <table>
-            <tr>
-              <td>It seems like we have no contact info on record, please click edit and add it if you can!</td>
-            </tr>
+            <tbody>
+              <tr>
+                <td>It seems like we have no contact info on record, please click edit and add it if you can!</td>
+              </tr>
+            </tbody>
           </table>
+          {/* <pre>{ JSON.stringify(item, null, 2) }</pre> */}
         </span>
       );
     }

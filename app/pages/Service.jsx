@@ -2,16 +2,16 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getService } from 'actions/serviceActions';
+import { get } from 'utils/DataService';
 
-import Loader from 'components/ui/Loader';
 import OrganizationCard from 'components/layout/OrganizationCard';
 import ServiceCard from 'components/layout/ServiceCard';
-import ListPageSidebar from 'components/listing/ListPageSidebar';
-import ContactInfoTable from 'components/listing/ContactInfoTable';
+import { ListPageSidebar, TableOfContactInfo, TableOfOpeningTimes } from 'components/listing';
+import { Datatable, Loader } from 'components/ui';
+// import ContactInfoTable from 'components/listing/ContactInfoTable';
 import MapOfLocations from 'components/maps/MapOfLocations';
 import { Link } from 'react-router';
-import { Popover, OverlayTrigger, Button } from 'react-bootstrap';
-import { get } from 'utils/DataService';
+// import { Popover, OverlayTrigger, Button } from 'react-bootstrap';
 
 class ServicePage extends React.Component {
   constructor(props) {
@@ -76,16 +76,18 @@ class ServicePage extends React.Component {
 
               <section>
                 <h2>Service Details</h2>
+                <Datatable />
               </section>
 
               <section>
                 <h2>Contact Info</h2>
-                <ContactInfoTable item={service} />
+                <TableOfContactInfo item={service} />
               </section>
 
               <section>
                 <h2>Locations and Hours</h2>
-                <MapOfLocations />
+                <MapOfLocations locations={[{ address: resource.address, name: service.name, schedule }]} />
+                <TableOfOpeningTimes schedule={schedule} />
               </section>
 
               <section>
@@ -96,43 +98,18 @@ class ServicePage extends React.Component {
                 <h2>Similar Services Near You</h2>
               </section>
 
+              <section>
+                <OrganizationCard org={service.resource} />
+                <ServiceCard service={service} />
+                <pre>{ JSON.stringify(this.props.activeService, null, 4)}</pre>
+              </section>
+
             </div>
             <div className="listing--aside">
               <ListPageSidebar />
             </div>
           </div>
         </article>
-        <h1>{ service.name }</h1>
-        <p>Also known as: </p>
-        <div>
-          Part of [Program Name] program, offered by { service.resource.name }
-        </div>
-        <OrganizationCard org={service.resource} />
-        <ServiceCard service={service} />
-        <h2>About this Service</h2>
-        <p>{service.long_description}</p>
-        <h2>Service Details</h2>
-        {/* <DataTable>
-          <TableBody>
-            {this.state.aboutRows.map(row => (
-              <TableRow key={row.key}>
-                <TableColumn>{row.key}</TableColumn>
-                {<TableColumn>{service[row.key]}</TableColumn>}
-              </TableRow>
-            ))}
-          </TableBody>
-        </DataTable>
-        <h2>Contact Info</h2>
-        <DataTable>
-          <TableBody>
-            <TableRow>
-              <TableColumn>Website</TableColumn>
-              {<TableColumn>{service[row.key]}</TableColumn>}
-            </TableRow>
-          </TableBody>
-        </DataTable> */}
-        <h2>Location and Hours</h2>
-        <pre>{ JSON.stringify(this.props.activeService, null, 2)}</pre>
       </div>
     );
   }
