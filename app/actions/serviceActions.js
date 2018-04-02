@@ -1,4 +1,4 @@
-import { SERVICE_LOAD_REQUEST, SERVICE_LOAD_SUCCESS, SERVICE_LOAD_FAILURE, SERVICES_LOAD_REQUEST } from 'actions/actionTypes';
+import { SERVICE_LOAD_REQUEST, SERVICE_LOAD_SUCCESS, SERVICE_LOAD_ERROR, SERVICES_LOAD_REQUEST } from 'actions/actionTypes';
 import { get } from 'utils/DataService';
 
 export function getService(id) {
@@ -8,7 +8,7 @@ export function getService(id) {
       const { service } = resp;
       dispatch({ type: SERVICE_LOAD_SUCCESS, service });
     }).catch((e) => {
-      dispatch({ type: SERVICE_LOAD_FAILURE, e });
+      dispatch({ type: SERVICE_LOAD_ERROR, e });
     });
   };
 }
