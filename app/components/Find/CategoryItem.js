@@ -6,7 +6,7 @@ var CategoryItem = React.createClass({
   render: function() {
     return (
     <li className="category-item">
-      <Link className="category-button" to={{ pathname: "resources", query: { categoryid: this.props.categoryid } }} >
+      <Link className="category-button" to={{ pathname: "search", query: { query: this.props.name } }} >
         <div className="category-button-content">
           <div className="category-button-icon">
             <img src={images.icon(this.props.name)} alt={this.props.name} className="img-responsive"/>
