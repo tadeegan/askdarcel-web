@@ -149,6 +149,27 @@
 
 .entry-additional-info {
   height: calc-em(102px);
+  margin: calc-em(20px) 0 0 calc-em(28px);
+  & > .entry-tabs {
+    margin-bottom: calc-em(10px); 
+
+    & > p {
+      color: $color-brand; 
+      text-transform: uppercase;
+      font-size: calc-em(13px);
+      font-weight: bold;  
+      line-height: calc-em(16px);
+    }
+    
+  }
+  & > .entry-body > p { 
+    font-size: calc-em(15px);  
+    line-height: calc-em(18px);
+    color: $color-grey6;
+    padding-right: calc-em(20px);
+    height: calc-em(60px);
+    overflow: scroll;
+  }
 }
 
 .entry-action-buttons {
@@ -165,11 +186,17 @@
   .action-button {
     flex: 1 1 100px;
     text-align: center;
+    color: $color-grey10;
+    & > a {
+      text-decoration: none;
+      color: $color-grey10;
+    }
   }
 }
 
 .entry-subhead {
   @extend %flex-column;
+  color: $color-grey6;
   p {
     @extend %font-size-small;
   }
@@ -180,6 +207,9 @@
 }
 
 .results-pagination {
+  width: calc-em(250px);
+  margin-left: auto;
+  margin-right: auto;
   .ais-Pagination-item {
     padding: 10px;
   }

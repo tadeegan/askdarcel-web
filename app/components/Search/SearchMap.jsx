@@ -5,9 +5,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import GoogleMap from 'google-map-react';
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
 
-function HitsMap({ hits }) {
+function HitsMap({ hits, userLocation }) {
   if (!hits.length) {
     return null;
   }
@@ -16,13 +15,12 @@ function HitsMap({ hits }) {
       <CustomMarker lat={hit._geoloc.lat} lng={hit._geoloc.lng} key={hit.objectID} />
   ));
 
-  console.log('markers:', markers)
-  console.log('hits:', hits)
-
   const options = {
     minZoomOverride: true,
     minZoom: 2,
   };
+
+  markers.push(<UserLocationMarker lat={userLocation.lat} lng={userLocation.lng} />);
 
   return (
     <div className="results-map">
@@ -42,6 +40,13 @@ function HitsMap({ hits }) {
   );
 }
 
+function UserLocationMarker() {
+  return (
+    <svg width="40" height="40">
+      <circle cx="20" cy="20" r="8" fill="none" stroke="#007ac7" strokeWidth="10" />
+    </svg>
+  );
+}
 
 function CustomMarker() {
   /*  eslint-disable max-len */
@@ -76,16 +81,26 @@ function createMapOptions(maps) {
   return {
     zoomControlOptions: {
       position: maps.ControlPosition.LEFT_TOP,
-      style: maps.ZoomControlStyle.SMALL
+      style: maps.ZoomControlStyle.SMALL,
     },
     mapTypeControlOptions: {
-      position: maps.ControlPosition.TOP_RIGHT
+      position: maps.ControlPosition.TOP_RIGHT,
     },
-    mapTypeControl: true
+    mapTypeControl: true,
   };
 }
 
 const SearchMap = connectHits(HitsMap);
 
+function mapStateToProps(state) {
+  return {
+    userLocation: state.user.location,
+  };
+}
 
-export default SearchMap;
+function mapDispatchToProps(dispatch) {
+  return {
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps) (SearchMap);
