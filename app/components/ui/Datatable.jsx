@@ -1,35 +1,22 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 class Datatable extends React.Component {
   render() {
+    const { rows, rowRenderer } = this.props;
     return (
       <table>
         <tbody>
-          <tr>
-            <td>Datatable</td>
-          </tr>
+          { rows.map(row => rowRenderer(row)) }
         </tbody>
       </table>
     );
   }
 }
 
-{/* <table>
-<tbody>
-  <tr>
-    <th>How To Apply</th>
-    <td>{ service.application_process }</td>
-  </tr>
-  <tr>
-    <th>Who Can Use This</th>
-    <td>{ service.eligibility }</td>
-  </tr>
-</tbody>
-</table> */}
-
-// Datatable.propTypes = {
-//   item: PropTypes.object.isRequired,
-// };
+Datatable.propTypes = {
+  rowRenderer: PropTypes.func.isRequired,
+  rows: PropTypes.array.isRequired,
+};
 
 export default Datatable;

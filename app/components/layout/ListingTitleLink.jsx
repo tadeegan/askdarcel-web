@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 
 import { Link } from 'react-router';
 import { Tooltip } from 'react-tippy';
-import { OrganizationCard, ServiceCard } from './index'
 import 'react-tippy/dist/tippy.css';
+import { OrganizationCard, ServiceCard } from './index';
 
 class ListingTitle extends React.Component {
   getTooltipContent() {
@@ -21,21 +21,21 @@ class ListingTitle extends React.Component {
     switch (type) {
       case 'org': return `/resource?id=${listing.id}`;
       case 'service': return `/services/${listing.id}`;
-      default: throw new Error('unknown listing type')
+      default: throw new Error('unknown listing type');
     }
   }
 
   render() {
-    const { children } = this.props;
+    const { listing, children } = this.props;
     return (
       <Tooltip
         arrow
         className="popover"
-        hideDelay={100000}
+        hideDelay={2000}
         html={(this.getTooltipContent())}
         theme="light"
       >
-        <Link to={this.getListingLink()}>{ children }</Link>
+        <Link to={this.getListingLink()}>{ children || listing.name }</Link>
       </Tooltip>
     );
   }

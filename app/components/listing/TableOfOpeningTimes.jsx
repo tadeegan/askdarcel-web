@@ -9,7 +9,7 @@ class TableOfOpeningTimes extends React.Component {
     // TODO Show relativeOpeningTime for current day
     
     return (
-      <table>
+      <table className="compact">
         <tbody>
           { schedule.schedule_days.map(sched => (
             <tr key={sched.day}>

@@ -4,17 +4,14 @@ import PropTypes from 'prop-types';
 import { RelativeOpeningTime } from '../listing';
 
 class MapOfLocations extends React.Component {
-  constructor(props) {
-    super(props);
-    console.log('creating map', this.props, { google });
-
-    this.state = {
-      addresses: this.parseAddresses(this.props.locations),
-    };
-  }
-
   componentDidMount() {
-    if (google === undefined) { return; }
+    if (!google === undefined) { return; }
+    console.log(google)
+
+    // this.setState({
+    //   addresses: this.parseAddresses(this.props.locations),
+    // })
+
     const map = new google.maps.Map( // TODO We should probably not just have google on the global namespace
       this.refs.map,
       { zoom: 10, position: new google.maps.LatLng(0, 0) },
@@ -51,7 +48,7 @@ class MapOfLocations extends React.Component {
     return this.props.locations.map((loc) => {
       const { address: { latitude, longitude }, name, schedule } = loc;
       return {
-        latLng: new google.maps.LatLng(latitude, longitude),
+        latLng: google === undefined ? null : new google.maps.LatLng(latitude, longitude),
         name,
         schedule,
       };
@@ -59,12 +56,13 @@ class MapOfLocations extends React.Component {
   }
 
   render() {
+    const addresses = this.parseAddresses(this.props.locations);
     return (
       <div>
         <div ref="map" className="map" />
         <table>
           <tbody>
-            { this.state.addresses.map((address, i) => (
+            { addresses.map((address, i) => (
               <tr key={address.name}>
                 <th>{ i }</th>
                 <td>{ address.name }</td>

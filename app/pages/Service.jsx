@@ -4,11 +4,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getService } from 'actions/serviceActions';
 
-import { Link } from 'react-router';
-import { Tooltip } from 'react-tippy';
 import { Datatable, Loader } from 'components/ui';
 import { OrganizationCard, ServiceCard, ListingTitleLink } from 'components/layout';
-import { ActionSidebar, TableOfContactInfo, TableOfOpeningTimes } from 'components/listing';
+import { ActionSidebar, TableOfContactInfo, TableOfOpeningTimes, CategoryTag } from 'components/listing';
 import { MapOfLocations } from 'components/maps';
 
 import 'react-tippy/dist/tippy.css';
@@ -17,6 +15,22 @@ class ServicePage extends React.Component {
   componentWillMount() {
     const { routeParams: { service } } = this.props;
     this.props.getService(service);
+  }
+
+  generateDetailsRows() {
+    const { activeService: service } = this.props;
+    const rows = [
+      ['How to Apply', service.application_process],
+      ['Who Can Use This', service.eligibility],
+      ['Required Documents', service.required_documents],
+      ['Fees', service.fee],
+      // ['Waitlist', ] // TODO This doesn't exist in any services
+      // ['Accessibility', ] // TODO Doesn't exist
+      // ['Languages'] // TODO Doesn't exist
+      // ['Funding Sources', ] // TODO Doesn't exist
+      ['Notes', service.notes.map(d => d.note).join('\n')],
+    ];
+    return rows.map(row => ({ title: row[0], value: row[1] }));
   }
 
   render() {
@@ -37,7 +51,7 @@ class ServicePage extends React.Component {
                   A service
                   {/* TODO Implement rendering/popover when programs exist */}
                   { program ? <span>in the {program.name} program,</span> : null }
-                  <span> offered by <ListingTitleLink type="org" listing={resource}>{resource.name}</ListingTitleLink></span>
+                  <span> offered by <ListingTitleLink type="org" listing={resource} /></span>
                 </p>
               </header>
 
@@ -48,7 +62,15 @@ class ServicePage extends React.Component {
 
               <section>
                 <h2>Service Details</h2>
-                <Datatable />
+                <Datatable
+                  rowRenderer={d => (
+                    <tr key={d.title}>
+                      <th>{ d.title }</th>
+                      <td>{ Array.isArray(d.value) ? d.value.join('\n') : d.value }</td>
+                    </tr>
+                  )}
+                  rows={this.generateDetailsRows()}
+                />
               </section>
 
               <section>
@@ -95,6 +117,8 @@ class ServicePage extends React.Component {
                 { name: 'Directions', icon: 'directions', link: `http://google.com/maps/dir/?api=1&destination=${resource.address.latitude},${resource.address.longitude}` },
               ]}
               />
+
+              { service.categories.map(cat => (<CategoryTag key={cat.id} category={cat} />)) }
             </div>
           </div>
         </article>

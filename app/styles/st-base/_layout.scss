@@ -65,6 +65,8 @@ pre {
 
 // Listing page action buttons
 ul.actions {
+  margin: $padding-xlarge 0;
+
   li {
     text-align: center;
     border: 1px solid $color-grey2;
