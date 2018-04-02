@@ -13,10 +13,11 @@ class OrganizationCard extends React.Component {
 
   render() {
     const { org, org: { id, address, schedule, name } } = this.props;
+    const maxHeight = '106px'
 
     return (
-      <Link to={{ pathname: '/resource', query: { id } }} className="card">
-        <StreetViewImage address={address} />
+      <Link to={{ pathname: '/resource', query: { id } }} className="card" style={{ maxHeight }}>
+        <StreetViewImage address={address} size={maxHeight} />
         <header className="content">
           <h3>{ name }</h3>
           <h4>

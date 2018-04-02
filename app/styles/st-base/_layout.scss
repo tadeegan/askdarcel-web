@@ -12,11 +12,13 @@ pre {
 // Card Styles
 .card {
   border: 1px solid #CCC;
-  min-width: 440px;
+  // min-width: 440px;
   border-radius: 2px;
   display: inline-block;
   text-decoration: none;
   color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &:hover {
     text-decoration: none;
@@ -87,5 +89,20 @@ ul.actions {
       background: $color-grey2;
       color: $color-title;
     }
+  }
+}
+
+.tippy-tooltip {
+  padding: 0;
+
+  &:hover {
+    .arrow-regular {
+      background: #EEE;
+    }
+  }
+
+  .card {
+    border: 0;
+    text-align: left;
   }
 }

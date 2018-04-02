@@ -14,6 +14,7 @@ class MapOfLocations extends React.Component {
   }
 
   componentDidMount() {
+    if (google === undefined) { return; }
     const map = new google.maps.Map( // TODO We should probably not just have google on the global namespace
       this.refs.map,
       { zoom: 10, position: new google.maps.LatLng(0, 0) },

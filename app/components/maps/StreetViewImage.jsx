@@ -22,10 +22,12 @@ class StreetViewImage extends React.Component {
   }
 
   render() {
+    const { size } = this.props
     return (
       <img
         className="streetview"
         alt="resource"
+        style={{ width: size, height: size }}
         src={this.buildImageUrl()}
       />
     );
@@ -34,6 +36,11 @@ class StreetViewImage extends React.Component {
 
 StreetViewImage.propTypes = {
   address: PropTypes.object.isRequired,
+  size: PropTypes.string
 };
+
+StreetViewImage.defaultProps = {
+  size: null
+}
 
 export default StreetViewImage;

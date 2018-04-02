@@ -5,10 +5,13 @@ import { bindActionCreators } from 'redux';
 import { getService } from 'actions/serviceActions';
 
 import { Link } from 'react-router';
+import { Tooltip } from 'react-tippy';
 import { Datatable, Loader } from 'components/ui';
-import { OrganizationCard, ServiceCard } from 'components/layout';
+import { OrganizationCard, ServiceCard, ListingTitleLink } from 'components/layout';
 import { ActionSidebar, TableOfContactInfo, TableOfOpeningTimes } from 'components/listing';
 import { MapOfLocations } from 'components/maps';
+
+import 'react-tippy/dist/tippy.css';
 
 class ServicePage extends React.Component {
   componentWillMount() {
@@ -34,7 +37,7 @@ class ServicePage extends React.Component {
                   A service
                   {/* TODO Implement rendering/popover when programs exist */}
                   { program ? <span>in the {program.name} program,</span> : null }
-                  <span> offered by <Link to={`/resource?id=${resource.id}`}>{ resource.name }</Link></span>
+                  <span> offered by <ListingTitleLink type="org" listing={resource}>{resource.name}</ListingTitleLink></span>
                 </p>
               </header>
 
@@ -67,7 +70,7 @@ class ServicePage extends React.Component {
               { resource.services.length > 1 ? <section>
                 <h2>Other Services at this Location</h2>
                 {/* TODO Exclude the current service from this list */}
-                { resource.services.map(srv => (<ServiceCard service={srv} />)) }
+                { resource.services.map(srv => (<ServiceCard service={srv} key={srv.id}/>)) }
               </section> : null}
 
               <section>
