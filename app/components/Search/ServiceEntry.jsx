@@ -8,7 +8,7 @@ class ServiceEntry extends Component {
 
     this.state = {
       isOpen: false,
-      openUntil: null
+      openUntil: null,
     };
 
     this.getOpenInformation = this.getOpenInformation.bind(this);

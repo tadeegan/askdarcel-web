@@ -42,8 +42,8 @@ function HitsMap({ hits, userLocation }) {
 
 function UserLocationMarker() {
   return (
-    <svg width="40" height="40">
-      <circle cx="20" cy="20" r="8" fill="none" stroke="#007ac7" strokeWidth="10" />
+    <svg width="30" height="30">
+      <circle cx="10" cy="10" r="5" fill="none" stroke="#007ac7" strokeWidth="5" />
     </svg>
   );
 }
