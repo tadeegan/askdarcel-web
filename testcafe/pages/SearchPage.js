@@ -2,7 +2,12 @@ import ReactSelector from 'testcafe-react-selectors';
 
 export default class SearchPage {
   constructor() {
-    this.resultsCount = ReactSelector('ResourcesTable').find('.results-count');
-    this.resultEntry = ReactSelector('ResourcesTable ResourcesRow');
+    const baseSelector = ReactSelector('ResourcesTable');
+    this.resultsCount = baseSelector.find('.results-count');
+    this.firstServiceName = baseSelector.find('.entry-organization');
+    this.firstServiceDesc = baseSelector.find('.entry-description');
+    this.firstResultName = baseSelector.find('.entry-headline');
+    this.firstResultAddress = baseSelector.find('.entry-distance');
+    this.openHours = baseSelector.find('.entry-hours');
   }
 }
