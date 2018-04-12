@@ -1,10 +1,20 @@
 import React from 'react';
 import { connectHits } from 'react-instantsearch/connectors';
-import { fitBounds } from 'google-map-react/utils';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import GoogleMap from 'google-map-react';
 
+function createMapOptions(maps) {
+  return {
+    zoomControlOptions: {
+      position: maps.ControlPosition.LEFT_TOP,
+      style: maps.ZoomControlStyle.SMALL,
+    },
+    mapTypeControlOptions: {
+      position: maps.ControlPosition.TOP_RIGHT,
+    },
+    mapTypeControl: true,
+  };
+}
 
 function HitsMap({ hits, userLocation }) {
   if (!hits.length) {
@@ -12,13 +22,8 @@ function HitsMap({ hits, userLocation }) {
   }
 
   const markers = hits.map(hit => (
-      <CustomMarker lat={hit._geoloc.lat} lng={hit._geoloc.lng} key={hit.objectID} />
+    <CustomMarker lat={hit._geoloc.lat} lng={hit._geoloc.lng} key={hit.objectID} />
   ));
-
-  const options = {
-    minZoomOverride: true,
-    minZoom: 2,
-  };
 
   markers.push(<UserLocationMarker lat={userLocation.lat} lng={userLocation.lng} />);
 
@@ -29,11 +34,11 @@ function HitsMap({ hits, userLocation }) {
           bootstrapURLKeys={{
             key: CONFIG.GOOGLE_API_KEY,
           }}
-          center={{lat: 37.7749, lng: -122.4194}}
+          center={{ lat: userLocation.lat, lng: userLocation.lng }}
           defaultZoom={14}
           options={createMapOptions}
         >
-        {markers}
+          {markers}
         </GoogleMap>
       </div>
     </div>
@@ -76,20 +81,6 @@ function CustomMarker() {
   /*  eslint-enable max-len */
 }
 
-function createMapOptions(maps) {
-
-  return {
-    zoomControlOptions: {
-      position: maps.ControlPosition.LEFT_TOP,
-      style: maps.ZoomControlStyle.SMALL,
-    },
-    mapTypeControlOptions: {
-      position: maps.ControlPosition.TOP_RIGHT,
-    },
-    mapTypeControl: true,
-  };
-}
-
 const SearchMap = connectHits(HitsMap);
 
 function mapStateToProps(state) {
@@ -98,9 +89,5 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-  };
-}
 
-export default connect(mapStateToProps, mapDispatchToProps) (SearchMap);
+export default connect(mapStateToProps)(SearchMap);

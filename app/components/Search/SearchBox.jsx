@@ -1,5 +1,5 @@
 import React from 'react';
-import { InstantSearch, Configure, Index } from 'react-instantsearch/dom';
+import { InstantSearch, Configure } from 'react-instantsearch/dom';
 import AutoComplete from './AutoComplete';
 
 

@@ -1,6 +1,6 @@
-import React, { Component} from 'react';
-import { getWalkTime, getTimes, timeToString } from '../../utils/index';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { getTimes, timeToString } from '../../utils/index';
 
 class ServiceEntry extends Component {
   constructor(props) {
@@ -8,20 +8,18 @@ class ServiceEntry extends Component {
 
     this.state = {
       isOpen: false,
-      openUntil: null
+      openUntil: null,
     };
 
     this.getOpenInformation = this.getOpenInformation.bind(this);
-
   }
-
 
   componentDidMount() {
     this.getOpenInformation(this.props.hit.schedule);
   }
 
   getOpenInformation(scheduleDays) {
-    let openInfo = getTimes(scheduleDays);
+    const openInfo = getTimes(scheduleDays);
     this.setState({
       isOpen: openInfo.isOpen,
       openUntil: openInfo.openUntil,
@@ -29,8 +27,8 @@ class ServiceEntry extends Component {
   }
 
   render() {
-    let { hit, userLocation } = this.props;
-    let { isOpen, openUntil } = this.state;
+    const { hit } = this.props;
+    const { isOpen, openUntil } = this.state;
     const description = hit.long_description || 'No description, yet...';
     let timeInfo = null;
     if (isOpen) {
@@ -40,42 +38,43 @@ class ServiceEntry extends Component {
     }
 
     return (
-    <li className="results-table-entry resource-entry">
-      <header>
-        <div className="entry-details">
-          <h4 className="entry-headline">{hit.name}</h4>
-          <div className="entry-subhead">
-            <p>{`${hit.address.address_1} • ${timeInfo}`}</p>
+      <li className="results-table-entry resource-entry">
+        <header>
+          <div className="entry-details">
+            <h4 className="entry-headline">{hit.name}</h4>
+            <div className="entry-subhead">
+              <p>{`${hit.address.address_1} • ${timeInfo}`}</p>
+            </div>
+          </div>
+        </header>
+        <div className="line-break" />
+        <div className="entry-additional-info">
+          <div className="entry-tabs">
+            <p>Description</p>
+          </div>
+          <div className="entry-body">
+            <p>{description}</p>
           </div>
         </div>
-      </header>
-      <div className="line-break" />
-      <div className="entry-additional-info">
-        <div className="entry-tabs">
-          <p>Description</p>
-        </div>
-        <div className="entry-body">
-        <p>{description}</p>
-        </div>
-      </div>
-      <div className="entry-action-buttons">
-        <ul className="action-buttons">
-          <li className="action-button">Details</li>
-          <li className="action-button">
-            <a href={`https://maps.google.com?saddr=Current+Location&daddr=${hit._geoloc.lat},${hit._geoloc.lng}&dirflg=w`}
-              target="_blank"
-              rel="noopener noreferrer"
+        <div className="entry-action-buttons">
+          <ul className="action-buttons">
+            <li className="action-button">Details</li>
+            <li className="action-button">
+              <a
+                href={`https://maps.google.com?saddr=Current+Location&daddr=${hit._geoloc.lat},${hit._geoloc.lng}&dirflg=w`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Directions
-            </a>
-          </li>
-        </ul>
-      </div>
+                  Directions
+              </a>
+            </li>
+          </ul>
+        </div>
 
-    </li>
-  );
+      </li>
+    );
   }
-};
+}
 
 
 function mapStateToProps(state) {
@@ -84,9 +83,5 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-  };
-}
 
-export default connect(mapStateToProps, mapDispatchToProps) (ServiceEntry);
+export default connect(mapStateToProps)(ServiceEntry);

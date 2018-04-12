@@ -1,6 +1,7 @@
 import React, { Component} from 'react';
 import { getWalkTime, getTimes, timeToString } from '../../utils/index';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 
 class ServiceEntry extends Component {
   constructor(props) {
@@ -12,10 +13,8 @@ class ServiceEntry extends Component {
     };
 
     this.getOpenInformation = this.getOpenInformation.bind(this);
-
   }
-
-
+  
   componentDidMount() {
     this.getOpenInformation(this.props.hit.schedule);
   }
@@ -31,7 +30,7 @@ class ServiceEntry extends Component {
   render() {
     let { hit, userLocation } = this.props;
     let { isOpen, openUntil } = this.state;
-    const description = hit.long_description || 'No description yet...';
+    const description = hit.long_description || 'No description, yet...';
     let timeInfo = null;
     if (isOpen) {
       timeInfo = `Open Until ${timeToString(openUntil)}`;
@@ -61,7 +60,7 @@ class ServiceEntry extends Component {
       </div>
       <div className="entry-action-buttons">
         <ul className="action-buttons">
-          <li className="action-button">Details</li>
+          <li className="action-button"><Link to={{ pathname: `/service/${hit.id}` }}>Details</Link></li>
           <li className="action-button">
             <a href={`https://maps.google.com?saddr=Current+Location&daddr=${hit._geoloc.lat},${hit._geoloc.lng}&dirflg=w`}
               target="_blank"
