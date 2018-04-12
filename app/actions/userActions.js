@@ -1,6 +1,4 @@
-// import * as types from './actionTypes';
-// import * as authApi from '../api/auth';
-// import { browserHistory } from 'react-router';
+import * as types from './actionTypes';
 
 export default {
   setUserLocation(location) {
@@ -8,4 +6,5 @@ export default {
       type: types.SET_USER_LOCATION,
       location,
     };
+  },
 };
