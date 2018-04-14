@@ -87,7 +87,6 @@ const SearchMap = ({hits, userLocation}) => {
   if (!hits || !hits.length) {
     return null;
   }
-  console.log('hits:', hits)
 
   const markers = hits.map(hit => (
     <CustomMarker lat={hit._geoloc.lat} lng={hit._geoloc.lng} key={hit.objectID} />

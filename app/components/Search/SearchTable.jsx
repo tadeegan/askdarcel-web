@@ -7,32 +7,13 @@ import {
 
 import SearchRow from './SearchRow';
 
-
-// const SearchTable = connectStateResults(
-//   ({ searchState, searchResults }) =>
-//    searchResults && searchResults.nbHits === 0
-//      ? <div>
-//          No results have been found for {searchState.query}
-//      </div>
-//       :
-//      <div className="results-table-body">
-//        <Hits hitComponent={SearchRow} />
-//        <div className="results-pagination">
-//          <Pagination
-//            totalPages={5}
-//            showLast={true}
-//          />
-//        </div>
-//      </div>,
-// );
-
 const SearchTable = () => (
   <div className="results-table-body">
    <Hits hitComponent={SearchRow} />
    <div className="results-pagination">
      <Pagination
-       totalPages={5}
-       showLast={true}
+       padding={2}
+       showLast
      />
    </div>
   </div>
