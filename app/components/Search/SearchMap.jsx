@@ -81,7 +81,36 @@ function CustomMarker() {
   /*  eslint-enable max-len */
 }
 
-const SearchMap = connectHits(HitsMap);
+// const SearchMap = connectHits(HitsMap);
+
+const SearchMap = ({hits, userLocation}) => {
+  if (!hits || !hits.length) {
+    return null;
+  }
+  console.log('hits:', hits)
+
+  const markers = hits.map(hit => (
+    <CustomMarker lat={hit._geoloc.lat} lng={hit._geoloc.lng} key={hit.objectID} />
+  ));
+
+  markers.push(<UserLocationMarker lat={userLocation.lat} lng={userLocation.lng} key={1}/>);
+  return (
+    <div className="results-map">
+      <div className="map-wrapper">
+        <GoogleMap
+          bootstrapURLKeys={{
+            key: CONFIG.GOOGLE_API_KEY,
+          }}
+          center={{ lat: userLocation.lat, lng: userLocation.lng }}
+          defaultZoom={14}
+          options={createMapOptions}
+        >
+          {markers}
+        </GoogleMap>
+      </div>
+    </div>
+  );
+}
 
 function mapStateToProps(state) {
   return {

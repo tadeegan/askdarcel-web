@@ -16,27 +16,10 @@ import { connectStateResults } from 'react-instantsearch/connectors';
 import ServiceEntry from '../components/Search/ServiceEntry';
 import ResourceEntry from '../components/Search/ResourceEntry';
 import SearchTable from '../components/Search/SearchTable';
+import SearchResultsContainer from '../components/Search/SearchResultsContainer';
 import qs from 'qs';
 import { isEqual } from 'lodash';
 
-
-// const SearchRow = ({hit}) => {
-//   return (
-//     <div>
-//       {hit.name}
-//       <p>Category: {hit.categories}</p>
-//     </div>
-//     );
-// }
-
-// const SearchTable = connectStateResults(
-//   ({ searchState, searchResults }) =>
-//    searchResults && searchResults.nbHits !== 0
-//      ? <Hits hitComponent={SearchRow}/>
-//      : <div>
-//          No results have been found for {searchState.query}
-//        </div>
-// );
 
 class Search extends Component {
   constructor(props) {
@@ -78,7 +61,7 @@ class Search extends Component {
     const configuration = this.state.aroundLatLng ? (
       <Configure aroundLatLng={`${userLocation.lat}, ${userLocation.lng}`} />
     ) : (
-      <Configure aroundLatLngViaIP={true} aroundRadius="all" />
+      <Configure aroundLatLngViaIP aroundRadius="all" />
     );
 
     return (
@@ -95,9 +78,8 @@ class Search extends Component {
           <div className="search-box">
             <SearchBox />
           </div>
-          <div className="results">
-            <SearchTable />
-            <SearchMap />
+          <div>
+            <SearchResultsContainer />
           </div>
         </InstantSearch>
       </div>
