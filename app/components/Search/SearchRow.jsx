@@ -14,6 +14,7 @@ const SearchRow = ({hit}) => {
     default:
       console.log('Support for the following entry is not supported yet:', hit.type)
   }
+
   return (
     <div>
       {entry}

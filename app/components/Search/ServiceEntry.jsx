@@ -20,20 +20,25 @@ class ServiceEntry extends Component {
   }
 
   getOpenInformation(scheduleDays) {
-    let openInfo = getTimes(scheduleDays);
+    const openInfo = getTimes(scheduleDays);
     this.setState({
       isOpen: openInfo.isOpen,
       openUntil: openInfo.openUntil,
+      is24hour: openInfo.is24hour,
     });
   }
 
   render() {
     let { hit, userLocation } = this.props;
-    let { isOpen, openUntil } = this.state;
+    const { isOpen, openUntil, is24hour } = this.state;
     const description = hit.long_description || 'No description, yet...';
     let timeInfo = null;
     if (isOpen) {
-      timeInfo = `Open Until ${timeToString(openUntil)}`;
+      if(is24hour) {
+        timeInfo = 'Open 24 hours';
+      } else {
+        timeInfo = `Open Until ${timeToString(openUntil)}`;
+      }
     } else {
       timeInfo = 'Closed';
     }
@@ -44,7 +49,7 @@ class ServiceEntry extends Component {
         <div className="entry-details">
           <h4 className="entry-headline">{hit.name}</h4>
           <div className="entry-subhead">
-            <p className="entry-affiliated-resource">{`a service offered by ${hit.service_of}`}</p>
+            <p className="entry-affiliated-resource">a service offered by <Link to={{ pathname: '/resource', query: { id: hit.resource_id } }}>{hit.service_of}</Link></p>
             <p>{`${hit.addresses.address_1} • ${timeInfo}`}</p>
           </div>
         </div>
@@ -60,7 +65,7 @@ class ServiceEntry extends Component {
       </div>
       <div className="entry-action-buttons">
         <ul className="action-buttons">
-          <li className="action-button"><Link to={{ pathname: `/service/${hit.id}` }}>Details</Link></li>
+          <li className="action-button"><Link to={{ pathname: `/service/${hit.service_id}` }}>Details</Link></li>
           <li className="action-button">
             <a href={`https://maps.google.com?saddr=Current+Location&daddr=${hit._geoloc.lat},${hit._geoloc.lng}&dirflg=w`}
               target="_blank"

@@ -35,7 +35,11 @@ module.exports = {
     }),
     new ExtendedDefinePlugin({
       CONFIG: config
-    })
+    }),
+    new webpack.DefinePlugin({
+      ALGOLIA_INDEX_PREFIX: process.env.NODE_ENV === 'Production' ? JSON.stringify('PRODUCTION') :
+      JSON.stringify(process.env.USER),
+    }),
   ],
   devtool: 'source-map',
   module: {

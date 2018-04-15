@@ -207,7 +207,11 @@ export function getTimes(scheduleDays) {
   });
 
   if (openUntil) {
-    return { openUntil, isOpen: true };
+    if(openUntil === 2359) {
+      return { openUntil, isOpen: true, is24hour: true };
+    } else {
+      return { openUntil, isOpen: true };
+    }
   }
   return { openUntil, isOpen: false };
 }

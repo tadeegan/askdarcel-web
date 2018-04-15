@@ -4,6 +4,7 @@ import {
   Hits,
   Pagination,
   } from 'react-instantsearch/dom';
+import { images } from 'assets';
 
 import SearchRow from './SearchRow';
 
@@ -15,6 +16,9 @@ const SearchTable = () => (
        padding={2}
        showLast
      />
+   </div>
+   <div className="algolia-img-wrapper">
+    <img src={images.algolia} alt="Search by Algolia" />
    </div>
   </div>
 );
