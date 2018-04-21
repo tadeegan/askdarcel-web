@@ -1,5 +1,5 @@
 import * as types from './actionTypes';
-import * as authApi from '../api/auth';
+// import * as authApi from '../api/auth';
 import { browserHistory } from 'react-router';
 
 function adminLoginRequest() {
@@ -20,11 +20,25 @@ function adminLoginError() {
   };
 }
 
+export function adminLogin(email, password) {
+  // console.log('em psw', email, password);
+  return fetch('/api/admin/auth/sign_in', {
+    method: 'post',
+    headers: {
+      "Content-type": "application/json", 
+    },
+    body: JSON.stringify({
+      email,
+      password
+    })
+  })
+}
+
 export default {
   adminLogin(email, password) {
     return dispatch => {
       dispatch(adminLoginRequest());
-      authApi.adminLogin(email, password)
+      adminLogin(email, password)
         .then(response => {
           if ( response.status === 200) {
             dispatch(adminLoginSuccess());

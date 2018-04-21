@@ -156,42 +156,42 @@ Website.defaultProps = {
 };
 
 
-function buildImgURL(address) {
-  if (address) {
-    let url = `https://maps.googleapis.com/maps/api/streetview?size=400x400&location=${address.latitude},${address.longitude}&fov=90&heading=235&pitch=10`;
-    // Ignore undefined CONFIG because it gets injected by extended-define-webpack-plugin
-    /* eslint-disable no-undef */
-    if (CONFIG.GOOGLE_API_KEY) {
-      url += `&key=${CONFIG.GOOGLE_API_KEY}`;
-    }
-    /* eslint-enable no-undef */
-    return url;
-  }
-  return 'http://lorempixel.com/200/200/city/';
-}
+// function buildImgURL(address) {
+//   if (address) {
+//     let url = `https://maps.googleapis.com/maps/api/streetview?size=400x400&location=${address.latitude},${address.longitude}&fov=90&heading=235&pitch=10`;
+//     // Ignore undefined CONFIG because it gets injected by extended-define-webpack-plugin
+//     /* eslint-disable no-undef */
+//     if (CONFIG.GOOGLE_API_KEY) {
+//       url += `&key=${CONFIG.GOOGLE_API_KEY}`;
+//     }
+//     /* eslint-enable no-undef */
+//     return url;
+//   }
+//   return 'http://lorempixel.com/200/200/city/';
+// }
 
-function StreetView(props) {
-  if (!props.address) {
-    return null;
-  }
-  return (
-    <div className="org-streetview">
-      <img
-        className="org-streetview--img"
-        src={buildImgURL(props.address)}
-        alt={`Street view of ${props.resourceName}`}
-      />
-    </div>
-  );
-}
+// function StreetView(props) {
+//   if (!props.address) {
+//     return null;
+//   }
+//   return (
+//     <div className="org-streetview">
+//       <img
+//         className="org-streetview--img"
+//         src={buildImgURL(props.address)}
+//         alt={`Street view of ${props.resourceName}`}
+//       />
+//     </div>
+//   );
+// }
 
-StreetView.propTypes = {
-  address: AddressType,
-  resourceName: PropTypes.string.isRequired,
-};
+// StreetView.propTypes = {
+//   address: AddressType,
+//   resourceName: PropTypes.string.isRequired,
+// };
 
-StreetView.defaultProps = {
-  address: null,
-};
+// StreetView.defaultProps = {
+//   address: null,
+// };
 
-export { Cat, AddressInfo, TodaysHours, PhoneNumber, ResourceCategories, Website, StreetView };
+export { Cat, AddressInfo, TodaysHours, PhoneNumber, ResourceCategories, Website };

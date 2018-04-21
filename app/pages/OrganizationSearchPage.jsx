@@ -8,7 +8,7 @@ import { images } from 'assets';
 import { daysOfTheWeek } from 'utils';
 import Loader from 'components/ui/Loader';
 import ResourcesList from 'components/Search/ResourcesList';
-import Gmap from 'components/Search/ResourcesMap';
+import { Gmap } from 'components/maps';
 
 // Show the span of results (11 - 20 for example rather than the #10)
 // Make the map update with proper markers

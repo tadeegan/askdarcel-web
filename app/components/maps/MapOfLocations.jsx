@@ -60,13 +60,10 @@ class MapOfLocations extends React.Component {
         position: new LatLng(Number(address.latitude), Number(address.longitude)),
       });
     });
-
-    console.log(map)
   }
 
   render() {
     const { locations } = this.state;
-    console.log(locations)
     return (
       <div>
         <div ref="map" className="map" />
@@ -74,7 +71,7 @@ class MapOfLocations extends React.Component {
           <Accordion>
             { locations.map((loc, i) => (
               <AccordionItem
-                key={loc.id}
+                key={i}
                 title={loc.address.address_1}
                 headerRenderer={title => (
                   <div>

@@ -8,7 +8,7 @@ class AccordionItem extends React.Component {
       <div>
         <header>
           {
-            this.props.headerRenderer
+            this.props.headerRenderer()
               ? this.props.headerRenderer(this.props.title)
               : <div>
                 { this.title }
@@ -30,7 +30,7 @@ AccordionItem.propTypes = {
 };
 
 AccordionItem.defaultProps = {
-  headerRenderer: null, // If undefined, we default to some basic template
+  headerRenderer: () => null, // If undefined, we default to some basic template
 };
 
 export default AccordionItem;

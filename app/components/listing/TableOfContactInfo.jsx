@@ -54,7 +54,7 @@ class ContactInfoTable extends React.Component {
                 <th>Phone</th>
                 <td>
                   <ul>
-                    { phones.map(phone => <li>{phone.number} {phone.service_type && `(${phone.service_type})`}</li>) }
+                    { phones.map(phone => <li key={phone.id}>{phone.number} {phone.service_type && `(${phone.service_type})`}</li>) }
                   </ul>
                 </td>
               </tr> : null

@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchService } from 'actions/serviceActions';
+import { fetchService } from 'models/services';
+import { parseLocationInformation } from 'models/locations';
 
 import { Datatable, Loader } from 'components/ui';
 import { ServiceCard, ListingTitleLink } from 'components/layout';
@@ -39,19 +40,7 @@ class ServicePage extends React.Component {
     const { activeService: service } = this.props;
     if (!service) { return (<Loader />); }
 
-    const { resource, program, schedule } = service;
-
-    // TODO This should be serviceAtLocation
-    const locations = [
-      resource.address,
-      { address_1: '666 Devil St.', latitude: '37.7800203', longitude: '-122.4077237' },
-      { address_1: '20 Chain Road.', latitude: '37.7811230', longitude: '-122.4076298' },
-    ].map(address => ({
-      id: address.id,
-      address,
-      name: service.name,
-      schedule,
-    }));
+    const { resource, program, schedule, name } = service;
 
     return (
       <div className="listing-container">
@@ -94,9 +83,10 @@ class ServicePage extends React.Component {
 
               <section>
                 <h2>Locations and Hours</h2>
+                {/* TODO This should be serviceAtLocation with multiple locations */}
                 <MapOfLocations
-                  locations={locations}
-                  locationRenderer={(location) => <TableOfOpeningTimes schedule={location.schedule} />}
+                  locations={[parseLocationInformation(name, resource.address, schedule)]}
+                  locationRenderer={location => <TableOfOpeningTimes schedule={location.schedule} />}
                 />
                 {/* TODO Transport Options */}
               </section>

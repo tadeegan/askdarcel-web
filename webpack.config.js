@@ -1,13 +1,13 @@
-var path = require('path');
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var ExtendedDefinePlugin = require('extended-define-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtendedDefinePlugin = require('extended-define-webpack-plugin');
 
 //Change this to config.js and add a key to the config file
-var config = require(path.resolve(__dirname, 'app/utils/config.example.js'));
+const config = require(path.resolve(__dirname, 'app/utils/config.example.js'));
 
-var appRoot = path.resolve(__dirname, 'app/');
-var buildDir = path.resolve(__dirname, 'build');
+const appRoot = path.resolve(__dirname, 'app/');
+const buildDir = path.resolve(__dirname, 'build');
 
 module.exports = {
   context: __dirname,
@@ -22,6 +22,7 @@ module.exports = {
     alias: {
       assets: path.resolve(appRoot, 'assets'),
       actions: path.resolve(appRoot, 'actions'),
+      models: path.resolve(appRoot, 'models'),
       components: path.resolve(appRoot, 'components'),
       reducers: path.resolve(appRoot, 'reducers'),
       styles: path.resolve(appRoot, 'styles'),

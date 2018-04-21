@@ -2,32 +2,31 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchOrganization } from 'actions/organizationActions';
+import { fetchOrganization, createOrganizationChangeRequest } from 'models/organizations';
+import { parseLocationInformation } from 'models/locations';
 
 import { Link } from 'react-router';
-import { AddressInfo, TodaysHours, PhoneNumber, ResourceCategories, Website, StreetView } from 'components/listing/ResourceInfos';
-import DetailedHours from 'components/listing/DetailedHours';
-import Services from 'components/listing/Services';
-import Notes from 'components/listing/Notes';
-import Loader from 'components/ui/Loader';
+import { ServiceCard } from 'components/layout';
+import { Loader, Datatable } from 'components/ui';
+import { ResourceMap, StreetViewImage, MapOfLocations } from 'components/maps';
+import { ActionSidebar, TableOfContactInfo, TableOfOpeningTimes } from 'components/listing';
+// import { AddressInfo, TodaysHours, PhoneNumber, ResourceCategories, Website, StreetView } from 'components/listing/ResourceInfos';
+// import DetailedHours from 'components/listing/DetailedHours';
+// import Services from 'components/listing/Services';
+// import Notes from 'components/listing/Notes';
+// import Loader from 'components/ui/Loader';
 import HAPcertified from 'assets/img/ic-hap.png';
-import ResourceMap from 'components/maps/ResourceMap';
-import * as dataService from 'utils/DataService';
 
-function scrollToElement(selector) {
-  const elem = document.getElementById(selector);
-  if (elem) {
-    elem.scrollIntoView({ block: 'start', behaviour: 'smooth' });
-  }
-}
+// import * as dataService from 'utils/DataService';
+
+// function scrollToElement(selector) {
+//   const elem = document.getElementById(selector);
+//   if (elem) {
+//     elem.scrollIntoView({ block: 'start', behaviour: 'smooth' });
+//   }
+// }
 
 class OrganizationPage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { resource: null };
-    // this.verifyResource = this.verifyResource.bind(this);
-  }
-
   componentWillMount() {
     const { routeParams: { resource } } = this.props;
     this.props.fetchOrganization(resource);
@@ -57,133 +56,93 @@ class OrganizationPage extends Component {
   //     });
   // }
 
+  generateDetailsRows() {
+    // TODO None of this data exists
+    const rows = [
+      // ['Legal Status', ]
+    ];
+    return rows;
+  }
+
   render() {
-    const { activeResource: resource } = this.props;
-    if (!resource) { return (<Loader />); }
+    const { activeOrganization: organization } = this.props;
+    if (!organization) { return (<Loader />); }
 
-    const { address, name } = resource;
-
-    console.log(resource)
-
+    const { address, name, certified, long_description, services, schedule } = organization;
     return (
-      <div className="org-container">
-        <article className="org" id="resource">
-          <div className="org--map">
-            <ResourceMap
-              name={resource.name}
-              lat={resource.address.latitude}
-              long={resource.address.longitude}
-              userLocation={this.props.userLocation}
-            />
-            <StreetView address={resource.address} resourceName={resource.name} />
-          </div>
-          <div className="org--main">
-            <div className="org--main--left">
-
-              <header className="org--main--header">
-                {
-                  resource.certified &&
-                  <img
-                    className="certified"
-                    src={HAPcertified}
-                    alt="Verified by the Homeless Assistance Project"
-                  />
-                }
-                <h1 className="org--main--header--title">{resource.name}</h1>
-                <div className="org--main--header--rating disabled-feature">
-                  <p className="excellent">
-                    <i className="material-icons">sentiment_very_satisfied</i>
-                    <i className="material-icons">sentiment_very_satisfied</i>
-                    <i className="material-icons">sentiment_very_satisfied</i>
-                    <i className="material-icons">sentiment_very_satisfied</i>
-                    <i className="material-icons">sentiment_very_satisfied</i>
-                  </p>
-                </div>
-                <div className="org--main--header--hours">
-                  <TodaysHours schedule_days={resource.schedule.schedule_days} />
-                </div>
-                <div className="org--main--header--phone">
-                  <PhoneNumber phones={resource.phones} />
-                </div>
-                <div className="org--main--header--description">
-                  <header>About this resource</header>
-                  <p>{resource.long_description || resource.short_description || 'No Description available'}</p>
-                </div>
+      <div className="listing-container">
+        <article className="listing" id="organization">
+          <div className="listing--main">
+            <div className="listing--main--left">
+              <header>
+                <h1>{ name }</h1>
+                { organization.alsoNamed ? <p>Also Known As</p>: null }
               </header>
 
-              <section className="service--section" id="services">
-                <header className="service--section--header">
-                  <h4>Services</h4>
-                </header>
-                <ul className="service--section--list">
-                  <Services description={resource.long_description} services={resource.services} />
-                </ul>
+              <section>
+                <h2>About This Organization</h2>
+                <p>{long_description}</p>
               </section>
 
-              <Notes notes={this.state.resource.notes} />
+              <section>
+                <h2>Organization Details</h2>
+                <TableOfContactInfo item={organization} />
+                <Datatable
+                  rowRenderer={d => (
+                    <tr key={d.title}>
+                      <th>{d.title}</th>
+                      <td>{ Array.isArray(d.value) ? d.value.join('\n') : d.value }</td>
+                    </tr>
+                  )}
+                  rows={this.generateDetailsRows()}
+                />
+              </section>
 
-              <section className="info--section" id="info">
-                <header className="service--section--header">
-                  <h4>Info</h4>
-                </header>
-                <ul className="info">
-                  <div className="info--column">
-                    <ResourceCategories categories={resource.categories} />
-                    <AddressInfo address={resource.address} />
-                    <PhoneNumber phones={resource.phones} />
-                    <Website website={resource.website} />
-                    <span className="website">
-                      <a href={`mailto:${this.state.resource.email}`} target="_blank" rel="noopener noreferrer">{this.state.resource.email}</a>
-                    </span>
-                  </div>
-                  <div className="info--column">
-                    <DetailedHours schedule={resource.schedule.schedule_days} />
-                  </div>
-                </ul>
+              {services.length && <section>
+                <h2>Services Offered</h2>
+                {
+                  services.map(service => <ServiceCard key={service.id} service={service} />)
+                }
+              </section>}
+
+              {/* TODO Programs go here */}
+
+              <section>
+                <h2>Locations and Hours</h2>
+                <MapOfLocations
+                  locations={[parseLocationInformation(name, address, schedule)]}
+                  locationRenderer={location => <TableOfOpeningTimes schedule={location.schedule} />}
+                />
+                {/* TODO Transport Options */}
               </section>
             </div>
-
-            <div className="org--aside">
-              <div className="org--aside--content">
-                <a
-                  href={`https://maps.google.com?saddr=Current+Location&daddr=${resource.address.latitude},${resource.address.longitude}&dirflg=w`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="org--aside--content--button directions-button"
-                >
-                  Get Directions
-                </a>
-                <Link to={{ pathname: '/resource/edit', query: { resourceid: resource.id } }} className="org--aside--content--button edit-button">
-                    Make Edits
-                </Link>
-                <button
-                  className="org--aside--content--button"
-                  onClick={this.verifyResource}
-                >
-                  Mark Info as Correct
-                </button>
-                <nav className="org--aside--content--nav">
-                  <ul>
-                    <li><a href="#resource">{resource.name}</a></li>
-                    <li><a href="#services">Services</a>
-                      <ul className="service--nav--list">
-                        {
-                          resource.services.map(service => (
-                            <li key={service.id}>
-                              <a href={`#service-${service.id}`} onClick={scrollToElement(`service-${service.id}`)}>
-                                {service.name}
-                              </a>
-                            </li>
-                          ))
-                        }
-                      </ul>
-                    </li>
-                    <li><a href="#info">Info</a></li>
-                  </ul>
-                </nav>
-              </div>
+            <div className="listing--aside">
+              <ActionSidebar actions={[
+                  { name: 'Edit', icon: 'edit', to: `/resource/edit?resourceid=${organization.id}` }, // TODO Update with path to /resource/:id
+                  { name: 'Print', icon: 'print', handler: () => { window.print(); } },
+                  { name: 'Directions', icon: 'directions', link: `http://google.com/maps/dir/?api=1&destination=${address.latitude},${address.longitude}` },
+                  { 
+                    name: 'Mark Correct',
+                    icon: 'done',
+                    handler: () => {
+                      console.log(this.props)
+                      this.props.createOrganizationChangeRequest(organization.id, { verified_at: new Date().toISOString() })
+                    }
+                  },
+              ]} 
+              />
             </div>
           </div>
+
+          {/* <div className="org--map">
+            <ResourceMap
+              name={name}
+              lat={address.latitude}
+              long={address.longitude}
+              userLocation={this.props.userLocation}
+            />
+            <StreetViewImage address={address} name={name} />
+          </div> */}
         </article>
       </div>
     );
@@ -208,6 +167,6 @@ OrganizationPage.propTypes = {
 };
 
 export default connect(
-  state => ({ ...state.resources }),
-  dispatch => bindActionCreators({ fetchOrganization }, dispatch),
+  state => ({ ...state.organizations }),
+  dispatch => bindActionCreators({ fetchOrganization, createOrganizationChangeRequest }, dispatch),
 )(OrganizationPage);

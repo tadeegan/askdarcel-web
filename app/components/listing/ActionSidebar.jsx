@@ -20,7 +20,7 @@ class ListPageSidebar extends React.Component {
           <li key={action.name}>
             {
               action.to || action.handler
-                ? <Link to={action.to} onClick={action.handler}>
+                ? <Link to={action.to} onClick={() => action.handler()}>
                   { this.renderButtonContent(action) }
                 </Link>
                 : <a href={action.link} target="_blank">

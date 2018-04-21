@@ -1,76 +1,52 @@
 import React from 'react';
-import Footer from 'components/ui/Footer';
-import Navigation from 'components/ui/Navigation';
-import FindHeader from 'components/search/FindHeader';
-import { CategoryLink } from 'components/layout'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { fetchCategories } from 'models/categories';
 
-let categories = [];
+import { Footer, Navigation, Loader } from 'components/ui';
+import { FindHeader } from 'components/search';
+import { CategoryLink } from 'components/layout';
 
-class CategoryBox extends React.Component {
-  componentDidMount() {
-    this.loadCategoriesFromServer();
+class HomePage extends React.Component {
+  componentWillMount() {
+    this.props.fetchCategories({ top: true });
   }
 
-  loadCategoriesFromServer() {
-    const callback = function callback(response, textStatus, jqXHR) {
-      if (httpRequest.readyState === XMLHttpRequest.DONE) {
-        if (httpRequest.status === 200) {
-          categories = JSON.parse(httpRequest.responseText).categories;
-          this.setState({ categories });
-        } else {
-          console.log('error...');
-        }
-      }
-    }.bind(this);
-
-    const tempUrl = '/api/categories?top_level=true';
-    const httpRequest = new XMLHttpRequest();
-    httpRequest.open('GET', tempUrl, true);
-    httpRequest.onreadystatechange = callback;
-    httpRequest.send(null);
-  }
-
-  render() {
-    return (
-      <div>
-        <FindHeader />
-        <CategoryList categories={categories} />
-      </div>
-    );
-  }
-}
-
-class CategoryList extends React.Component {
-  render() {
-    let categoryNodes = this.props.categories.map((category) => {
-      return (
-        <CategoryLink name={category.name} key={category.id} categoryid={category.id} />
-      );
-    });
+  renderCategorySection() {
+    const { categoryList } = this.props;
+    if (!categoryList) { return <Loader />; }
 
     return (
       <section className="category-list" role="main">
         <header>
-          <h2>Most used resources</h2>
+          <h2>Most used categories</h2>
         </header>
         <ul className="category-items">
-          {categoryNodes}
+          {
+            categoryList.map(cat =>
+              <CategoryLink key={cat.id} name={cat.name} categoryid={cat.id} />,
+            )
+          }
         </ul>
       </section>
     );
   }
-}
 
-class ContentPage extends React.Component {
   render() {
     return (
       <div className="find-page">
         <Navigation />
-        <CategoryBox />
+        <div>
+          <FindHeader />
+          { this.renderCategorySection() }
+        </div>
         <Footer />
       </div>
     );
   }
 }
 
-export default ContentPage;
+export default connect(
+  state => ({ ...state.categories }),
+  dispatch => bindActionCreators({ fetchCategories }, dispatch),
+)(HomePage);
