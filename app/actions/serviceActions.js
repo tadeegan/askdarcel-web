@@ -7,9 +7,8 @@ export function fetchService(id) {
     return get(`/api/services/${id}`).then((resp) => {
       const { service } = resp;
       dispatch({ type: SERVICE_LOAD_SUCCESS, service });
-    }).catch((e) => {
-      console.log(e);
-      dispatch({ type: SERVICE_LOAD_ERROR, e });
+    }).catch((err) => {
+      dispatch({ type: SERVICE_LOAD_ERROR, err });
     });
   };
 }

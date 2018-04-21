@@ -4,13 +4,8 @@ import { withRouter, browserHistory } from 'react-router';
 import _ from 'lodash';
 
 import { Loader } from 'components/ui';
-import EditAddress from './EditAddress';
-import EditServices from './EditServices';
-import EditNotes from './EditNotes';
-import EditSchedule from './EditSchedule';
-import EditPhones from './EditPhones';
-import EditSidebar from './EditSidebar';
-import * as dataService from '../../utils/DataService';
+import { EditAddress, EditServices, EditNotes, EditSchedule, EditPhones, EditSidebar } from 'components/edit'
+import * as dataService from 'utils/DataService';
 
 function getDiffObject(curr, orig) {
   return Object.entries(curr).reduce((acc, [key, value]) => {

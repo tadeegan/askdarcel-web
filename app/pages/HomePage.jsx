@@ -1,10 +1,10 @@
 import React from 'react';
-import Footer from '../ui/Footer';
-import Navigation from '../ui/Navigation';
-import FindHeader from './FindHeader';
-import CategoryItem from './CategoryItem';
+import Footer from 'components/ui/Footer';
+import Navigation from 'components/ui/Navigation';
+import FindHeader from 'components/search/FindHeader';
+import { CategoryLink } from 'components/layout'
 
-var categories = [];
+let categories = [];
 
 class CategoryBox extends React.Component {
   componentDidMount() {
@@ -12,19 +12,19 @@ class CategoryBox extends React.Component {
   }
 
   loadCategoriesFromServer() {
-    var callback = function callback(response, textStatus, jqXHR) {
+    const callback = function callback(response, textStatus, jqXHR) {
       if (httpRequest.readyState === XMLHttpRequest.DONE) {
         if (httpRequest.status === 200) {
           categories = JSON.parse(httpRequest.responseText).categories;
-          this.setState({categories: categories});
+          this.setState({ categories });
         } else {
           console.log('error...');
         }
       }
     }.bind(this);
 
-    var tempUrl = '/api/categories?top_level=true';
-    var httpRequest = new XMLHttpRequest();
+    const tempUrl = '/api/categories?top_level=true';
+    const httpRequest = new XMLHttpRequest();
     httpRequest.open('GET', tempUrl, true);
     httpRequest.onreadystatechange = callback;
     httpRequest.send(null);
@@ -42,10 +42,9 @@ class CategoryBox extends React.Component {
 
 class CategoryList extends React.Component {
   render() {
-
-    var categoryNodes = this.props.categories.map(function(category) {
+    let categoryNodes = this.props.categories.map((category) => {
       return (
-        <CategoryItem name={category.name} key={category.id} categoryid={category.id} />
+        <CategoryLink name={category.name} key={category.id} categoryid={category.id} />
       );
     });
 
@@ -66,9 +65,9 @@ class ContentPage extends React.Component {
   render() {
     return (
       <div className="find-page">
-      <Navigation />
-      <CategoryBox />
-      <Footer />
+        <Navigation />
+        <CategoryBox />
+        <Footer />
       </div>
     );
   }

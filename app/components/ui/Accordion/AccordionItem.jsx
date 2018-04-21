@@ -30,7 +30,7 @@ AccordionItem.propTypes = {
 };
 
 AccordionItem.defaultProps = {
-  // headerRenderer: title => title,
+  headerRenderer: null, // If undefined, we default to some basic template
 };
 
 export default AccordionItem;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-class Admin extends React.Component {
+class AdminDashboardPage extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -16,7 +16,9 @@ class Admin extends React.Component {
   //     changeRequests.map((changeRequest) => { // Create an action handler for each CR
   //       const changeRequestFields = changeRequest.field_changes.reduce((a, c) => {
   //         if (a[c.field_name] !== undefined) {
-  //           console.warn('Discarding duplicate field name in action handler: ', { current: a[c.field_name], duplicate: c });
+  //           console.warn('Discarding duplicate field name in action handler: ',
+  //             { current: a[c.field_name], duplicate: c }
+  //           );
   //           return a;
   //         }
 
@@ -40,4 +42,4 @@ class Admin extends React.Component {
   }
 }
 
-export default Admin;
+export default AdminDashboardPage;

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Select from 'react-select';
 import * as dataService from '../../utils/DataService';
 
@@ -9,7 +10,7 @@ function dataToSelectValue(data) {
   };
 }
 
-class MultiSelectDropdown extends Component {
+class MultiSelectDropdown extends React.Component {
   constructor(props) {
     super(props);
 

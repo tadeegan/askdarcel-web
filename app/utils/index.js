@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 export function getAuthRequestHeaders() {
   const authHeaders = JSON.parse(localStorage.authHeaders);
   return {

@@ -1,51 +1,49 @@
 import React from 'react';
-import { Route, Link, browserHistory, IndexRoute, withRouter } from 'react-router';
+import { Route, IndexRoute } from 'react-router';
 
-import configureStore from './store/configureStore';
-import App from './components/App';
-import CategoryPage from './components/Find/FindPage';
-import ResourcesTable from './components/Search/ResourcesTable';
-import Resource from './components/Resource/Resource';
-import EditSections from './components/Edit/EditSections';
-import ServicePage from './pages/Service'
-import Login from './components/User/Login';
-import Google from './utils/google';
-import CreateAccount from './components/User/CreateAccount';
-import TestAuth from './components/User/TestAuth';
-import Admin from './components/Admin/Admin';
-import ChangeRequests from './components/Admin/ChangeRequests';
+import App from './App';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import OrganizationEditPage from './pages/OrganizationEditPage';
+import OrganizationPage from './pages/OrganizationPage';
+import OrganizationSearchPage from './pages/OrganizationSearchPage';
 import Search from './pages/Search';
+import ServicePage from './pages/ServicePage';
 
+import AdminChangeRequests from './pages/AdminChangeRequestsPage';
+import AdminDashboard from './pages/AdminDashboardPage';
+
+// import configureStore from './store/configureStore';
 import { RequireAuth } from './components/Auth/RequireAuth';
 
-function redirectToRoot (nextState, replace) {
+function redirectToRoot(nextState, replace) {
   replace({
     pathname: '/',
   });
-};
+}
 
 // Adapted from
 // https://github.com/ReactTraining/react-router/issues/2019#issuecomment-256591800
 // Note: When we upgrade to react-router 4.x, we should use
 // https://github.com/ReactTraining/react-router/blob/v4.1.1/packages/react-router-dom/docs/guides/scroll-restoration.md
 function scrollToTop(prevState, nextState) {
-  if (nextState.location.action !== "POP") {
+  if (nextState.location.action !== 'POP') {
     window.scrollTo(0, 0);
   }
 }
 
 export default (
-  <Route path="/" component={ App } onChange={ scrollToTop } >
-    <IndexRoute component={ CategoryPage } />
-    <Route name="resources" path="/resources" component={ ResourcesTable } />
-    <Route name="editResource" path="/resource/edit" component={ EditSections } />
-    <Route name="newResource" path="/resource/new" component={ EditSections } />
-    <Route name="search" path="/search" component={ Search } />
-    <Route name="resource" path="/resource" component={ Resource }  />
-    <Route name="ServicePage" path="/services/:service" component={ ServicePage } />
-    <Route name="admin" path="/admin" component={ RequireAuth(Admin) } />
-    <Route name="changeRequests" path="/admin/changes" component={ RequireAuth(ChangeRequests) } />
-    <Route name="login" path="/login" component={ Login } />
-    <Route path="*" onEnter={ redirectToRoot } />
+  <Route path="/" component={App} onChange={scrollToTop} >
+    <IndexRoute name="HomePage" component={HomePage} />
+    <Route path="/login" name="login" component={LoginPage} />
+    <Route path="/resource/:resource" name="resource" component={OrganizationPage} />
+    <Route path="/resource/edit" name="editResource" component={OrganizationEditPage} />
+    <Route path="/resource/new" name="newResource" component={OrganizationEditPage} />
+    <Route path="/resources" name="resources" component={OrganizationSearchPage} />
+    <Route path="/search" name="search" component={Search} />
+    <Route path="/services/:service" name="ServicePage" component={ServicePage} />
+    <Route path="/admin" name="Admin" component={RequireAuth(AdminDashboard)} />
+    <Route path="/admin/changes" name="AdminChangeRequests" component={RequireAuth(AdminChangeRequests)} />
+    <Route path="*" onEnter={redirectToRoot} />
   </Route>
 );

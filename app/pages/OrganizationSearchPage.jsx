@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 
-import { images } from '../../assets';
-import { daysOfTheWeek } from '../../utils/index';
-import Loader from '../ui/Loader';
-import ResourcesList from './ResourcesList';
-import Gmap from './ResourcesMap';
+import { images } from 'assets';
+import { daysOfTheWeek } from 'utils';
+import Loader from 'components/ui/Loader';
+import ResourcesList from 'components/Search/ResourcesList';
+import Gmap from 'components/Search/ResourcesMap';
 
 // Show the span of results (11 - 20 for example rather than the #10)
 // Make the map update with proper markers

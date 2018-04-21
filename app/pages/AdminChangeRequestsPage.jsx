@@ -1,35 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TextareaAutosize from 'react-autosize-textarea';
+import { getExistingValueFromChangeRequest } from 'actions/adminActions';
 
-import * as DataService from '../../utils/DataService';
-import { getAuthRequestHeaders } from '../../utils/index';
+import * as DataService from '../utils/DataService';
+import { getAuthRequestHeaders } from '../utils/index';
 
-class ChangeRequest extends React.Component {
+class AdminChangeRequestsPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       existingRecord: {},
       changeRequestFields: {},
     };
-  }
-
-  getExistingValueFromChangeRequest(changeRequest, fieldName, fieldValue) {
-    let { resource } = changeRequest;
-    switch (changeRequest.type) {
-      case 'ResourceChangeRequest':
-      case 'AddressChangeRequest':
-      case 'PhoneChangeRequest':
-      case 'NoteChangeRequest':
-        return resource[fieldName] ? resource[fieldName] : false;
-      case 'ScheduleDayChangeRequest':
-        return 'date change';
-      case 'ServiceChangeRequest':
-        return resource.services.find(service => service.id === changeRequest.object_id)[fieldName];
-      default:
-        console.log('unknown type', changeRequest, fieldName, fieldValue);
-        return '<Some Change>';
-    }
   }
 
   changeFieldValue(key, value) {
@@ -51,7 +34,7 @@ class ChangeRequest extends React.Component {
       getAuthRequestHeaders(),
     )
     .then(response =>
-      this.props.updateFunction(response, this.props.changeRequest)
+      this.props.updateFunction(response, this.props.changeRequest),
     )
     .catch((err) => {
       console.log(err);
@@ -65,7 +48,7 @@ class ChangeRequest extends React.Component {
       getAuthRequestHeaders(),
     )
     .then(response =>
-      this.props.updateFunction(response, this.props.changeRequest, {})
+      this.props.updateFunction(response, this.props.changeRequest, {}),
     )
     .catch((err) => {
       console.log(err);
@@ -75,7 +58,7 @@ class ChangeRequest extends React.Component {
   renderFieldChange(change) {
     const fieldName = change.field_name;
     const fieldValue = change.field_value;
-    const existingValue = this.getExistingValueFromChangeRequest(
+    const existingValue = getExistingValueFromChangeRequest(
       this.props.changeRequest,
       fieldName,
       fieldValue,
@@ -150,14 +133,14 @@ class ChangeRequest extends React.Component {
   }
 }
 
-ChangeRequest.propTypes = {
+AdminChangeRequestsPage.propTypes = {
   title: PropTypes.string,
   changeRequest: PropTypes.object.isRequired,
   updateFunction: PropTypes.func.isRequired,
 };
 
-ChangeRequest.defaultProps = {
+AdminChangeRequestsPage.defaultProps = {
   title: '',
 };
 
-export default ChangeRequest;
+export default AdminChangeRequestsPage;

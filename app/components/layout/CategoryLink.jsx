@@ -6,7 +6,7 @@ class CategoryItem extends React.Component {
   render() {
     return (
       <li className="category-item">
-        <Link className="category-button" to={{ pathname: "resources", query: { categoryid: this.props.categoryid } }} >
+        <Link className="category-button" to={{ pathname: 'resources', query: { categoryid: this.props.categoryid } }} >
           <div className="category-button-content">
             <div className="category-button-icon">
               <img
